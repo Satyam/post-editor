@@ -1,0 +1,29 @@
+{
+  "name": "post-editor",
+  "version": "1.0.0",
+  "description": "Editor for blog posts in HTML with FrontMatter, to use with HEXO CMS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "neu run",
+    "help": "neu help",
+    "neu": "neu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Satyam/post-editor.git"
+  },
+  "author": "Daniel Barreiro <satyam@satyam.com.ar> (Satyam)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Satyam/post-editor/issues"
+  },
+  "homepage": "https://github.com/Satyam/post-editor#readme",
+  "devDependencies": {
+    "@neutralinojs/neu": "^9.6.0",
+    "neutralinojs-types": "^2.0.0"
+  },
+  "dependencies": {
+    "@editorjs/editorjs": "^2.27.2"
+  }
+}

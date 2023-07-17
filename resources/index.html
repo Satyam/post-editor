@@ -6,16 +6,53 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div id="neutralinoapp">
-      <h1>NeutralinoJs</h1>
-      <div id="info"></div>
-      <br />
-      <img src="icons/logo.gif" alt="Neutralinojs" />
-      <div>
-        <a href="#" onclick="openDocs();">Docs</a> &middot;
-        <a href="#" onclick="openTutorial();">Tutorial</a>
-      </div>
-    </div>
+    <h1>Editor Roxy</h1>
+    <main>
+      <section id="initial">
+        <button id="new">Nuevo</button><button id="edit">Modificar</button>
+      </section>
+      <section id="editor">
+        <label
+          >Título
+          <input
+            name="title"
+            class="text-input"
+            title="Título de la página o post"
+            required
+            tabindex="1"
+        /></label>
+        <label
+          >Fecha<input
+            name="date"
+            type="date"
+            class="text-input"
+            title="Fecha de publicación"
+            required
+        /></label>
+        <label
+          >Categorias<input
+            name="categories"
+            class="text-input"
+            title="Lista de categorías, separada por comas"
+        /></label>
+        <label
+          >Tags<input
+            name="tags"
+            class="text-input"
+            title="Lista de etiquetas, separada por comas"
+        /></label>
+        <fieldset>
+          <legend>Tipo</legend>
+          <label
+            ><input name="tipo" type="radio" value="page" checked />
+            Página</label
+          >
+          <label><input name="tipo" type="radio" value="post" /> Post</label>
+        </fieldset>
+        <div id="editorjs"></div>
+        <button id="guardar">Guardar</button><button id="exit">Salir</button>
+      </section>
+    </main>
     <!-- Neutralino.js client. This file is gitignored, 
         because `neu update` typically downloads it.
         Avoid copy-pasting it. 

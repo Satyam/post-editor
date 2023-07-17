@@ -1,16 +1,39 @@
-#neutralinoapp {
-    text-align: center;
-    -webkit-user-select: none;
-    user-select: none;
-    cursor: default;
+h1 {
+  text-align: center;
 }
-
-#neutralinoapp h1{
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 20px;
+#editorjs {
+  border: thin solid silver;
+  margin-bottom: 1rem;
 }
-
-#neutralinoapp > div {
-    font-size: 16px;
-    font-weight: normal;
+main {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+label {
+  display: block;
+  margin-bottom: 1rem;
+  width: 30%;
+}
+label .text-input {
+  margin-left: 1rem;
+  display: block;
+}
+fieldset {
+  margin-bottom: 1rem;
+  border-color: canvas;
+}
+section {
+  clear: both;
+}
+#new,
+#guardar {
+  float: left;
+}
+#edit,
+#exit {
+  float: right;
+}
+#editor {
+  display: none;
 }

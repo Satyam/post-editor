@@ -144,3 +144,6 @@ neutralino.js
 # Neutralinojs related files
 .storage
 *.log
+
+resources/js/main.js
+.tmp/auth_info.json

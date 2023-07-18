@@ -2,19 +2,23 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>NeutralinoJs sample app</title>
+    <title>Roxy Editor</title>
+    <link rel="stylesheet" href="suneditor.min.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <h1>Editor Roxy</h1>
     <main>
       <section id="initial">
-        <button id="new">Nuevo</button><button id="edit">Modificar</button>
+        <button id="new">Nuevo</button>
+        <button id="edit">Modificar</button>
+        <button id="exit">Salir</button>
       </section>
       <section id="editor">
         <label
           >Título
           <input
+            id="title"
             name="title"
             class="text-input"
             title="Título de la página o post"
@@ -23,6 +27,7 @@
         /></label>
         <label
           >Fecha<input
+            id="date"
             name="date"
             type="date"
             class="text-input"
@@ -31,26 +36,35 @@
         /></label>
         <label
           >Categorias<input
+            id="categories"
             name="categories"
             class="text-input"
             title="Lista de categorías, separada por comas"
         /></label>
         <label
           >Tags<input
+            id="tags"
             name="tags"
             class="text-input"
             title="Lista de etiquetas, separada por comas"
         /></label>
+        <label
+          >Autor<input
+            id="author"
+            name="author"
+            class="text-input"
+            title="Nombre del autor"
+        /></label>
         <fieldset>
           <legend>Tipo</legend>
           <label
-            ><input name="tipo" type="radio" value="page" checked />
+            ><input id="isPage" name="tipo" type="radio" value="page" checked />
             Página</label
           >
           <label><input name="tipo" type="radio" value="post" /> Post</label>
         </fieldset>
-        <div id="editorjs"></div>
-        <button id="guardar">Guardar</button><button id="exit">Salir</button>
+        <textarea id="suneditor">Hi</textarea>
+        <button id="save">Guardar</button><button id="return">Volver</button>
       </section>
     </main>
     <!-- Neutralino.js client. This file is gitignored, 

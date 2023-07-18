@@ -13,7 +13,7 @@
     "enabled": true,
     "writeToLogFile": true
   },
-  "nativeAllowList": ["app.*", "os.*", "debug.log"],
+  "nativeAllowList": ["app.*", "os.*", "debug.log", "filesystem.*"],
   "globalVariables": {
     "TEST1": "Hello",
     "TEST2": [2, 4, 5],
@@ -42,8 +42,7 @@
     "browser": {
       "globalVariables": {
         "TEST": "Test value browser"
-      },
-      "nativeBlockList": ["filesystem.*"]
+      }
     },
     "cloud": {
       "url": "/resources/#cloud",
@@ -52,8 +51,7 @@
     "chrome": {
       "width": 800,
       "height": 500,
-      "args": "--user-agent=\"Neutralinojs chrome mode\"",
-      "nativeBlockList": ["filesystem.*", "os.*"]
+      "args": "--user-agent=\"Neutralinojs chrome mode\""
     }
   },
   "cli": {

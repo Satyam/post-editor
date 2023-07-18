@@ -26,14 +26,14 @@ fieldset {
 section {
   clear: both;
 }
-#new,
-#guardar {
-  float: left;
-}
-#edit,
-#exit {
-  float: right;
+#initial button {
+  display: block;
+  margin: 1rem;
 }
 #editor {
   display: none;
+}
+
+#suneditor {
+  width: 100%;
 }

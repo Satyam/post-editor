@@ -22,13 +22,12 @@
   "homepage": "https://github.com/Satyam/post-editor#readme",
   "devDependencies": {
     "@neutralinojs/neu": "^9.6.0",
+    "@rollup/plugin-commonjs": "^25.0.3",
     "@rollup/plugin-node-resolve": "^15.1.0",
     "neutralinojs-types": "^2.0.0",
     "rollup": "^3.26.3"
   },
   "dependencies": {
-    "@editorjs/editorjs": "^2.27.2",
-    "editorjs-html": "^3.4.3",
-    "editorjs-parser": "^1.5.3"
+    "suneditor": "^2.45.1"
   }
 }

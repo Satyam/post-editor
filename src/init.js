@@ -7,8 +7,8 @@ Neutralino.events.on('windowClose', () => {
 });
 
 export let config = null;
-
-export const init = () =>
-  readJson(join(NL_CWD, editor.config.json)).then((cfg) => {
-    config = cfg;
-  });
+export let neutralinoConfig;
+export const init = async () => {
+  config = await readJson(join(NL_CWD, 'editor.config.json'));
+  neutralinoConfig = await Neutralino.app.getConfig();
+};

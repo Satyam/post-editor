@@ -2,7 +2,7 @@ export const readJson = (fileName) =>
   Neutralino.filesystem.readFile(fileName).then((c) => JSON.parse(c));
 
 const stripStartSlashRx = /^\/?(.*)/;
-const stripEndSlashRx = /(.*)\/?$/;
+const stripEndSlashRx = /(.*?)\/?$/;
 
 export const join = (first, ...paths) =>
   paths.reduce(

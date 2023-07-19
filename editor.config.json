@@ -2,5 +2,7 @@
   "hexoDir": "../roxygrabber/hexo",
   "filesList": "../roxygrabber/hexo/public/files.json",
   "pagesDir": "../roxygrabber/hexo/source",
-  "postsDir": "../roxygrabber/hexo/source/_post"
+  "postsDir": "../roxygrabber/hexo/source/_post",
+  "srcImagesDir": "../roxygrabber/hexo/source/assets/img",
+  "finalImagesDir": "/assets/img"
 }

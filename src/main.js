@@ -1,4 +1,4 @@
-import { init, config } from './init';
+import { init, config, neutralinoConfig } from './init';
 import { parse } from './frontmatter';
 import editor from './editor';
 import { readJson, join } from './utils';
@@ -70,15 +70,41 @@ init().then(async () => {
     sectionEditor.hidden = false;
   });
 
-  editor.onChange = function (contents, core) {
-    console.log('onChange', contents);
-  };
+  // editor.onChange = function (contents, core) {
+  //   console.log('onChange', contents);
+  // };
 
   editor.onImageUploadBefore = (files, info, core, uploadHandler) => {
     // https://github.com/JiHong88/suneditor/discussions/1109
-    console.log('-------image --------');
+    console.log('-------image onImageUploadBefore ');
     console.log({ files, info });
+    debugger;
     return true;
     // return Boolean || return (new FileList) || return undefined;
+  };
+  editor.onImageUpload = async (
+    targetElement,
+    index,
+    state,
+    info,
+    remainingFilesCount,
+    core
+  ) => {
+    if (state === 'create') {
+      await Neutralino.filesystem
+        .copyFile(
+          join(config.srcImagesDir, info.name),
+          join(
+            NL_CWD,
+            neutralinoConfig.documentRoot,
+            config.finalImagesDir,
+            info.name
+          )
+        )
+        .catch((err) => {
+          console.error(err);
+          throw err;
+        });
+    }
   };
 });

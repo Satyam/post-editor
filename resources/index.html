@@ -10,11 +10,24 @@
     <h1>Editor Roxy</h1>
     <main>
       <section id="initial">
-        <button id="new">Nuevo</button>
-        <button id="edit">Modificar</button>
+        <div class="two-grid">
+          <div>
+            <fieldset>
+              <legend>Página</legend>
+              <button id="newPage">Nueva</button>
+              <button id="editPage">Modificar</button>
+            </fieldset>
+            <fieldset>
+              <legend>Post</legend>
+              <button id="newPost">Nuevo</button>
+              <button id="editPost">Modificar</button>
+            </fieldset>
+          </div>
+          <ul id="fileList" hidden></ul>
+        </div>
         <button id="exit">Salir</button>
       </section>
-      <section id="editor">
+      <section hidden id="editor">
         <label
           >Título
           <input
@@ -34,35 +47,30 @@
             title="Fecha de publicación"
             required
         /></label>
-        <label
-          >Categorias<input
-            id="categories"
-            name="categories"
-            class="text-input"
-            title="Lista de categorías, separada por comas"
-        /></label>
-        <label
-          >Tags<input
-            id="tags"
-            name="tags"
-            class="text-input"
-            title="Lista de etiquetas, separada por comas"
-        /></label>
-        <label
-          >Autor<input
-            id="author"
-            name="author"
-            class="text-input"
-            title="Nombre del autor"
-        /></label>
-        <fieldset>
-          <legend>Tipo</legend>
+        <div id="postExtra">
           <label
-            ><input id="isPage" name="tipo" type="radio" value="page" checked />
-            Página</label
-          >
-          <label><input name="tipo" type="radio" value="post" /> Post</label>
-        </fieldset>
+            >Categorias<input
+              id="categories"
+              name="categories"
+              class="text-input"
+              title="Lista de categorías, separada por comas"
+          /></label>
+          <label
+            >Tags<input
+              id="tags"
+              name="tags"
+              class="text-input"
+              title="Lista de etiquetas, separada por comas"
+          /></label>
+          <label
+            >Autor<input
+              id="author"
+              name="author"
+              class="text-input"
+              title="Nombre del autor"
+          /></label>
+        </div>
+
         <textarea id="suneditor">Hi</textarea>
         <button id="save">Guardar</button><button id="return">Volver</button>
       </section>

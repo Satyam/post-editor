@@ -1,0 +1,17 @@
+export const sectionInitial = document.getElementById('initial');
+export const btnNewPage = document.getElementById('newPage');
+export const btnEditPage = document.getElementById('editPage');
+export const btnNewPost = document.getElementById('newPost');
+export const btnEditPost = document.getElementById('editPost');
+export const btnExit = document.getElementById('exit');
+export const sectionEditor = document.getElementById('editor');
+export const inputTitle = document.getElementById('title');
+export const inputDate = document.getElementById('date');
+export const inputCats = document.getElementById('categories');
+export const inputTags = document.getElementById('tags');
+export const inputAuthor = document.getElementById('author');
+export const radioIsPage = document.getElementById('isPage');
+export const btnSave = document.getElementById('save');
+export const btnReturn = document.getElementById('return');
+export const ulFileList = document.getElementById('fileList');
+export const divPostExtra = document.getElementById('postExtra');

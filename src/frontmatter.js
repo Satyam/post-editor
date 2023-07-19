@@ -1,6 +1,6 @@
 const sepRx = /^---\n(?<fm>.*)\n---\s*(?<content>.*)$/s;
 const lineRx = /^\s*(?<prop>\w+):\s*(?<value>.*)\s*$/m;
-const parse = (str) => {
+export const parse = (str) => {
   const m = str.match(sepRx);
   if (!m) return m;
   const { fm, content } = m.groups;
@@ -16,4 +16,9 @@ const parse = (str) => {
   return { content, matter };
 };
 
-export default parse;
+export const stringify = (matter, content) => `---
+${Object.keys(matter)
+  .map((key) => `key: ${JSON.stringify(matter[key])}`)
+  .join('\n')}
+---
+${content}`;

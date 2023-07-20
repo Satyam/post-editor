@@ -13,5 +13,5 @@ export const inputAuthor = document.getElementById('author');
 export const radioIsPage = document.getElementById('isPage');
 export const btnSave = document.getElementById('save');
 export const btnReturn = document.getElementById('return');
-export const ulFileList = document.getElementById('fileList');
+export const divFileList = document.getElementById('fileList');
 export const divPostExtra = document.getElementById('postExtra');

@@ -37,7 +37,7 @@ section {
 
 .two-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 2fr;
   gap: 20px;
 }
 
@@ -53,4 +53,20 @@ section {
 
 .sun-editor .se-btn-tray {
   padding: 3px 2px 0%;
+}
+
+#fileList {
+  font-size: 14px;
+}
+#fileList details ul {
+  margin-top: 3px;
+}
+#fileList details > details {
+  margin-left: 1rem;
+}
+
+#fileList details p {
+  margin-block-start: 3px;
+  margin-block-end: 3px;
+  margin-left: 1rem;
 }

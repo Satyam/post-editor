@@ -1,7 +1,7 @@
 import { init, config, neutralinoConfig } from './init';
 import { parse } from './frontmatter';
 import editor from './editor';
-import { readJson, join } from './utils';
+import { readJson, join, objMapString, sortDescending } from './utils';
 import { imagesToEditor } from './images';
 import {
   sectionInitial,
@@ -18,7 +18,7 @@ import {
   inputAuthor,
   btnSave,
   btnReturn,
-  ulFileList,
+  divFileList,
   divPostExtra,
 } from './elements';
 
@@ -48,16 +48,50 @@ init().then(async () => {
 
   btnEditPage.addEventListener('click', async (ev) => {
     ev.stopPropagation();
-    ulFileList.innerHTML = pages
+    divFileList.innerHTML = `<ul>${pages
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
-      .join('');
-    ulFileList.hidden = false;
+      .join('')}</ul>`;
+    divFileList.hidden = false;
   });
 
-  ulFileList.addEventListener('click', async (ev) => {
+  btnEditPost.addEventListener('click', async (ev) => {
     ev.stopPropagation();
+    const tree = {};
+    posts.forEach((p) => {
+      const [y, m, d] = p.date.split('-');
+      if (!(y in tree)) tree[y] = {};
+      if (!(m in tree[y])) tree[y][m] = {};
+      if (!(d in tree[y][m])) tree[y][m][d] = [];
+      tree[y][m][d].push(p);
+    });
+
+    divFileList.innerHTML = objMapString(
+      tree,
+      (y) =>
+        `<details><summary>${y}</summary>${objMapString(
+          tree[y],
+          (m) =>
+            `<details><summary>${m}</summary>${objMapString(
+              tree[y][m],
+              (d) =>
+                `<details><summary>${d}</summary><p>${d}/${m}/${y}</p><ul>
+                  ${tree[y][m][d]
+                    .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
+                    .join('\n')}</ul></details>`,
+              sortDescending
+            )}</details>`,
+          sortDescending
+        )}</details>`,
+      sortDescending
+    );
+    divFileList.hidden = false;
+  });
+
+  divFileList.addEventListener('click', async (ev) => {
+    ev.stopPropagation();
+    if (ev.target.tagName !== 'A') return;
     ev.preventDefault();
-    ulFileList.hidden = false;
+    divFileList.hidden = false;
 
     const fileName = join(config.pagesDir, ev.target.getAttribute('href'));
 

@@ -11,3 +11,13 @@ export const readJson = (fileName) =>
 //   );
 
 export const join = (...args) => args.join('/').replaceAll('//', '/');
+
+export const objMap = (obj, fn, sortFn) =>
+  Object.keys(obj, fn)
+    .sort(sortFn)
+    .map((key, index) => fn(key, obj[key], index));
+
+export const objMapString = (obj, fn, sortFn, sep = '\n') =>
+  objMap(obj, fn, sortFn).join(sep);
+
+export const sortDescending = (a, b) => b - a;

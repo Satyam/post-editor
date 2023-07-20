@@ -4,5 +4,5 @@
   "pagesDir": "../roxygrabber/hexo/source",
   "postsDir": "../roxygrabber/hexo/source/_post",
   "srcImagesDir": "../roxygrabber/hexo/source/assets/img",
-  "finalImagesDir": "/assets/img"
+  "editorImagesDir": "/assets/img"
 }

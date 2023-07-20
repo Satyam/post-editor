@@ -2,6 +2,7 @@ import { init, config, neutralinoConfig } from './init';
 import { parse } from './frontmatter';
 import editor from './editor';
 import { readJson, join } from './utils';
+import { imagesToEditor } from './images';
 import {
   sectionInitial,
   btnNewPage,
@@ -26,6 +27,7 @@ init().then(async () => {
     json: { pages, posts },
   } = await readJson(config.filesList);
 
+  await imagesToEditor();
   btnExit.addEventListener('click', (ev) => {
     Neutralino.app.exit();
   });
@@ -62,6 +64,7 @@ init().then(async () => {
     const { matter, content } = parse(
       await Neutralino.filesystem.readFile(fileName)
     );
+    debugger;
     inputTitle.value = matter.title;
     inputDate.value = matter.date;
     divPostExtra.hidden = true;
@@ -77,8 +80,7 @@ init().then(async () => {
   editor.onImageUploadBefore = (files, info, core, uploadHandler) => {
     // https://github.com/JiHong88/suneditor/discussions/1109
     console.log('-------image onImageUploadBefore ');
-    console.log({ files, info });
-    debugger;
+    console.log(JSON.stringify({ files, info }, null, 2));
     return true;
     // return Boolean || return (new FileList) || return undefined;
   };
@@ -90,21 +92,19 @@ init().then(async () => {
     remainingFilesCount,
     core
   ) => {
-    if (state === 'create') {
-      await Neutralino.filesystem
-        .copyFile(
-          join(config.srcImagesDir, info.name),
-          join(
-            NL_CWD,
-            neutralinoConfig.documentRoot,
-            config.finalImagesDir,
-            info.name
-          )
-        )
-        .catch((err) => {
-          console.error(err);
-          throw err;
-        });
-    }
+    console.log('-------image onImageUpload ');
+    console.log(
+      JSON.stringify(
+        {
+          tag: targetElement.tagName,
+          index,
+          state,
+          info,
+          remainingFilesCount,
+        },
+        null,
+        2
+      )
+    );
   };
 });

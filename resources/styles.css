@@ -12,8 +12,7 @@ main {
 }
 label {
   display: block;
-  margin-bottom: 1rem;
-  width: 30%;
+  margin-bottom: 0.5rem;
 }
 label .text-input {
   margin-left: 1rem;
@@ -57,6 +56,12 @@ section {
 
 #fileList {
   font-size: 14px;
+  display: none;
+}
+
+#fileList.post-list,
+#fileList.page-list {
+  display: block;
 }
 #fileList.post-list details ul {
   margin-top: 3px;
@@ -69,4 +74,30 @@ section {
   margin-block-start: 3px;
   margin-block-end: 3px;
   margin-left: 1rem;
+}
+
+.editor-top {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 20px;
+}
+
+#title,
+#categories,
+#tags,
+#author {
+  width: 90%;
+}
+
+#editor {
+  display: none;
+}
+
+#editor.is-new,
+#editor.is-edit {
+  display: block;
+}
+
+#editor.is-page #postExtra {
+  display: none;
 }

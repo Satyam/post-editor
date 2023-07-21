@@ -22,6 +22,15 @@ import {
   divPostExtra,
 } from './elements';
 
+const CNAMES = {
+  NEW: 'is-new',
+  EDIT: 'is-edit',
+  POST: 'is-post',
+  PAGE: 'is-page',
+  PAGE_LIST: 'page-list',
+  POST_LIST: 'post-list',
+};
+
 init().then(async () => {
   const {
     json: { pages, posts },
@@ -34,12 +43,19 @@ init().then(async () => {
 
   btnNewPage.addEventListener('click', (ev) => {
     sectionInitial.hidden = true;
-    sectionEditor.hidden = false;
+    sectionEditor.classList.remove(CNAMES.EDIT, CNAMES.POST);
+    sectionEditor.classList.add(CNAMES.NEW, CNAMES.PAGE);
+  });
+
+  btnNewPost.addEventListener('click', (ev) => {
+    sectionInitial.hidden = true;
+    sectionEditor.classList.remove(CNAMES.EDIT, CNAMES.PAGE);
+    sectionEditor.classList.add(CNAMES.NEW, CNAMES.POST);
   });
 
   btnReturn.addEventListener('click', (ev) => {
     sectionInitial.hidden = false;
-    sectionEditor.hidden = true;
+    sectionEditor.className = '';
   });
 
   btnSave.addEventListener('click', (ev) => {
@@ -48,16 +64,15 @@ init().then(async () => {
 
   btnEditPage.addEventListener('click', async (ev) => {
     ev.stopPropagation();
-    divFileList.className = 'page-list';
     divFileList.innerHTML = `<ul>${pages
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
       .join('')}</ul>`;
-    divFileList.hidden = false;
+    divFileList.className = CNAMES.PAGE_LIST;
   });
 
   btnEditPost.addEventListener('click', async (ev) => {
     ev.stopPropagation();
-    divFileList.className = 'post-list';
+
     const tree = {};
     posts.forEach((p) => {
       const [y, m, d] = p.date.split('-');
@@ -86,14 +101,21 @@ init().then(async () => {
         )}</details>`,
       sortDescending
     );
-    divFileList.hidden = false;
+    divFileList.className = CNAMES.POST_LIST;
   });
 
   divFileList.addEventListener('click', async (ev) => {
     ev.stopPropagation();
     if (ev.target.tagName !== 'A') return;
     ev.preventDefault();
-    divFileList.hidden = false;
+
+    sectionEditor.classList.remove(CNAMES.NEW, CNAMES.PAGE, CNAMES.POST);
+    sectionEditor.classList.add(
+      CNAMES.EDIT,
+      divFileList.classList.contains(CNAMES.POST_LIST)
+        ? CNAMES.POST
+        : CNAMES.PAGE
+    );
 
     const fileName = join(config.pagesDir, ev.target.getAttribute('href'));
 
@@ -104,16 +126,12 @@ init().then(async () => {
     inputTitle.value = matter.title;
     inputDate.value = matter.date;
     if (divFileList.className === 'post-list') {
-      divPostExtra.hidden = false;
       inputAuthor.value = matter.author ?? '';
       inputCats.value = matter.categories ?? '';
       inputTags.value = matter.tags ?? '';
-    } else {
-      divPostExtra.hidden = true;
     }
     editor.setContents(content);
     sectionInitial.hidden = true;
-    sectionEditor.hidden = false;
   });
 
   // editor.onChange = function (contents, core) {
@@ -139,7 +157,7 @@ init().then(async () => {
     console.log(
       JSON.stringify(
         {
-          tag: targetElement.tagName,
+          tag: targetElement?.tagName,
           index,
           state,
           info,

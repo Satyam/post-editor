@@ -23,56 +23,63 @@
               <button id="editPost">Modificar</button>
             </fieldset>
           </div>
-          <div id="fileList" hidden></div>
+          <div id="fileList"></div>
         </div>
         <button id="exit">Salir</button>
       </section>
-      <section hidden id="editor">
-        <label
-          >Título
-          <input
-            id="title"
-            name="title"
-            class="text-input"
-            title="Título de la página o post"
-            required
-            tabindex="1"
-        /></label>
-        <label
-          >Fecha<input
-            id="date"
-            name="date"
-            type="date"
-            class="text-input"
-            title="Fecha de publicación"
-            required
-        /></label>
-        <div id="postExtra">
-          <label
-            >Categorias<input
-              id="categories"
-              name="categories"
-              class="text-input"
-              title="Lista de categorías, separada por comas"
-          /></label>
-          <label
-            >Tags<input
-              id="tags"
-              name="tags"
-              class="text-input"
-              title="Lista de etiquetas, separada por comas"
-          /></label>
-          <label
-            >Autor<input
-              id="author"
-              name="author"
-              class="text-input"
-              title="Nombre del autor"
-          /></label>
+      <section id="editor">
+        <div class="editor-top">
+          <div>
+            <label
+              >Título
+              <input
+                id="title"
+                name="title"
+                class="text-input"
+                title="Título de la página o post"
+                required
+                tabindex="1"
+            /></label>
+            <label
+              >Fecha<input
+                id="date"
+                name="date"
+                type="date"
+                class="text-input"
+                title="Fecha de publicación"
+                required
+            /></label>
+            <div id="postExtra">
+              <label
+                >Categorias<input
+                  id="categories"
+                  name="categories"
+                  class="text-input"
+                  title="Lista de categorías, separada por comas"
+              /></label>
+              <label
+                >Tags<input
+                  id="tags"
+                  name="tags"
+                  class="text-input"
+                  title="Lista de etiquetas, separada por comas"
+              /></label>
+              <label
+                >Autor<input
+                  id="author"
+                  name="author"
+                  class="text-input"
+                  title="Nombre del autor"
+              /></label>
+            </div>
+          </div>
+          <div>
+            <button id="save">Guardar</button>
+            <button id="return">Volver</button>
+          </div>
         </div>
 
         <textarea id="suneditor">Hi</textarea>
-        <button id="save">Guardar</button><button id="return">Volver</button>
       </section>
     </main>
     <!-- Neutralino.js client. This file is gitignored, 

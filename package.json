@@ -28,6 +28,7 @@
     "rollup": "^3.26.3"
   },
   "dependencies": {
-    "suneditor": "^2.45.1"
+    "suneditor": "^2.45.1",
+    "yaml": "^2.3.1"
   }
 }

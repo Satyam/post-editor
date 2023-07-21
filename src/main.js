@@ -48,6 +48,7 @@ init().then(async () => {
 
   btnEditPage.addEventListener('click', async (ev) => {
     ev.stopPropagation();
+    divFileList.className = 'page-list';
     divFileList.innerHTML = `<ul>${pages
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
       .join('')}</ul>`;
@@ -56,6 +57,7 @@ init().then(async () => {
 
   btnEditPost.addEventListener('click', async (ev) => {
     ev.stopPropagation();
+    divFileList.className = 'post-list';
     const tree = {};
     posts.forEach((p) => {
       const [y, m, d] = p.date.split('-');
@@ -98,10 +100,17 @@ init().then(async () => {
     const { matter, content } = parse(
       await Neutralino.filesystem.readFile(fileName)
     );
-    debugger;
+
     inputTitle.value = matter.title;
     inputDate.value = matter.date;
-    divPostExtra.hidden = true;
+    if (divFileList.className === 'post-list') {
+      divPostExtra.hidden = false;
+      inputAuthor.value = matter.author ?? '';
+      inputCats.value = matter.categories ?? '';
+      inputTags.value = matter.tags ?? '';
+    } else {
+      divPostExtra.hidden = true;
+    }
     editor.setContents(content);
     sectionInitial.hidden = true;
     sectionEditor.hidden = false;

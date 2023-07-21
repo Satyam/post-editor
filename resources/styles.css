@@ -58,14 +58,14 @@ section {
 #fileList {
   font-size: 14px;
 }
-#fileList details ul {
+#fileList.post-list details ul {
   margin-top: 3px;
 }
-#fileList details > details {
+#fileList.post-list details > details {
   margin-left: 1rem;
 }
 
-#fileList details p {
+#fileList.post-list details p {
   margin-block-start: 3px;
   margin-block-end: 3px;
   margin-left: 1rem;

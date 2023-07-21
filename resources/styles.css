@@ -76,6 +76,10 @@ section {
   margin-left: 1rem;
 }
 
+.hidden {
+  display: none;
+}
+
 .editor-top {
   display: grid;
   grid-template-columns: 3fr 1fr;

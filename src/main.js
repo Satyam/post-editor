@@ -29,6 +29,7 @@ const CNAMES = {
   PAGE: 'is-page',
   PAGE_LIST: 'page-list',
   POST_LIST: 'post-list',
+  HIDDEN: 'hidden',
 };
 
 init().then(async () => {
@@ -42,19 +43,19 @@ init().then(async () => {
   });
 
   btnNewPage.addEventListener('click', (ev) => {
-    sectionInitial.hidden = true;
+    sectionInitial.className = CNAMES.HIDDEN;
     sectionEditor.classList.remove(CNAMES.EDIT, CNAMES.POST);
     sectionEditor.classList.add(CNAMES.NEW, CNAMES.PAGE);
   });
 
   btnNewPost.addEventListener('click', (ev) => {
-    sectionInitial.hidden = true;
+    sectionInitial.className = CNAMES.HIDDEN;
     sectionEditor.classList.remove(CNAMES.EDIT, CNAMES.PAGE);
     sectionEditor.classList.add(CNAMES.NEW, CNAMES.POST);
   });
 
   btnReturn.addEventListener('click', (ev) => {
-    sectionInitial.hidden = false;
+    sectionInitial.className = '';
     sectionEditor.className = '';
   });
 
@@ -131,7 +132,7 @@ init().then(async () => {
       inputTags.value = matter.tags ?? '';
     }
     editor.setContents(content);
-    sectionInitial.hidden = true;
+    sectionInitial.className = CNAMES.HIDDEN;
   });
 
   // editor.onChange = function (contents, core) {

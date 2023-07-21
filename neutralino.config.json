@@ -43,7 +43,7 @@
     }
   },
   "cli": {
-    "binaryName": "post-ed",
+    "binaryName": "roxy-editor",
     "resourcesPath": "/resources/",
     "extensionsPath": "/extensions/",
     "clientLibrary": "/resources/js/neutralino.js",

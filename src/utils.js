@@ -1,5 +1,11 @@
 export const readJson = (fileName) =>
-  Neutralino.filesystem.readFile(fileName).then((c) => JSON.parse(c));
+  Neutralino.filesystem
+    .readFile(fileName)
+    .catch((err) => {
+      console.log('Not found:', fileName);
+      return '{}';
+    })
+    .then((c) => JSON.parse(c));
 
 // const stripStartSlashRx = /^\/?(.*)/;
 // const stripEndSlashRx = /(.*?)\/?$/;
@@ -19,5 +25,7 @@ export const objMap = (obj, fn, sortFn) =>
 
 export const objMapString = (obj, fn, sortFn, sep = '\n') =>
   objMap(obj, fn, sortFn).join(sep);
+
+export const isObjEmpty = (obj) => !obj || Object.keys(obj).length === 0;
 
 export const sortDescending = (a, b) => b - a;

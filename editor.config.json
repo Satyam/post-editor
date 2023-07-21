@@ -1,6 +1,7 @@
 {
   "hexoDir": "../roxygrabber/hexo",
   "filesList": "../roxygrabber/hexo/public/files.json",
+  "draftList": "draftList.json",
   "pagesDir": "../roxygrabber/hexo/source",
   "postsDir": "../roxygrabber/hexo/source/_post",
   "srcImagesDir": "../roxygrabber/hexo/source/assets/img",

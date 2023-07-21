@@ -1,7 +1,13 @@
 import { init, config, neutralinoConfig } from './init';
 import { parse } from './frontmatter';
 import editor from './editor';
-import { readJson, join, objMapString, sortDescending } from './utils';
+import {
+  readJson,
+  join,
+  objMapString,
+  sortDescending,
+  isObjEmpty,
+} from './utils';
 import { imagesToEditor } from './images';
 import {
   sectionInitial,
@@ -9,6 +15,8 @@ import {
   btnEditPage,
   btnNewPost,
   btnEditPost,
+  btnDraftPage,
+  btnDraftPost,
   btnExit,
   sectionEditor,
   inputTitle,
@@ -17,18 +25,21 @@ import {
   inputTags,
   inputAuthor,
   btnSave,
+  btnSaveDraft,
   btnReturn,
   divFileList,
-  divPostExtra,
 } from './elements';
 
 const CNAMES = {
   NEW: 'is-new',
   EDIT: 'is-edit',
+  DRAFT: 'is-draft',
   POST: 'is-post',
   PAGE: 'is-page',
   PAGE_LIST: 'page-list',
   POST_LIST: 'post-list',
+  DRAFT_POST_LIST: 'draft-post-list',
+  DRAFT_PAGE_LIST: 'draft-page-list',
   HIDDEN: 'hidden',
 };
 
@@ -37,20 +48,26 @@ init().then(async () => {
     json: { pages, posts },
   } = await readJson(config.filesList);
 
+  const { draftPosts, draftPages } = await readJson(config.draftList);
+
+  if (isObjEmpty(draftPages)) btnDraftPage.disabled = true;
+  if (isObjEmpty(draftPosts)) btnDraftPost.disabled = true;
+
   await imagesToEditor();
+
   btnExit.addEventListener('click', (ev) => {
     Neutralino.app.exit();
   });
 
   btnNewPage.addEventListener('click', (ev) => {
     sectionInitial.className = CNAMES.HIDDEN;
-    sectionEditor.classList.remove(CNAMES.EDIT, CNAMES.POST);
+    sectionEditor.classList.remove(CNAMES.EDIT, CNAMES.DRAFT, CNAMES.POST);
     sectionEditor.classList.add(CNAMES.NEW, CNAMES.PAGE);
   });
 
   btnNewPost.addEventListener('click', (ev) => {
     sectionInitial.className = CNAMES.HIDDEN;
-    sectionEditor.classList.remove(CNAMES.EDIT, CNAMES.PAGE);
+    sectionEditor.classList.remove(CNAMES.EDIT, CNAMES.DRAFT, CNAMES.PAGE);
     sectionEditor.classList.add(CNAMES.NEW, CNAMES.POST);
   });
 
@@ -69,6 +86,28 @@ init().then(async () => {
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
       .join('')}</ul>`;
     divFileList.className = CNAMES.PAGE_LIST;
+    sectionEditor.classList.remove(CNAMES.NEW, CNAMES.DRAFT, CNAMES.POST);
+    sectionEditor.classList.add(CNAMES.EDIT, CNAMES.PAGE);
+  });
+
+  btnDraftPage.addEventListener('click', async (ev) => {
+    ev.stopPropagation();
+    divFileList.innerHTML = `<ul>${draftPages
+      .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
+      .join('')}</ul>`;
+    divFileList.className = CNAMES.DRAFT_PAGE_LIST;
+    sectionEditor.classList.remove(CNAMES.NEW, CNAMES.POST);
+    sectionEditor.classList.add(CNAMES.EDIT, CNAMES.DRAFT, CNAMES.PAGE);
+  });
+
+  btnDraftPost.addEventListener('click', async (ev) => {
+    ev.stopPropagation();
+    divFileList.innerHTML = `<ul>${draftPosts
+      .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
+      .join('')}</ul>`;
+    divFileList.className = CNAMES.DRAFT_POST_LIST;
+    sectionEditor.classList.remove(CNAMES.NEW, CNAMES.PAGE);
+    sectionEditor.classList.add(CNAMES.EDIT, CNAMES.DRAFT, CNAMES.POST);
   });
 
   btnEditPost.addEventListener('click', async (ev) => {
@@ -103,20 +142,14 @@ init().then(async () => {
       sortDescending
     );
     divFileList.className = CNAMES.POST_LIST;
+    sectionEditor.classList.remove(CNAMES.NEW, CNAMES.PAGE);
+    sectionEditor.classList.add(CNAMES.EDIT, CNAMES.DRAFT, CNAMES.POST);
   });
 
   divFileList.addEventListener('click', async (ev) => {
     ev.stopPropagation();
     if (ev.target.tagName !== 'A') return;
     ev.preventDefault();
-
-    sectionEditor.classList.remove(CNAMES.NEW, CNAMES.PAGE, CNAMES.POST);
-    sectionEditor.classList.add(
-      CNAMES.EDIT,
-      divFileList.classList.contains(CNAMES.POST_LIST)
-        ? CNAMES.POST
-        : CNAMES.PAGE
-    );
 
     const fileName = join(config.pagesDir, ev.target.getAttribute('href'));
 

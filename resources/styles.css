@@ -60,7 +60,8 @@ section {
 }
 
 #fileList.post-list,
-#fileList.page-list {
+#fileList.page-list,
+#fileList.draft-list {
   display: block;
 }
 #fileList.post-list details ul {
@@ -98,7 +99,8 @@ section {
 }
 
 #editor.is-new,
-#editor.is-edit {
+#editor.is-edit,
+#editor.is-draft {
   display: block;
 }
 

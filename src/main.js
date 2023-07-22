@@ -10,7 +10,6 @@ import {
 } from './utils';
 import { imagesToEditor } from './images';
 import {
-  sectionInitial,
   btnNewPage,
   btnEditPage,
   btnNewPost,
@@ -18,6 +17,7 @@ import {
   btnDraftPage,
   btnDraftPost,
   btnExit,
+  main,
   sectionEditor,
   inputTitle,
   inputDate,
@@ -31,19 +31,18 @@ import {
 } from './elements';
 
 const CNAMES = {
-  NEW: 'is-new',
-  EDIT: 'is-edit',
-  DRAFT: 'is-draft',
   POST: 'is-post',
   PAGE: 'is-page',
   PAGE_LIST: 'page-list',
   POST_LIST: 'post-list',
   DRAFT_POST_LIST: 'draft-post-list',
   DRAFT_PAGE_LIST: 'draft-page-list',
-  HIDDEN: 'hidden',
+  SELECT: 'select',
+  EDIT: 'edit',
 };
 
 init().then(async () => {
+  main.className = CNAMES.SELECT;
   const {
     json: { pages, posts },
   } = await readJson(config.filesList);
@@ -60,24 +59,33 @@ init().then(async () => {
   });
 
   btnNewPage.addEventListener('click', (ev) => {
-    sectionInitial.className = CNAMES.HIDDEN;
-    sectionEditor.classList.remove(CNAMES.EDIT, CNAMES.DRAFT, CNAMES.POST);
-    sectionEditor.classList.add(CNAMES.NEW, CNAMES.PAGE);
+    main.className = CNAMES.EDIT;
+    sectionEditor.className = CNAMES.PAGE;
   });
 
   btnNewPost.addEventListener('click', (ev) => {
-    sectionInitial.className = CNAMES.HIDDEN;
-    sectionEditor.classList.remove(CNAMES.EDIT, CNAMES.DRAFT, CNAMES.PAGE);
-    sectionEditor.classList.add(CNAMES.NEW, CNAMES.POST);
+    main.className = CNAMES.EDIT;
+    sectionEditor.className = CNAMES.POST;
   });
 
   btnReturn.addEventListener('click', (ev) => {
-    sectionInitial.className = '';
-    sectionEditor.className = '';
+    main.className = CNAMES.SELECT;
   });
 
   btnSave.addEventListener('click', (ev) => {
     console.log(editor.getContents());
+  });
+
+  btnSaveDraft.addEventListener('click', (ev) => {
+    const isPost = sectionEditor.classList.contains(CNAMES.POST);
+    const title = inputTitle.value;
+    const date = inputDate.value;
+    const matter = { title, date };
+    if (isPost) {
+      matter.author = inputAuthor.value;
+      matter.categories = inputCats.value.split(',');
+      matter.tags = inputTags.value.split(',');
+    }
   });
 
   btnEditPage.addEventListener('click', async (ev) => {
@@ -86,8 +94,7 @@ init().then(async () => {
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
       .join('')}</ul>`;
     divFileList.className = CNAMES.PAGE_LIST;
-    sectionEditor.classList.remove(CNAMES.NEW, CNAMES.DRAFT, CNAMES.POST);
-    sectionEditor.classList.add(CNAMES.EDIT, CNAMES.PAGE);
+    sectionEditor.className = CNAMES.PAGE;
   });
 
   btnDraftPage.addEventListener('click', async (ev) => {
@@ -96,8 +103,7 @@ init().then(async () => {
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
       .join('')}</ul>`;
     divFileList.className = CNAMES.DRAFT_PAGE_LIST;
-    sectionEditor.classList.remove(CNAMES.NEW, CNAMES.POST);
-    sectionEditor.classList.add(CNAMES.EDIT, CNAMES.DRAFT, CNAMES.PAGE);
+    sectionEditor.className = CNAMES.PAGE;
   });
 
   btnDraftPost.addEventListener('click', async (ev) => {
@@ -106,8 +112,7 @@ init().then(async () => {
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
       .join('')}</ul>`;
     divFileList.className = CNAMES.DRAFT_POST_LIST;
-    sectionEditor.classList.remove(CNAMES.NEW, CNAMES.PAGE);
-    sectionEditor.classList.add(CNAMES.EDIT, CNAMES.DRAFT, CNAMES.POST);
+    sectionEditor.className = CNAMES.POST;
   });
 
   btnEditPost.addEventListener('click', async (ev) => {
@@ -142,8 +147,7 @@ init().then(async () => {
       sortDescending
     );
     divFileList.className = CNAMES.POST_LIST;
-    sectionEditor.classList.remove(CNAMES.NEW, CNAMES.PAGE);
-    sectionEditor.classList.add(CNAMES.EDIT, CNAMES.DRAFT, CNAMES.POST);
+    sectionEditor.className = CNAMES.POST;
   });
 
   divFileList.addEventListener('click', async (ev) => {
@@ -165,7 +169,7 @@ init().then(async () => {
       inputTags.value = matter.tags ?? '';
     }
     editor.setContents(content);
-    sectionInitial.className = CNAMES.HIDDEN;
+    main.className = CNAMES.EDIT;
   });
 
   // editor.onChange = function (contents, core) {

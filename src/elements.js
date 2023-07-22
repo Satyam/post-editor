@@ -1,4 +1,3 @@
-export const sectionInitial = document.getElementById('initial');
 export const btnNewPage = document.getElementById('newPage');
 export const btnEditPage = document.getElementById('editPage');
 export const btnNewPost = document.getElementById('newPost');
@@ -17,3 +16,4 @@ export const btnSave = document.getElementById('save');
 export const btnSaveDraft = document.getElementById('saveDraft');
 export const btnReturn = document.getElementById('return');
 export const divFileList = document.getElementById('fileList');
+export const main = document.getElementById('main');

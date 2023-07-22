@@ -3,6 +3,7 @@ import plugins from 'suneditor/src/plugins';
 import es from 'suneditor/src/lang/es';
 
 const editor = suneditor.create('suneditor', {
+  height: '300',
   defaultTag: '',
   textTags: {
     bold: 'b',

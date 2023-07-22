@@ -1,4 +1,3 @@
-import { init, config, neutralinoConfig } from './init';
 import { parse } from './frontmatter';
 import editor from './editor';
 import {
@@ -41,13 +40,19 @@ const CNAMES = {
   EDIT: 'edit',
 };
 
-init().then(async () => {
+Neutralino.init();
+
+Neutralino.events.on('windowClose', () => {
+  Neutralino.app.exit();
+});
+
+const start = async () => {
   main.className = CNAMES.SELECT;
   const {
     json: { pages, posts },
-  } = await readJson(config.filesList);
+  } = await readJson(NL_HEXO_FILES_LIST);
 
-  const { draftPosts, draftPages } = await readJson(config.draftList);
+  const { draftPosts, draftPages } = await readJson(NL_DRAFTS_LIST);
 
   if (isObjEmpty(draftPages)) btnDraftPage.disabled = true;
   if (isObjEmpty(draftPosts)) btnDraftPost.disabled = true;
@@ -155,7 +160,7 @@ init().then(async () => {
     if (ev.target.tagName !== 'A') return;
     ev.preventDefault();
 
-    const fileName = join(config.pagesDir, ev.target.getAttribute('href'));
+    const fileName = join(NL_SRC_PAGES_DIR, ev.target.getAttribute('href'));
 
     const { matter, content } = parse(
       await Neutralino.filesystem.readFile(fileName)
@@ -206,4 +211,8 @@ init().then(async () => {
       )
     );
   };
+};
+
+start().catch((err) => {
+  console.log(err), Neutralino.app.exit(1);
 });

@@ -49,5 +49,14 @@
     "clientLibrary": "/resources/js/neutralino.js",
     "binaryVersion": "4.10.0",
     "clientVersion": "3.8.2"
+  },
+  "globalVariables": {
+    "HEXO_DIR": "../roxygrabber/hexo",
+    "HEXO_FILES_LIST": "../roxygrabber/hexo/public/files.json",
+    "HEXO_IMG_DIR": "../roxygrabber/hexo/source/assets/img",
+    "SRC_PAGES_DIR": "../roxygrabber/hexo/source",
+    "DRAFTS_LIST": "resources/draftsList.json",
+    "DRAFTS_DIR": "resources/drafts",
+    "EDITOR_IMG_DIR": "resources/assets/img"
   }
 }

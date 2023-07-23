@@ -9,6 +9,8 @@ import {
 
 export const form = document.forms[0];
 
+let isPost = false;
+
 const fill = (input, list) => {
   input.list.innerHTML = list
     .map((name) => `<option value="${name}" />`)
@@ -46,8 +48,7 @@ form.addEventListener('submit', async (ev) => {
   console.log('submitted by:', ev.submitter.name);
 
   let valid = true;
-  const title = form.title.value;
-  debugger;
+  const title = form.elements.title.value;
   if (title.length < 5) {
     showError(form.title, 'Los títulos han de tener al menos 5 caracteres');
     valid = false;
@@ -60,7 +61,6 @@ form.addEventListener('submit', async (ev) => {
   console.log(date);
 
   if (valid) {
-    debugger;
     form.dispatchEvent(
       new CustomEvent(ev.submitter.name, {
         detail: inputs.reduce(
@@ -71,3 +71,18 @@ form.addEventListener('submit', async (ev) => {
     );
   }
 });
+
+export const setForm = (post, data) => {
+  isPost = post;
+  form.className = post ? 'is-post' : 'is-page';
+  inputs.forEach((el) => showError(el));
+  if (data)
+    Object.keys(data).forEach((name) => {
+      const el = form.elements[name];
+      if (el) el.value = data[name];
+      else {
+        console.log('no prop', name, data);
+        debugger;
+      }
+    });
+};

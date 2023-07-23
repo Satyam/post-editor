@@ -8,7 +8,7 @@ import {
   sortDescending,
   slugify,
 } from './utils';
-import { form, setDataLists } from './form';
+import { form, setDataLists, setForm } from './form';
 import { imagesToEditor } from './images';
 import {
   btnNewPage,
@@ -19,22 +19,11 @@ import {
   btnDraftPost,
   btnExit,
   main,
-  sectionEditor,
-  inputTitle,
-  inputDate,
-  inputCats,
-  inputTags,
-  inputAuthor,
-  // btnSave,
-  // btnSaveDraft,
   btnReturn,
   divFileList,
-  // form,
 } from './elements';
 
 const CNAMES = {
-  POST: 'is-post',
-  PAGE: 'is-page',
   PAGE_LIST: 'page-list',
   POST_LIST: 'post-list',
   DRAFT_POST_LIST: 'draft-post-list',
@@ -59,7 +48,6 @@ const start = async () => {
     json: { pages, posts, categories, tags, authors },
   } = await readJson(NL_HEXO_FILES_LIST);
 
-  debugger;
   setDataLists(categories, tags, authors);
   const drafts = await readJson(NL_DRAFTS_LIST);
 
@@ -74,12 +62,13 @@ const start = async () => {
 
   form.addEventListener('save', (ev) => {
     console.log('save', ev.detail);
-    debugger;
   });
   form.addEventListener('draft', async (ev) => {
     console.log('draft', ev.detail);
     const matter = ev.detail;
+    matter.updated = new Date().toISOString();
     if (isPost) {
+      matter.layout = 'post';
       const file = join('posts', `${matter.date}-${slugify(matter.title)}`);
       await fs.writeFile(
         join(NL_DRAFTS_DIR, file),
@@ -87,6 +76,7 @@ const start = async () => {
       );
       drafts.draftPosts.push({ file, title, date });
     } else {
+      matter.layout = 'page';
       const file = join('pages', slugify(matter.title));
       await fs.writeFile(
         join(NL_DRAFTS_DIR, file),
@@ -100,14 +90,14 @@ const start = async () => {
   });
   btnNewPage.addEventListener('click', (ev) => {
     main.className = CNAMES.EDIT;
-    sectionEditor.className = CNAMES.PAGE;
     isPost = false;
+    setForm(isPost);
   });
 
   btnNewPost.addEventListener('click', (ev) => {
     main.className = CNAMES.EDIT;
-    sectionEditor.className = CNAMES.POST;
     isPost = true;
+    setForm(isPost);
   });
 
   btnReturn.addEventListener('click', (ev) => {
@@ -120,7 +110,6 @@ const start = async () => {
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
       .join('')}</ul>`;
     divFileList.className = CNAMES.PAGE_LIST;
-    sectionEditor.className = CNAMES.PAGE;
     isPost = false;
   });
 
@@ -130,7 +119,6 @@ const start = async () => {
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
       .join('')}</ul>`;
     divFileList.className = CNAMES.DRAFT_PAGE_LIST;
-    sectionEditor.className = CNAMES.PAGE;
     isPost = false;
   });
 
@@ -140,7 +128,6 @@ const start = async () => {
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
       .join('')}</ul>`;
     divFileList.className = CNAMES.DRAFT_POST_LIST;
-    sectionEditor.className = CNAMES.POST;
     isPost = true;
   });
 
@@ -176,7 +163,6 @@ const start = async () => {
       sortDescending
     );
     divFileList.className = CNAMES.POST_LIST;
-    sectionEditor.className = CNAMES.POST;
     isPost = true;
   });
 
@@ -191,13 +177,7 @@ const start = async () => {
       await Neutralino.filesystem.readFile(fileName)
     );
 
-    inputTitle.value = matter.title;
-    inputDate.value = matter.date;
-    if (divFileList.className === 'post-list') {
-      inputAuthor.value = matter.author ?? '';
-      inputCats.value = matter.categories ?? '';
-      inputTags.value = matter.tags ?? '';
-    }
+    setForm(isPost, matter);
     editor.setContents(content);
     main.className = CNAMES.EDIT;
   });

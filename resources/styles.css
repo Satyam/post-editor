@@ -71,12 +71,6 @@ section {
   margin-left: 1rem;
 }
 
-.editor-top {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 20px;
-}
-
 #title,
 #categories,
 #tags,
@@ -98,10 +92,15 @@ section {
   display: block;
 }
 
-#editor.is-page #postExtra {
+#form {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 20px;
+}
+#form.is-page #postExtra {
   display: none;
 }
-#editor.is-post #postExtra {
+#form.is-post #postExtra {
   display: block;
 }
 

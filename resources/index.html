@@ -32,7 +32,7 @@
         <button id="exit">Salir</button>
       </section>
       <section id="editor">
-        <div class="editor-top">
+        <form id="form" class="editor-top" novalidate>
           <div>
             <label
               >Título
@@ -41,9 +41,10 @@
                 name="title"
                 class="text-input"
                 title="Título de la página o post"
-                required
                 tabindex="1"
-            /></label>
+              />
+              <div class="error"></div>
+            </label>
             <label
               >Fecha<input
                 id="date"
@@ -51,8 +52,9 @@
                 type="date"
                 class="text-input"
                 title="Fecha de publicación"
-                required
-            /></label>
+              />
+              <div class="error"></div>
+            </label>
             <div id="postExtra">
               <label
                 >Categorias<input
@@ -60,29 +62,43 @@
                   name="categories"
                   class="text-input"
                   title="Lista de categorías, separada por comas"
-              /></label>
+                  list="catsDatalist"
+                />
+                <div class="error"></div>
+              </label>
+              <datalist id="catsDatalist"></datalist>
               <label
                 >Etiquetas<input
                   id="tags"
                   name="tags"
                   class="text-input"
                   title="Lista de etiquetas, separada por comas"
-              /></label>
+                  list="tagsDatalist"
+                />
+                <div class="error"></div>
+              </label>
+              <datalist id="tagsDatalist"></datalist>
               <label
                 >Autor<input
                   id="author"
                   name="author"
                   class="text-input"
                   title="Nombre del autor"
-              /></label>
+                  list="authorDatalist"
+                />
+                <div class="error"></div>
+              </label>
+              <datalist id="authorDatalist"></datalist>
             </div>
           </div>
           <div>
-            <button id="save">Guardar</button>
-            <button id="saveDraft">Guardar como borrador</button>
+            <button id="save" name="save" type="submit">Guardar</button>
+            <button id="saveDraft" name="draft" type="submit">
+              Guardar como borrador
+            </button>
             <button id="return">Volver</button>
           </div>
-        </div>
+        </form>
 
         <textarea id="suneditor">Hi</textarea>
       </section>

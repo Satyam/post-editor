@@ -1,12 +1,14 @@
-import { parse } from './frontmatter';
+import { parse, stringify } from './frontmatter';
 import editor from './editor';
 import {
   readJson,
+  writeJson,
   join,
   objMapString,
   sortDescending,
-  isObjEmpty,
+  slugify,
 } from './utils';
+import { form, setDataLists } from './form';
 import { imagesToEditor } from './images';
 import {
   btnNewPage,
@@ -23,10 +25,11 @@ import {
   inputCats,
   inputTags,
   inputAuthor,
-  btnSave,
-  btnSaveDraft,
+  // btnSave,
+  // btnSaveDraft,
   btnReturn,
   divFileList,
+  // form,
 } from './elements';
 
 const CNAMES = {
@@ -46,16 +49,22 @@ Neutralino.events.on('windowClose', () => {
   Neutralino.app.exit();
 });
 
+const fs = Neutralino.filesystem;
+
+let isPost = false;
+
 const start = async () => {
   main.className = CNAMES.SELECT;
   const {
-    json: { pages, posts },
+    json: { pages, posts, categories, tags, authors },
   } = await readJson(NL_HEXO_FILES_LIST);
 
-  const { draftPosts, draftPages } = await readJson(NL_DRAFTS_LIST);
+  debugger;
+  setDataLists(categories, tags, authors);
+  const drafts = await readJson(NL_DRAFTS_LIST);
 
-  if (isObjEmpty(draftPages)) btnDraftPage.disabled = true;
-  if (isObjEmpty(draftPosts)) btnDraftPost.disabled = true;
+  btnDraftPage.disabled = drafts.draftPages.length === 0;
+  btnDraftPost.disabled = drafts.draftPosts.length === 0;
 
   await imagesToEditor();
 
@@ -63,34 +72,46 @@ const start = async () => {
     Neutralino.app.exit();
   });
 
+  form.addEventListener('save', (ev) => {
+    console.log('save', ev.detail);
+    debugger;
+  });
+  form.addEventListener('draft', async (ev) => {
+    console.log('draft', ev.detail);
+    const matter = ev.detail;
+    if (isPost) {
+      const file = join('posts', `${matter.date}-${slugify(matter.title)}`);
+      await fs.writeFile(
+        join(NL_DRAFTS_DIR, file),
+        stringify(matter, editor.getContents())
+      );
+      drafts.draftPosts.push({ file, title, date });
+    } else {
+      const file = join('pages', slugify(matter.title));
+      await fs.writeFile(
+        join(NL_DRAFTS_DIR, file),
+        stringify(matter, editor.getContents())
+      );
+      drafts.draftPages.push({ file, title, date });
+    }
+    await writeJson(NL_DRAFTS_LIST, drafts);
+    btnDraftPage.disabled = drafts.draftPages.length === 0;
+    btnDraftPost.disabled = drafts.draftPosts.length === 0;
+  });
   btnNewPage.addEventListener('click', (ev) => {
     main.className = CNAMES.EDIT;
     sectionEditor.className = CNAMES.PAGE;
+    isPost = false;
   });
 
   btnNewPost.addEventListener('click', (ev) => {
     main.className = CNAMES.EDIT;
     sectionEditor.className = CNAMES.POST;
+    isPost = true;
   });
 
   btnReturn.addEventListener('click', (ev) => {
     main.className = CNAMES.SELECT;
-  });
-
-  btnSave.addEventListener('click', (ev) => {
-    console.log(editor.getContents());
-  });
-
-  btnSaveDraft.addEventListener('click', (ev) => {
-    const isPost = sectionEditor.classList.contains(CNAMES.POST);
-    const title = inputTitle.value;
-    const date = inputDate.value;
-    const matter = { title, date };
-    if (isPost) {
-      matter.author = inputAuthor.value;
-      matter.categories = inputCats.value.split(',');
-      matter.tags = inputTags.value.split(',');
-    }
   });
 
   btnEditPage.addEventListener('click', async (ev) => {
@@ -100,24 +121,27 @@ const start = async () => {
       .join('')}</ul>`;
     divFileList.className = CNAMES.PAGE_LIST;
     sectionEditor.className = CNAMES.PAGE;
+    isPost = false;
   });
 
   btnDraftPage.addEventListener('click', async (ev) => {
     ev.stopPropagation();
-    divFileList.innerHTML = `<ul>${draftPages
+    divFileList.innerHTML = `<ul>${drafts.draftPages
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
       .join('')}</ul>`;
     divFileList.className = CNAMES.DRAFT_PAGE_LIST;
     sectionEditor.className = CNAMES.PAGE;
+    isPost = false;
   });
 
   btnDraftPost.addEventListener('click', async (ev) => {
     ev.stopPropagation();
-    divFileList.innerHTML = `<ul>${draftPosts
+    divFileList.innerHTML = `<ul>${drafts.draftPosts
       .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
       .join('')}</ul>`;
     divFileList.className = CNAMES.DRAFT_POST_LIST;
     sectionEditor.className = CNAMES.POST;
+    isPost = true;
   });
 
   btnEditPost.addEventListener('click', async (ev) => {
@@ -153,6 +177,7 @@ const start = async () => {
     );
     divFileList.className = CNAMES.POST_LIST;
     sectionEditor.className = CNAMES.POST;
+    isPost = true;
   });
 
   divFileList.addEventListener('click', async (ev) => {

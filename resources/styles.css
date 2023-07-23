@@ -54,7 +54,8 @@ section {
 
 #fileList.post-list,
 #fileList.page-list,
-#fileList.draft-list {
+#fileList.draft-post-list,
+#fileList.draft-page-list {
   display: block;
 }
 #fileList.post-list details ul {
@@ -102,4 +103,17 @@ section {
 }
 #editor.is-post #postExtra {
   display: block;
+}
+
+.error {
+  visibility: hidden;
+  font-size: x-small;
+  color: red;
+  margin-left: 2rem;
+}
+.invalid .error {
+  visibility: visible;
+}
+.invalid input {
+  border-color: red;
 }

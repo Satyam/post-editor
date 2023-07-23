@@ -55,7 +55,7 @@
     "HEXO_FILES_LIST": "../roxygrabber/hexo/public/files.json",
     "HEXO_IMG_DIR": "../roxygrabber/hexo/source/assets/img",
     "SRC_PAGES_DIR": "../roxygrabber/hexo/source",
-    "DRAFTS_LIST": "resources/draftsList.json",
+    "DRAFTS_LIST": "resources/drafts/files.json",
     "DRAFTS_DIR": "resources/drafts",
     "EDITOR_IMG_DIR": "resources/assets/img"
   }

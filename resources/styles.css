@@ -50,6 +50,7 @@ section {
 #fileList {
   font-size: 14px;
   display: none;
+  cursor: pointer;
 }
 
 #fileList.post-list,

@@ -15,16 +15,7 @@ import {
   divFileList,
 } from './elements';
 
-import {
-  drafts,
-  pages,
-  posts,
-  categories,
-  tags,
-  authors,
-  load,
-  saveDrafts,
-} from './files';
+import { drafts, pages, posts, load, saveDrafts } from './files';
 
 const CNAMES = {
   PAGE_LIST: 'page-list',
@@ -49,7 +40,7 @@ load()
   .then(async () => {
     main.className = CNAMES.SELECT;
 
-    setDataLists(categories, tags, authors);
+    setDataLists();
 
     btnDraftPage.disabled = !drafts.pages?.length;
     btnDraftPost.disabled = !drafts.posts?.length;

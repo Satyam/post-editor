@@ -7,6 +7,8 @@ import {
   slugify,
 } from './utils';
 
+import { categories, tags, authors } from './files';
+
 export const form = document.forms[0];
 const selectedCats = document.getElementById('selectedCats');
 const selectedTags = document.getElementById('selectedTags');
@@ -23,7 +25,8 @@ const fillSelect = (select, list) => {
     .map((name) => `<option value="${name}">${name}</option>`)
     .join('\n');
 };
-export const setDataLists = (categories, tags, authors) => {
+
+export const setDataLists = () => {
   fillSelect(form.catList, categories);
   fillSelect(form.tagsList, tags);
   fillDataList(form.author, authors);

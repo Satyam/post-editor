@@ -53,7 +53,6 @@ load()
     });
 
     form.addEventListener('draft', async (ev) => {
-      console.log('draft', ev.detail);
       const matter = ev.detail;
       matter.updated = new Date().toISOString();
       if (isPost) {

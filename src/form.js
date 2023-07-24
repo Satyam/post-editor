@@ -69,7 +69,6 @@ const showError = (el, msg) => {
 
 form.addEventListener('submit', async (ev) => {
   ev.preventDefault();
-  console.log('submitted by:', ev.submitter.name);
 
   let valid = true;
   const title = form.elements.title.value;
@@ -85,7 +84,6 @@ form.addEventListener('submit', async (ev) => {
     showError(form.date, 'Se debe indicar una fecha para el artículo');
     valid = false;
   } else showError(form.date);
-  console.log(date);
 
   if (valid) {
     const data = {
@@ -124,7 +122,6 @@ export const setForm = (
 
   form.elements.title.value = data.title;
   form.date.value = data.date.split('T')[0];
-  console.log(data.date, form.date.value);
   if (post) {
     form.author.value = data.author;
     selectedCats.innerHTML = data.categories

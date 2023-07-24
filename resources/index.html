@@ -37,9 +37,8 @@
             <label
               >Título
               <input
-                id="title"
                 name="title"
-                class="text-input"
+                class="text-input wide"
                 title="Título de la página o post"
                 tabindex="1"
               />
@@ -47,7 +46,6 @@
             </label>
             <label
               >Fecha<input
-                id="date"
                 name="date"
                 type="date"
                 class="text-input"
@@ -102,9 +100,8 @@
               </fieldset>
               <label
                 >Autor<input
-                  id="author"
                   name="author"
-                  class="text-input"
+                  class="text-input wide"
                   title="Ingresa o selecciona el nombre del autor"
                   list="authorDatalist"
                 />
@@ -114,23 +111,16 @@
             </div>
           </div>
           <div>
-            <button id="save" name="save" type="submit">Guardar</button>
-            <button id="saveDraft" name="draft" type="submit">
-              Guardar como borrador
-            </button>
-            <button id="return">Volver</button>
+            <button name="save" type="submit">Guardar</button>
+            <button name="draft" type="submit">Guardar como borrador</button>
+            <button type="reset">Volver</button>
           </div>
         </form>
 
         <textarea id="suneditor">Hi</textarea>
       </section>
     </main>
-    <!-- Neutralino.js client. This file is gitignored, 
-        because `neu update` typically downloads it.
-        Avoid copy-pasting it. 
-        -->
     <script src="js/neutralino.js"></script>
-    <!-- Your app's source files -->
     <script src="js/main.js"></script>
   </body>
 </html>

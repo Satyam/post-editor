@@ -11,7 +11,6 @@ import {
   btnDraftPost,
   btnExit,
   main,
-  btnReturn,
   divFileList,
 } from './elements';
 
@@ -91,7 +90,7 @@ load()
       setForm(isPost);
     });
 
-    btnReturn.addEventListener('click', (ev) => {
+    form.addEventListener('reset', (ev) => {
       main.className = CNAMES.SELECT;
     });
 

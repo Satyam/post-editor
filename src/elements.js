@@ -5,6 +5,5 @@ export const btnEditPost = document.getElementById('editPost');
 export const btnDraftPage = document.getElementById('draftPage');
 export const btnDraftPost = document.getElementById('draftPost');
 export const btnExit = document.getElementById('exit');
-export const btnReturn = document.getElementById('return');
 export const divFileList = document.getElementById('fileList');
 export const main = document.getElementById('main');

@@ -56,34 +56,56 @@
               <div class="error"></div>
             </label>
             <div id="postExtra">
-              <label
-                >Categorias<input
-                  id="categories"
-                  name="categories"
-                  class="text-input"
-                  title="Lista de categorías, separada por comas"
-                  list="catsDatalist"
-                />
-                <div class="error"></div>
-              </label>
-              <datalist id="catsDatalist"></datalist>
-              <label
-                >Etiquetas<input
-                  id="tags"
-                  name="tags"
-                  class="text-input"
-                  title="Lista de etiquetas, separada por comas"
-                  list="tagsDatalist"
-                />
-                <div class="error"></div>
-              </label>
-              <datalist id="tagsDatalist"></datalist>
+              <fieldset
+                class="two-halves"
+                title="Ingresa una nueva categoría y/o marca una o más categorías de la lista a la izquierda"
+              >
+                <legend>Categorias</legend>
+                <div>
+                  <input
+                    name="newCat"
+                    title="Puedes ingresar una nueva categoría aquí"
+                  /><br />
+                  <select
+                    name="catList"
+                    multiple
+                    size="5"
+                    title="Puedes marcar cero o más categorías de las existentes"
+                  ></select>
+                </div>
+                <fieldset>
+                  <legend>Seleccionadas:</legend>
+                  <ul id="selectedCats" class="selectedItems"></ul>
+                </fieldset>
+              </fieldset>
+              <fieldset
+                class="two-halves"
+                title="Ingresa una nueva etiqueta y/o marca una o más etiquetas de la lista a la izquierda"
+              >
+                <legend>Etiquetas</legend>
+                <div>
+                  <input
+                    name="newTag"
+                    title="Puedes ingresar una nueva etiqueta aquí"
+                  /><br />
+                  <select
+                    name="tagsList"
+                    multiple
+                    size="5"
+                    title="Puedes marcar cero o más etiquetas de las existentes"
+                  ></select>
+                </div>
+                <fieldset>
+                  <legend>Seleccionadas:</legend>
+                  <ul id="selectedTags" class="selectedItems"></ul>
+                </fieldset>
+              </fieldset>
               <label
                 >Autor<input
                   id="author"
                   name="author"
                   class="text-input"
-                  title="Nombre del autor"
+                  title="Ingresa o selecciona el nombre del autor"
                   list="authorDatalist"
                 />
                 <div class="error"></div>

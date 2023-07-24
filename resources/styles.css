@@ -116,3 +116,20 @@ section {
 .invalid input {
   border-color: red;
 }
+
+.two-halves {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.two-halves input,
+.two-halves select {
+  width: 100%;
+}
+
+.selectedItems {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 1em;
+}

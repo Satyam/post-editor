@@ -1,6 +1,10 @@
 const fs = Neutralino.filesystem;
-export const readJson = (fileName) =>
-  fs.readFile(fileName).then((c) => JSON.parse(c));
+
+export const readJson = (fileName, defaultValue) =>
+  fs.readFile(fileName).then(
+    (c) => JSON.parse(c),
+    (err) => defaultValue ?? {}
+  );
 
 export const writeJson = (filename, obj) =>
   fs.writeFile(filename, JSON.stringify(obj, null, 2));

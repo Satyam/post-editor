@@ -65,11 +65,11 @@ const showError = (el, msg) => {
 };
 
 form.addEventListener('reset', (ev) => {
-  form.title.value = '';
+  form.elements.title.value = '';
   form.date.value = new Date().toISOString().split(':')[0];
   form.categories.value = '';
   form.tags.value = '';
-  form.author.value = '';
+  form.author.value = 'Roxana Cabut';
 });
 
 form.addEventListener('submit', async (ev) => {
@@ -79,9 +79,12 @@ form.addEventListener('submit', async (ev) => {
   let valid = true;
   const title = form.elements.title.value;
   if (title.length < 5) {
-    showError(form.title, 'Los títulos han de tener al menos 5 caracteres');
+    showError(
+      form.elements.title,
+      'Los títulos han de tener al menos 5 caracteres'
+    );
     valid = false;
-  } else showError(form.title);
+  } else showError(form.elements.title);
   const date = form.date.value;
   if (date.length === 0) {
     showError(form.date, 'Se debe indicar una fecha para el artículo');
@@ -90,12 +93,20 @@ form.addEventListener('submit', async (ev) => {
   console.log(date);
 
   if (valid) {
+    const data = {
+      title: form.elements.title.value,
+      date: form.elements.date.value,
+    };
+    if (isPost) {
+      data.author = form.elements.author.value;
+      data.categories = Array.from(selectedCats.children).map(
+        (li) => li.innerHTML
+      );
+      data.tags = Array.from(selectedTags.children).map((li) => li.innerHTML);
+    }
     form.dispatchEvent(
       new CustomEvent(ev.submitter.name, {
-        detail: inputs.reduce(
-          (data, el) => ({ ...data, [el.name]: el.value }),
-          {}
-        ),
+        detail: data,
       })
     );
   }
@@ -111,7 +122,6 @@ export const setForm = (post, data) => {
       if (el) el.value = data[name];
       else {
         console.log('no prop', name, data);
-        debugger;
       }
     });
 };

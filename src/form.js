@@ -67,14 +67,6 @@ const showError = (el, msg) => {
   }
 };
 
-form.addEventListener('reset', (ev) => {
-  form.elements.title.value = '';
-  form.date.value = new Date().toISOString().split(':')[0];
-  form.categories.value = '';
-  form.tags.value = '';
-  form.author.value = 'Roxana Cabut';
-});
-
 form.addEventListener('submit', async (ev) => {
   ev.preventDefault();
   console.log('submitted by:', ev.submitter.name);
@@ -115,16 +107,41 @@ form.addEventListener('submit', async (ev) => {
   }
 });
 
-export const setForm = (post, data) => {
+export const setForm = (
+  post,
+  data = {
+    title: '',
+    date: new Date().toISOString(),
+    categories: [],
+    tags: [],
+    author: 'Roxana Cabut',
+  }
+) => {
   isPost = post;
   form.className = post ? 'is-post' : 'is-page';
+
   inputs.forEach((el) => showError(el));
-  if (data)
-    Object.keys(data).forEach((name) => {
-      const el = form.elements[name];
-      if (el) el.value = data[name];
-      else {
-        console.log('no prop', name, data);
-      }
+
+  form.elements.title.value = data.title;
+  form.date.value = data.date.split('T')[0];
+  console.log(data.date, form.date.value);
+  if (post) {
+    form.author.value = data.author;
+    selectedCats.innerHTML = data.categories
+      .map((cat) => `<li>${cat}</li>`)
+      .join('\n');
+    Array.from(form.catList.options).forEach((opt) => {
+      opt.selected = data.categories.includes(opt.value);
     });
+    selectedTags.innerHTML = data.tags
+      .map((tag) => `<li>${tag}</li>`)
+      .join('\n');
+    Array.from(form.tagsList.options).forEach((opt) => {
+      opt.selected = data.tags.includes(opt.value);
+    });
+  }
 };
+
+form.addEventListener('reset', (ev) => {
+  setForm(true);
+});

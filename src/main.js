@@ -49,10 +49,10 @@ const start = async () => {
   } = await readJson(NL_HEXO_FILES_LIST);
 
   setDataLists(categories, tags, authors);
-  const drafts = await readJson(NL_DRAFTS_LIST);
+  const drafts = await readJson(NL_DRAFTS_INFO, { pages: [], posts: [] });
 
-  btnDraftPage.disabled = drafts.draftPages.length === 0;
-  btnDraftPost.disabled = drafts.draftPosts.length === 0;
+  btnDraftPage.disabled = !drafts.pages?.length;
+  btnDraftPost.disabled = !drafts.posts?.length;
 
   await imagesToEditor();
 
@@ -74,7 +74,7 @@ const start = async () => {
         join(NL_DRAFTS_DIR, file),
         stringify(matter, editor.getContents())
       );
-      drafts.draftPosts.push({ file, title, date });
+      drafts.posts.push({ file, title: matter.title, date: matter.date });
     } else {
       matter.layout = 'page';
       const file = join('pages', slugify(matter.title));
@@ -82,12 +82,13 @@ const start = async () => {
         join(NL_DRAFTS_DIR, file),
         stringify(matter, editor.getContents())
       );
-      drafts.draftPages.push({ file, title, date });
+      drafts.pages.push({ file, title: matter.title, date: matter.date });
     }
-    await writeJson(NL_DRAFTS_LIST, drafts);
-    btnDraftPage.disabled = drafts.draftPages.length === 0;
-    btnDraftPost.disabled = drafts.draftPosts.length === 0;
+    await writeJson(NL_DRAFTS_INFO, drafts);
+    btnDraftPage.disabled = !drafts.pages?.length;
+    btnDraftPost.disabled = !drafts.posts?.length;
   });
+
   btnNewPage.addEventListener('click', (ev) => {
     main.className = CNAMES.EDIT;
     isPost = false;
@@ -107,7 +108,10 @@ const start = async () => {
   btnEditPage.addEventListener('click', async (ev) => {
     ev.stopPropagation();
     divFileList.innerHTML = `<ul>${pages
-      .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
+      .map(
+        (p) =>
+          `<li><a href="${join(NL_SRC_PAGES_DIR, p.file)}">${p.title}</a></li>`
+      )
       .join('')}</ul>`;
     divFileList.className = CNAMES.PAGE_LIST;
     isPost = false;
@@ -115,8 +119,11 @@ const start = async () => {
 
   btnDraftPage.addEventListener('click', async (ev) => {
     ev.stopPropagation();
-    divFileList.innerHTML = `<ul>${drafts.draftPages
-      .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
+    divFileList.innerHTML = `<ul>${drafts.pages
+      .map(
+        (p) =>
+          `<li><a href="${join(NL_DRAFTS_DIR, p.file)}">${p.title}</a></li>`
+      )
       .join('')}</ul>`;
     divFileList.className = CNAMES.DRAFT_PAGE_LIST;
     isPost = false;
@@ -124,8 +131,11 @@ const start = async () => {
 
   btnDraftPost.addEventListener('click', async (ev) => {
     ev.stopPropagation();
-    divFileList.innerHTML = `<ul>${drafts.draftPosts
-      .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
+    divFileList.innerHTML = `<ul>${drafts.posts
+      .map(
+        (p) =>
+          `<li><a href="${join(NL_DRAFTS_DIR, p.file)}">${p.title}</a></li>`
+      )
       .join('')}</ul>`;
     divFileList.className = CNAMES.DRAFT_POST_LIST;
     isPost = true;
@@ -154,7 +164,12 @@ const start = async () => {
               (d) =>
                 `<details><summary>${d}</summary><p>${d}/${m}/${y}</p><ul>
                   ${tree[y][m][d]
-                    .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
+                    .map(
+                      (p) =>
+                        `<li><a href="${join(NL_SRC_PAGES_DIR, p.file)}">${
+                          p.title
+                        }</a></li>`
+                    )
                     .join('\n')}</ul></details>`,
               sortDescending
             )}</details>`,
@@ -171,11 +186,9 @@ const start = async () => {
     if (ev.target.tagName !== 'A') return;
     ev.preventDefault();
 
-    const fileName = join(NL_SRC_PAGES_DIR, ev.target.getAttribute('href'));
+    const fileName = ev.target.getAttribute('href');
 
-    const { matter, content } = parse(
-      await Neutralino.filesystem.readFile(fileName)
-    );
+    const { matter, content } = parse(await fs.readFile(fileName));
 
     setForm(isPost, matter);
     editor.setContents(content);

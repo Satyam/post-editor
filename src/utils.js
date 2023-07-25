@@ -6,6 +6,7 @@ export const readJson = (fileName, defaultValue) =>
     (err) => defaultValue ?? {}
   );
 
+export const today = new Date().toISOString().split('T')[0];
 export const writeJson = (filename, obj) =>
   fs.writeFile(filename, JSON.stringify(obj, null, 2));
 // const stripStartSlashRx = /^\/?(.*)/;

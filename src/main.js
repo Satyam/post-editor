@@ -1,6 +1,6 @@
 import { parse, stringify } from './frontmatter';
 import editor from './editor';
-import { join, objMapString, sortDescending, slugify } from './utils';
+import { join, objMapString, sortDescending, slugify, today } from './utils';
 import {
   form,
   setDataLists,
@@ -40,14 +40,18 @@ Neutralino.events.on('windowClose', () => {
 
 const fs = Neutralino.filesystem;
 
+const setDraftButtons = () => {
+  btnDraftPage.disabled = !drafts.pages?.length;
+  btnDraftPost.disabled = !drafts.posts?.length;
+};
+
 load()
   .then(async () => {
     main.className = CNAMES.SELECT;
 
     setDataLists();
 
-    btnDraftPage.disabled = !drafts.pages?.length;
-    btnDraftPost.disabled = !drafts.posts?.length;
+    setDraftButtons();
 
     btnExit.addEventListener('click', (ev) => {
       Neutralino.app.exit();
@@ -58,11 +62,15 @@ load()
     });
 
     form.addEventListener('draft', async (ev) => {
-      const matter = ev.detail;
-      matter.updated = new Date().toISOString();
+      const { fileName, ...matter } = ev.detail;
+      const fName = fileName?.split('/').at(-1);
+      matter.updated = today;
       if (isPost) {
         matter.layout = 'post';
-        const file = join('posts', `${matter.date}-${slugify(matter.title)}`);
+        const file = join(
+          'posts',
+          fName ?? `${matter.date}-${slugify(matter.title)}.md`
+        );
         await fs.writeFile(
           join(NL_DRAFTS_DIR, file),
           stringify(matter, editor.getContents())
@@ -70,7 +78,7 @@ load()
         drafts.posts.push({ file, title: matter.title, date: matter.date });
       } else {
         matter.layout = 'page';
-        const file = join('pages', slugify(matter.title));
+        const file = join('pages', fName ?? `${slugify(matter.title)}.md`);
         await fs.writeFile(
           join(NL_DRAFTS_DIR, file),
           stringify(matter, editor.getContents())
@@ -78,8 +86,7 @@ load()
         drafts.pages.push({ file, title: matter.title, date: matter.date });
       }
       await saveDrafts();
-      btnDraftPage.disabled = !drafts.pages?.length;
-      btnDraftPost.disabled = !drafts.posts?.length;
+      setDraftButtons();
     });
 
     btnNewPage.addEventListener('click', (ev) => {

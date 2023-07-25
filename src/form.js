@@ -1,11 +1,4 @@
-import {
-  readJson,
-  writeJson,
-  join,
-  objMapString,
-  sortDescending,
-  slugify,
-} from './utils';
+import { today } from './utils';
 
 import { categories, tags, authors } from './files';
 
@@ -92,6 +85,7 @@ form.addEventListener('submit', async (ev) => {
 
   if (valid) {
     const data = {
+      fileName,
       title: els.title.value,
       date: els.date.value,
     };
@@ -113,7 +107,7 @@ form.addEventListener('submit', async (ev) => {
 export const setForm = (
   data = {
     title: '',
-    date: new Date().toISOString(),
+    date: today,
     categories: [],
     tags: [],
     author: 'Roxana Cabut',
@@ -128,7 +122,7 @@ export const setForm = (
     .forEach((el) => showError(el));
 
   els.title.value = data.title;
-  if (data.date) els.date.value = data.date.split('T')[0];
+  els.date.value = data.date?.split('T')[0] ?? today;
   if (isPost) {
     els.author.value = data.author;
     selectedCats.innerHTML = data.categories

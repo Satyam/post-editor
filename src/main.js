@@ -1,7 +1,14 @@
 import { parse, stringify } from './frontmatter';
 import editor from './editor';
 import { join, objMapString, sortDescending, slugify } from './utils';
-import { form, setDataLists, setForm } from './form';
+import {
+  form,
+  setDataLists,
+  setForm,
+  isDraft,
+  isPost,
+  setEditor,
+} from './form';
 import {
   btnNewPage,
   btnEditPage,
@@ -32,8 +39,6 @@ Neutralino.events.on('windowClose', () => {
 });
 
 const fs = Neutralino.filesystem;
-
-let isPost = false;
 
 load()
   .then(async () => {
@@ -79,14 +84,14 @@ load()
 
     btnNewPage.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
-      isPost = false;
-      setForm(isPost);
+      setEditor(false);
+      setForm();
     });
 
     btnNewPost.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
-      isPost = true;
-      setForm(isPost);
+      setEditor(true);
+      setForm();
     });
 
     form.addEventListener('reset', (ev) => {
@@ -104,7 +109,7 @@ load()
         )
         .join('')}</ul>`;
       divFileList.className = CNAMES.PAGE_LIST;
-      isPost = false;
+      setEditor(false);
     });
 
     btnDraftPage.addEventListener('click', async (ev) => {
@@ -116,7 +121,7 @@ load()
         )
         .join('')}</ul>`;
       divFileList.className = CNAMES.DRAFT_PAGE_LIST;
-      isPost = false;
+      setEditor(false, true);
     });
 
     btnDraftPost.addEventListener('click', async (ev) => {
@@ -128,7 +133,7 @@ load()
         )
         .join('')}</ul>`;
       divFileList.className = CNAMES.DRAFT_POST_LIST;
-      isPost = true;
+      setEditor(true, true);
     });
 
     btnEditPost.addEventListener('click', async (ev) => {
@@ -168,7 +173,7 @@ load()
         sortDescending
       );
       divFileList.className = CNAMES.POST_LIST;
-      isPost = true;
+      setEditor(true);
     });
 
     divFileList.addEventListener('click', async (ev) => {
@@ -180,7 +185,7 @@ load()
 
       const { matter, content } = parse(await fs.readFile(fileName));
 
-      setForm(isPost, matter);
+      setForm(matter, fileName);
       editor.setContents(content);
       main.className = CNAMES.EDIT;
     });

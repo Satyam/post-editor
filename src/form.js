@@ -10,9 +10,21 @@ import {
 import { categories, tags, authors } from './files';
 
 export const form = document.forms[0];
+
+const els = form.elements;
+
 const selectedCats = document.getElementById('selectedCats');
 const selectedTags = document.getElementById('selectedTags');
-let isPost = false;
+
+export let isPost = false;
+export let isDraft = false;
+
+export const setEditor = (post = false, draft = false) => {
+  isPost = post;
+  isDraft = draft;
+};
+
+let fileName;
 
 const fillDataList = (input, list) => {
   input.list.innerHTML = list
@@ -27,36 +39,32 @@ const fillSelect = (select, list) => {
 };
 
 export const setDataLists = () => {
-  fillSelect(form.catList, categories);
-  fillSelect(form.tagsList, tags);
-  fillDataList(form.author, authors);
+  fillSelect(els.catList, categories);
+  fillSelect(els.tagsList, tags);
+  fillDataList(els.author, authors);
 };
 
 const copySelectedCats = (ev) => {
-  const cats = Array.from(form.catList.options)
+  const cats = Array.from(els.catList.options)
     .filter((opt) => opt.selected)
     .map((opt) => opt.value);
-  if (form.newCat.value.length) cats.unshift(form.newCat.value);
+  if (els.newCat.value.length) cats.unshift(els.newCat.value);
 
   selectedCats.innerHTML = cats.map((cat) => `<li>${cat}</li>`).join('\n');
 };
-form.catList.addEventListener('input', copySelectedCats);
-form.newCat.addEventListener('input', copySelectedCats);
+els.catList.addEventListener('input', copySelectedCats);
+els.newCat.addEventListener('input', copySelectedCats);
 
 const copySelectedTags = (ev) => {
-  const tags = Array.from(form.tagsList.options)
+  const tags = Array.from(els.tagsList.options)
     .filter((opt) => opt.selected)
     .map((opt) => opt.value);
-  if (form.newTag.value.length) tags.unshift(form.newTag.value);
+  if (els.newTag.value.length) tags.unshift(els.newTag.value);
 
   selectedTags.innerHTML = tags.map((tag) => `<li>${tag}</li>`).join('\n');
 };
-form.tagsList.addEventListener('input', copySelectedTags);
-form.newTag.addEventListener('input', copySelectedTags);
-
-const inputs = Array.from(form.elements).filter(
-  (el) => el.tagName !== 'BUTTON'
-);
+els.tagsList.addEventListener('input', copySelectedTags);
+els.newTag.addEventListener('input', copySelectedTags);
 
 const showError = (el, msg) => {
   if (msg) {
@@ -71,27 +79,24 @@ form.addEventListener('submit', async (ev) => {
   ev.preventDefault();
 
   let valid = true;
-  const title = form.elements.title.value;
+  const title = els.title.value;
   if (title.length < 5) {
-    showError(
-      form.elements.title,
-      'Los títulos han de tener al menos 5 caracteres'
-    );
+    showError(els.title, 'Los títulos han de tener al menos 5 caracteres');
     valid = false;
-  } else showError(form.elements.title);
-  const date = form.date.value;
+  } else showError(els.title);
+  const date = els.date.value;
   if (date.length === 0) {
-    showError(form.date, 'Se debe indicar una fecha para el artículo');
+    showError(els.date, 'Se debe indicar una fecha para el artículo');
     valid = false;
-  } else showError(form.date);
+  } else showError(els.date);
 
   if (valid) {
     const data = {
-      title: form.elements.title.value,
-      date: form.elements.date.value,
+      title: els.title.value,
+      date: els.date.value,
     };
     if (isPost) {
-      data.author = form.elements.author.value;
+      data.author = els.author.value;
       data.categories = Array.from(selectedCats.children).map(
         (li) => li.innerHTML
       );
@@ -106,39 +111,41 @@ form.addEventListener('submit', async (ev) => {
 });
 
 export const setForm = (
-  post,
   data = {
     title: '',
     date: new Date().toISOString(),
     categories: [],
     tags: [],
     author: 'Roxana Cabut',
-  }
+  },
+  _fileName = null
 ) => {
-  isPost = post;
-  form.className = post ? 'is-post' : 'is-page';
+  fileName = _fileName;
+  form.className = isPost ? 'is-post' : 'is-page';
 
-  inputs.forEach((el) => showError(el));
+  Array.from(els)
+    .filter((el) => el.tagName === 'INPUT')
+    .forEach((el) => showError(el));
 
-  form.elements.title.value = data.title;
-  form.date.value = data.date.split('T')[0];
-  if (post) {
-    form.author.value = data.author;
+  els.title.value = data.title;
+  if (data.date) els.date.value = data.date.split('T')[0];
+  if (isPost) {
+    els.author.value = data.author;
     selectedCats.innerHTML = data.categories
       .map((cat) => `<li>${cat}</li>`)
       .join('\n');
-    Array.from(form.catList.options).forEach((opt) => {
+    Array.from(els.catList.options).forEach((opt) => {
       opt.selected = data.categories.includes(opt.value);
     });
     selectedTags.innerHTML = data.tags
       .map((tag) => `<li>${tag}</li>`)
       .join('\n');
-    Array.from(form.tagsList.options).forEach((opt) => {
+    Array.from(els.tagsList.options).forEach((opt) => {
       opt.selected = data.tags.includes(opt.value);
     });
   }
 };
 
 form.addEventListener('reset', (ev) => {
-  setForm(true);
+  setForm();
 });

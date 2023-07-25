@@ -233,5 +233,6 @@ load()
     };
   })
   .catch((err) => {
-    console.log(err), Neutralino.app.exit(1);
+    console.log(err);
+    Neutralino.app.exit(1);
   });

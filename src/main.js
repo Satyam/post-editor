@@ -23,6 +23,8 @@ import {
 
 import { drafts, pages, posts, load, saveDrafts } from './files';
 
+import { on } from './events';
+
 const CNAMES = {
   PAGE_LIST: 'page-list',
   POST_LIST: 'post-list',
@@ -57,12 +59,11 @@ load()
       Neutralino.app.exit();
     });
 
-    form.addEventListener('save', (ev) => {
-      console.log('save', ev.detail);
+    on('save', (data) => {
+      console.log('save', data);
     });
 
-    form.addEventListener('draft', async (ev) => {
-      const { fileName, ...matter } = ev.detail;
+    on('draft', async ({ fileName, ...matter }) => {
       const fName = fileName?.split('/').at(-1);
       matter.updated = today;
       if (isPost) {

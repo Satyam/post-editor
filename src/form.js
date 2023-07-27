@@ -1,6 +1,7 @@
 import { today } from './utils';
 
 import { categories, tags, authors } from './files';
+import { dispatch } from './events';
 
 export const form = document.forms[0];
 
@@ -68,8 +69,9 @@ const showError = (el, msg) => {
   }
 };
 
-form.addEventListener('submit', async (ev) => {
+form.addEventListener('submit', (ev) => {
   ev.preventDefault();
+  ev.stopImmediatePropagation();
 
   let valid = true;
   const title = els.title.value;
@@ -96,12 +98,9 @@ form.addEventListener('submit', async (ev) => {
       );
       data.tags = Array.from(selectedTags.children).map((li) => li.innerHTML);
     }
-    form.dispatchEvent(
-      new CustomEvent(ev.submitter.name, {
-        detail: data,
-      })
-    );
+    dispatch(ev.submitter.name, data);
   }
+  return false;
 });
 
 export const setForm = (

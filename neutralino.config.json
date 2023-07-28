@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/neutralinojs/neutralinojs/main/schemas/neutralino.config.schema.json",
   "applicationId": "js.neutralino.sample",
   "version": "1.0.0",
-  "defaultMode": "chrome",
+  "defaultMode": "window",
   "port": 0,
   "documentRoot": "/resources/",
   "url": "/",
@@ -13,7 +13,7 @@
     "enabled": false,
     "writeToLogFile": false
   },
-  "nativeAllowList": ["app.*", "os.*", "debug.log", "filesystem.*"],
+  "nativeAllowList": ["app.*", "os.*", "debug.log", "filesystem.*", "events.*"],
   "modes": {
     "window": {
       "title": "Roxy Blog Editor",

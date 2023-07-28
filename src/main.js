@@ -56,6 +56,7 @@ load()
     setDraftButtons();
 
     btnExit.addEventListener('click', (ev) => {
+      window.close();
       Neutralino.app.exit();
     });
 
@@ -235,5 +236,6 @@ load()
   })
   .catch((err) => {
     console.log(err);
+    window.close();
     Neutralino.app.exit(1);
   });

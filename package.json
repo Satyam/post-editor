@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "neu run",
+    "start": "rollup --config rollup.config.mjs &&neu run --disable-auto-reload",
     "help": "neu help",
     "neu": "neu",
     "build": "rollup --config rollup.config.mjs"

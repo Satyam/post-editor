@@ -131,3 +131,39 @@ section {
   margin-bottom: 0;
   padding-left: 1em;
 }
+
+button {
+  border-radius: 5px;
+  font-size: 16px;
+  padding: 6px 14px;
+  background-color: #e7e7e7;
+  color: black;
+  margin: 8px 20px;
+  border: none;
+} /* Gray */
+
+button:disabled {
+  opacity: 0.5;
+}
+
+button.default {
+  background-color: #008cba;
+} /* Blue */
+
+button.warning {
+  background-color: #f44336;
+} /* Red */
+/* .button1 {
+  background-color: #4caf50;
+} /* Green */
+/* .button5 {
+  background-color: #555555;
+} Black */
+
+#remove {
+  display: none;
+}
+
+.can-delete #remove {
+  display: block;
+}

@@ -21,7 +21,7 @@ import {
   divFileList,
 } from './elements';
 
-import { drafts, pages, posts, load, saveDrafts } from './files';
+import { drafts, pages, posts, load, saveDrafts, removePost } from './files';
 
 import { on } from './events';
 
@@ -91,6 +91,13 @@ load()
       setDraftButtons();
     });
 
+    on('remove', async (fileName) => {
+      console.log('Borrar', fileName, isDraft, isPost);
+      divFileList.className = '';
+      await removePost(fileName, isDraft, isPost);
+      main.className = CNAMES.SELECT;
+    });
+
     btnNewPage.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
       setEditor(false);
@@ -124,9 +131,12 @@ load()
     btnDraftPage.addEventListener('click', async (ev) => {
       ev.stopPropagation();
       divFileList.innerHTML = `<ul>${drafts.pages
+        .sort(sortDescending)
         .map(
           (p) =>
-            `<li><a href="${join(NL_DRAFTS_DIR, p.file)}">${p.title}</a></li>`
+            `<li>${p.date} - <a href="${join(NL_DRAFTS_DIR, p.file)}">${
+              p.title
+            }</a></li>`
         )
         .join('')}</ul>`;
       divFileList.className = CNAMES.DRAFT_PAGE_LIST;
@@ -136,9 +146,12 @@ load()
     btnDraftPost.addEventListener('click', async (ev) => {
       ev.stopPropagation();
       divFileList.innerHTML = `<ul>${drafts.posts
+        .sort(sortDescending)
         .map(
           (p) =>
-            `<li><a href="${join(NL_DRAFTS_DIR, p.file)}">${p.title}</a></li>`
+            `<li>${p.date} - <a href="${join(NL_DRAFTS_DIR, p.file)}">${
+              p.title
+            }</a></li>`
         )
         .join('')}</ul>`;
       divFileList.className = CNAMES.DRAFT_POST_LIST;

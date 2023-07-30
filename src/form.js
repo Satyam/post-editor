@@ -115,6 +115,7 @@ export const setForm = (
 ) => {
   fileName = _fileName;
   form.className = isPost ? 'is-post' : 'is-page';
+  if (_fileName) form.classList.add('can-delete');
 
   Array.from(els)
     .filter((el) => el.tagName === 'INPUT')
@@ -141,4 +142,14 @@ export const setForm = (
 
 form.addEventListener('reset', (ev) => {
   setForm();
+});
+
+document.getElementById('remove').addEventListener('click', () => {
+  if (
+    window.confirm(
+      `¿Seguro que desea borrar "${els.title.value}" de fecha ${els.date.value}?`
+    )
+  ) {
+    dispatch('remove', fileName);
+  }
 });

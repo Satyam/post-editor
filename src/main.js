@@ -47,6 +47,12 @@ const setDraftButtons = () => {
   btnDraftPost.disabled = !drafts.posts?.length;
 };
 
+const clearSelect = () => {
+  divFileList.className = '';
+  main.className = CNAMES.SELECT;
+  setDraftButtons();
+};
+
 load()
   .then(async () => {
     main.className = CNAMES.SELECT;
@@ -93,9 +99,8 @@ load()
 
     on('remove', async (fileName) => {
       console.log('Borrar', fileName, isDraft, isPost);
-      divFileList.className = '';
       await removePost(fileName, isDraft, isPost);
-      main.className = CNAMES.SELECT;
+      clearSelect();
     });
 
     btnNewPage.addEventListener('click', (ev) => {
@@ -111,7 +116,7 @@ load()
     });
 
     form.addEventListener('reset', (ev) => {
-      main.className = CNAMES.SELECT;
+      clearSelect();
     });
 
     btnEditPage.addEventListener('click', async (ev) => {

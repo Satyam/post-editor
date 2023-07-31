@@ -140,10 +140,6 @@ export const setForm = (
   }
 };
 
-form.addEventListener('reset', (ev) => {
-  setForm();
-});
-
 document.getElementById('remove').addEventListener('click', async () => {
   if (
     await confirm(

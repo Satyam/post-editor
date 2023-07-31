@@ -167,3 +167,19 @@ button.warning {
 .can-delete #remove {
   display: block;
 }
+
+dialog {
+  text-align: center;
+  padding: 0;
+}
+dialog h1 {
+  margin: 0;
+  padding-bottom: 0.5rem;
+  background-color: lightblue;
+  border-bottom: thin solid;
+}
+
+#confirmMsg {
+  padding: 1rem;
+  border-bottom: thin solid;
+}

@@ -2,7 +2,7 @@ import { today } from './utils';
 
 import { categories, tags, authors } from './files';
 import { dispatch } from './events';
-
+import { confirm } from './dialog';
 export const form = document.forms[0];
 
 const els = form.elements;
@@ -144,10 +144,11 @@ form.addEventListener('reset', (ev) => {
   setForm();
 });
 
-document.getElementById('remove').addEventListener('click', () => {
+document.getElementById('remove').addEventListener('click', async () => {
   if (
-    window.confirm(
-      `¿Seguro que desea borrar "${els.title.value}" de fecha ${els.date.value}?`
+    await confirm(
+      `¿Desea borrar "${els.title.value}" de fecha ${els.date.value}?`,
+      'Confirmación'
     )
   ) {
     dispatch('remove', fileName);

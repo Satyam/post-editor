@@ -53,13 +53,16 @@ const clearSelect = () => {
   setDraftButtons();
 };
 
+const setFileList = (className, contents) => {
+  divFileList.className = className;
+  divFileList.innerHTML = contents;
+};
+
 load()
   .then(async () => {
-    main.className = CNAMES.SELECT;
+    clearSelect();
 
     setDataLists();
-
-    setDraftButtons();
 
     btnExit.addEventListener('click', (ev) => {
       window.close();
@@ -121,45 +124,51 @@ load()
 
     btnEditPage.addEventListener('click', async (ev) => {
       ev.stopPropagation();
-      divFileList.innerHTML = `<ul>${pages
-        .map(
-          (p) =>
-            `<li><a href="${join(NL_SRC_PAGES_DIR, p.file)}">${
-              p.title
-            }</a></li>`
-        )
-        .join('')}</ul>`;
-      divFileList.className = CNAMES.PAGE_LIST;
+      setFileList(
+        CNAMES.PAGE_LIST,
+        `<ul>${pages
+          .map(
+            (p) =>
+              `<li><a href="${join(NL_SRC_PAGES_DIR, p.file)}">${
+                p.title
+              }</a></li>`
+          )
+          .join('')}</ul>`
+      );
       setEditor(false);
     });
 
     btnDraftPage.addEventListener('click', async (ev) => {
       ev.stopPropagation();
-      divFileList.innerHTML = `<ul>${drafts.pages
-        .sort(sortDescending)
-        .map(
-          (p) =>
-            `<li>${p.date} - <a href="${join(NL_DRAFTS_DIR, p.file)}">${
-              p.title
-            }</a></li>`
-        )
-        .join('')}</ul>`;
-      divFileList.className = CNAMES.DRAFT_PAGE_LIST;
+      setFileList(
+        CNAMES.DRAFT_PAGE_LIST,
+        `<ul>${drafts.pages
+          .sort(sortDescending)
+          .map(
+            (p) =>
+              `<li>${p.date} - <a href="${join(NL_DRAFTS_DIR, p.file)}">${
+                p.title
+              }</a></li>`
+          )
+          .join('')}</ul>`
+      );
       setEditor(false, true);
     });
 
     btnDraftPost.addEventListener('click', async (ev) => {
       ev.stopPropagation();
-      divFileList.innerHTML = `<ul>${drafts.posts
-        .sort(sortDescending)
-        .map(
-          (p) =>
-            `<li>${p.date} - <a href="${join(NL_DRAFTS_DIR, p.file)}">${
-              p.title
-            }</a></li>`
-        )
-        .join('')}</ul>`;
-      divFileList.className = CNAMES.DRAFT_POST_LIST;
+      setFileList(
+        CNAMES.DRAFT_POST_LIST,
+        `<ul>${drafts.posts
+          .sort(sortDescending)
+          .map(
+            (p) =>
+              `<li>${p.date} - <a href="${join(NL_DRAFTS_DIR, p.file)}">${
+                p.title
+              }</a></li>`
+          )
+          .join('')}</ul>`
+      );
       setEditor(true, true);
     });
 
@@ -174,17 +183,18 @@ load()
         if (!(d in tree[y][m])) tree[y][m][d] = [];
         tree[y][m][d].push(p);
       });
-
-      divFileList.innerHTML = objMapString(
-        tree,
-        (y) =>
-          `<details><summary>${y}</summary>${objMapString(
-            tree[y],
-            (m) =>
-              `<details><summary>${m}</summary>${objMapString(
-                tree[y][m],
-                (d) =>
-                  `<details><summary>${d}</summary><p>${d}/${m}/${y}</p><ul>
+      setFileList(
+        CNAMES.POST_LIST,
+        objMapString(
+          tree,
+          (y) =>
+            `<details><summary>${y}</summary>${objMapString(
+              tree[y],
+              (m) =>
+                `<details><summary>${m}</summary>${objMapString(
+                  tree[y][m],
+                  (d) =>
+                    `<details><summary>${d}</summary><p>${d}/${m}/${y}</p><ul>
                   ${tree[y][m][d]
                     .map(
                       (p) =>
@@ -193,13 +203,13 @@ load()
                         }</a></li>`
                     )
                     .join('\n')}</ul></details>`,
-                sortDescending
-              )}</details>`,
-            sortDescending
-          )}</details>`,
-        sortDescending
+                  sortDescending
+                )}</details>`,
+              sortDescending
+            )}</details>`,
+          sortDescending
+        )
       );
-      divFileList.className = CNAMES.POST_LIST;
       setEditor(true);
     });
 

@@ -1,14 +1,6 @@
-import { parse, stringify } from './frontmatter';
 import editor from './editor';
 import { join, objMapString, sortDescending, slugify, today } from './utils';
-import {
-  form,
-  setDataLists,
-  setForm,
-  isDraft,
-  isPost,
-  setEditor,
-} from './form';
+import { form, setDataLists, setForm } from './form';
 import {
   btnNewPage,
   btnEditPage,
@@ -21,7 +13,23 @@ import {
   divFileList,
 } from './elements';
 
-import { drafts, pages, posts, load, saveDrafts, removePost } from './files';
+import { readMd, removeMd, saveMD } from './files';
+
+import {
+  loadInfo,
+  getPages,
+  getPosts,
+  getDraftPages,
+  getDraftPosts,
+  isDraft,
+  isPost,
+  setMdType,
+  saveInfo,
+  setFileName,
+  SRC_PAGES_DIR,
+  DRAFTS_DIR,
+} from './data';
+import { imagesToEditor } from './images';
 
 import { on } from './events';
 
@@ -43,8 +51,8 @@ Neutralino.events.on('windowClose', () => {
 const fs = Neutralino.filesystem;
 
 const setDraftButtons = () => {
-  btnDraftPage.disabled = !drafts.pages?.length;
-  btnDraftPost.disabled = !drafts.posts?.length;
+  btnDraftPage.disabled = !getDraftPages().length;
+  btnDraftPost.disabled = !getDraftPosts().length;
 };
 
 const clearSelect = () => {
@@ -58,8 +66,9 @@ const setFileList = (className, contents) => {
   divFileList.innerHTML = contents;
 };
 
-load()
+loadInfo()
   .then(async () => {
+    await imagesToEditor();
     clearSelect();
 
     setDataLists();
@@ -73,7 +82,7 @@ load()
       console.log('save', data);
     });
 
-    on('draft', async ({ fileName, ...matter }) => {
+    on('draft', async (matter) => {
       const fName = fileName?.split('/').at(-1);
       matter.updated = today;
       if (isPost) {
@@ -82,39 +91,39 @@ load()
           'posts',
           fName ?? `${matter.date}-${slugify(matter.title)}.md`
         );
-        await fs.writeFile(
-          join(NL_DRAFTS_DIR, file),
-          stringify(matter, editor.getContents())
-        );
-        drafts.posts.push({ file, title: matter.title, date: matter.date });
+        await saveMD(join(DRAFTS_DIR, file), matter, editor.getContents());
+        getDraftPosts()
+          .filter((p) => p.file !== file)
+          .push({ file, title: matter.title, date: today });
       } else {
         matter.layout = 'page';
         const file = join('pages', fName ?? `${slugify(matter.title)}.md`);
-        await fs.writeFile(
-          join(NL_DRAFTS_DIR, file),
-          stringify(matter, editor.getContents())
-        );
-        drafts.pages.push({ file, title: matter.title, date: matter.date });
+        await saveMD(join(DRAFTS_DIR, file), matter, editor.getContents());
+        getDraftPages()
+          .filter((p) => p.file !== file)
+          .push({ file, title: matter.title, date: today });
       }
-      await saveDrafts();
+      await saveInfo();
       setDraftButtons();
     });
 
-    on('remove', async (fileName) => {
+    on('remove', async () => {
       console.log('Borrar', fileName, isDraft, isPost);
-      await removePost(fileName, isDraft, isPost);
+      await removeMd();
       clearSelect();
     });
 
     btnNewPage.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
-      setEditor(false);
+      setMdType(false);
+      setFileName();
       setForm();
     });
 
     btnNewPost.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
-      setEditor(true);
+      setMdType(true);
+      setFileName();
       setForm();
     });
 
@@ -126,57 +135,55 @@ load()
       ev.stopPropagation();
       setFileList(
         CNAMES.PAGE_LIST,
-        `<ul>${pages
+        `<ul>${getPages()
           .map(
             (p) =>
-              `<li><a href="${join(NL_SRC_PAGES_DIR, p.file)}">${
-                p.title
-              }</a></li>`
+              `<li><a href="${join(SRC_PAGES_DIR, p.file)}">${p.title}</a></li>`
           )
           .join('')}</ul>`
       );
-      setEditor(false);
+      setMdType(false);
     });
 
     btnDraftPage.addEventListener('click', async (ev) => {
       ev.stopPropagation();
       setFileList(
         CNAMES.DRAFT_PAGE_LIST,
-        `<ul>${drafts.pages
+        `<ul>${getDraftPages()
           .sort(sortDescending)
           .map(
             (p) =>
-              `<li>${p.date} - <a href="${join(NL_DRAFTS_DIR, p.file)}">${
+              `<li>${p.date} - <a href="${join(DRAFTS_DIR, p.file)}">${
                 p.title
               }</a></li>`
           )
           .join('')}</ul>`
       );
-      setEditor(false, true);
+      setMdType(false, true);
     });
 
     btnDraftPost.addEventListener('click', async (ev) => {
       ev.stopPropagation();
       setFileList(
         CNAMES.DRAFT_POST_LIST,
-        `<ul>${drafts.posts
+        `<ul>${getDraftPosts()
           .sort(sortDescending)
           .map(
             (p) =>
-              `<li>${p.date} - <a href="${join(NL_DRAFTS_DIR, p.file)}">${
+              `<li>${p.date} - <a href="${join(DRAFTS_DIR, p.file)}">${
                 p.title
               }</a></li>`
           )
           .join('')}</ul>`
       );
-      setEditor(true, true);
+      setMdType(true, true);
     });
 
     btnEditPost.addEventListener('click', async (ev) => {
       ev.stopPropagation();
 
       const tree = {};
-      posts.forEach((p) => {
+      getPosts.forEach((p) => {
         const [y, m, d] = p.date.split('-');
         if (!(y in tree)) tree[y] = {};
         if (!(m in tree[y])) tree[y][m] = {};
@@ -198,7 +205,7 @@ load()
                   ${tree[y][m][d]
                     .map(
                       (p) =>
-                        `<li><a href="${join(NL_SRC_PAGES_DIR, p.file)}">${
+                        `<li><a href="${join(SRC_PAGES_DIR, p.file)}">${
                           p.title
                         }</a></li>`
                     )
@@ -210,7 +217,7 @@ load()
           sortDescending
         )
       );
-      setEditor(true);
+      setMdType(true);
     });
 
     divFileList.addEventListener('click', async (ev) => {
@@ -218,11 +225,11 @@ load()
       if (ev.target.tagName !== 'A') return;
       ev.preventDefault();
 
-      const fileName = ev.target.getAttribute('href');
+      setFileName(ev.target.getAttribute('href'));
 
-      const { matter, content } = parse(await fs.readFile(fileName));
+      const { matter, content } = await readMd();
 
-      setForm(matter, fileName);
+      setForm(matter);
       editor.setContents(content);
       main.className = CNAMES.EDIT;
     });
@@ -238,7 +245,9 @@ load()
       return true;
       // return Boolean || return (new FileList) || return undefined;
     };
-    editor.onImageUpload = async (
+
+    //stackoverflow.com/questions/35940290/how-to-convert-base64-string-to-javascript-file-object-like-as-from-file-input-f
+    https: editor.onImageUpload = async (
       targetElement,
       index,
       state,
@@ -267,3 +276,88 @@ load()
     window.close();
     Neutralino.app.exit(1);
   });
+
+// // https://stackoverflow.com/questions/68248551/base64-to-image-file-convertion-in-js
+
+// export function getFileFromBase64(string64:string, fileName:string) {
+//   const trimmedString = string64.replace('dataimage/jpegbase64', '');
+//   const imageContent = atob(trimmedString);
+//   const buffer = new ArrayBuffer(imageContent.length);
+//   const view = new Uint8Array(buffer);
+
+//   for (let n = 0; n < imageContent.length; n++) {
+//     view[n] = imageContent.charCodeAt(n);
+//   }
+//   const type = 'image/jpeg';
+//   const blob = new Blob([buffer], { type });
+//   return new File([blob], fileName, { lastModified: new Date().getTime(), type });
+// }
+
+//---------------------------
+// https://stackoverflow.com/questions/38658654/how-to-convert-a-base64-string-into-a-file/38659875
+
+// data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgICA...
+
+function base64ImageToBlob(str) {
+  // extract content type and base64 payload from original string
+  var pos = str.indexOf(';base64,');
+  var type = str.substring(5, pos);
+  var b64 = str.substr(pos + 8);
+
+  // decode base64
+  var imageContent = atob(b64);
+
+  // create an ArrayBuffer and a view (as unsigned 8-bit)
+  var buffer = new ArrayBuffer(imageContent.length);
+  var view = new Uint8Array(buffer);
+
+  // fill the view, using the decoded base64
+  for (var n = 0; n < imageContent.length; n++) {
+    view[n] = imageContent.charCodeAt(n);
+  }
+
+  // convert ArrayBuffer to Blob
+  var blob = new Blob([buffer], { type: type });
+
+  return blob;
+}
+
+// https://stackoverflow.com/questions/21227078/convert-base64-to-image-in-javascript-jquery
+
+function base64toBlob(base64Data, contentType) {
+  contentType = contentType || '';
+  var sliceSize = 1024;
+  var byteCharacters = atob(base64Data);
+  var bytesLength = byteCharacters.length;
+  var slicesCount = Math.ceil(bytesLength / sliceSize);
+  var byteArrays = new Array(slicesCount);
+
+  for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+    var begin = sliceIndex * sliceSize;
+    var end = Math.min(begin + sliceSize, bytesLength);
+
+    var bytes = new Array(end - begin);
+    for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
+      bytes[i] = byteCharacters[offset].charCodeAt(0);
+    }
+    byteArrays[sliceIndex] = new Uint8Array(bytes);
+  }
+  return new Blob(byteArrays, { type: contentType });
+}
+
+// new Regex(@"data:(?<mime>[\w/\-\.]+);(?<encoding>\w+),(?<data>.*)", RegexOptions.Compiled);
+// {
+//   "tag": "IMG",
+//   "index": 0,
+//   "state": "create",
+//   "info": {
+//     "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABEoAAAStCAAAAAB2bOEGAAA+NXpUWHRSYXc
+// .....
+// o2mb+N3HZ+EBbONohu66wdVm1FzFrVmiPpNC6u2Ha/mSq5agBANkyDbtH03EyVIlC3lYj+B8Uh81qmOr4aAAAAAElFTkSuQmCC",
+//     "index": 0,
+//     "name": "posterizada.png",
+//     "size": 103044,
+//     "element": {}
+//   },
+//   "remainingFilesCount": 0
+// }

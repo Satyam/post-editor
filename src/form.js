@@ -1,24 +1,23 @@
 import { today } from './utils';
 
-import { categories, tags, authors } from './files';
+import {
+  getCategories,
+  getTags,
+  getAuthors,
+  isDraft,
+  isPost,
+  fileName,
+} from './data';
+
 import { dispatch } from './events';
 import { confirm } from './dialog';
+
 export const form = document.forms[0];
 
 const els = form.elements;
 
 const selectedCats = document.getElementById('selectedCats');
 const selectedTags = document.getElementById('selectedTags');
-
-export let isPost = false;
-export let isDraft = false;
-
-export const setEditor = (post = false, draft = false) => {
-  isPost = post;
-  isDraft = draft;
-};
-
-let fileName;
 
 const fillDataList = (input, list) => {
   input.list.innerHTML = list
@@ -33,9 +32,9 @@ const fillSelect = (select, list) => {
 };
 
 export const setDataLists = () => {
-  fillSelect(els.catList, categories);
-  fillSelect(els.tagsList, tags);
-  fillDataList(els.author, authors);
+  fillSelect(els.catList, getCategories());
+  fillSelect(els.tagsList, getTags());
+  fillDataList(els.author, getAuthors());
 };
 
 const copySelectedCats = (ev) => {
@@ -87,7 +86,6 @@ form.addEventListener('submit', (ev) => {
 
   if (valid) {
     const data = {
-      fileName,
       title: els.title.value,
       date: els.date.value,
     };
@@ -110,12 +108,10 @@ export const setForm = (
     categories: [],
     tags: [],
     author: 'Roxana Cabut',
-  },
-  _fileName = null
+  }
 ) => {
-  fileName = _fileName;
   form.className = isPost ? 'is-post' : 'is-page';
-  if (_fileName) form.classList.add('can-delete');
+  if (fileName) form.classList.add('can-delete');
 
   Array.from(els)
     .filter((el) => el.tagName === 'INPUT')
@@ -147,6 +143,6 @@ document.getElementById('remove').addEventListener('click', async () => {
       'Confirmación'
     )
   ) {
-    dispatch('remove', fileName);
+    dispatch('remove');
   }
 });

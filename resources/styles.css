@@ -133,6 +133,7 @@ section {
 }
 
 button {
+  cursor: pointer;
   border-radius: 5px;
   font-size: 16px;
   padding: 6px 14px;
@@ -144,6 +145,7 @@ button {
 
 button:disabled {
   opacity: 0.5;
+  cursor: not-allowed;
 }
 
 button.default {

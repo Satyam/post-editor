@@ -19,8 +19,7 @@ import {
   loadInfo,
   getPages,
   getPosts,
-  getDraftPages,
-  getDraftPosts,
+  getDrafts,
   isDraft,
   isPost,
   setMdType,
@@ -51,8 +50,8 @@ Neutralino.events.on('windowClose', () => {
 const fs = Neutralino.filesystem;
 
 const setDraftButtons = () => {
-  btnDraftPage.disabled = !getDraftPages().length;
-  btnDraftPost.disabled = !getDraftPosts().length;
+  btnDraftPage.disabled = !getDrafts(false).length;
+  btnDraftPost.disabled = !getDrafts(true).length;
 };
 
 const clearSelect = () => {
@@ -140,7 +139,7 @@ loadInfo()
       ev.stopPropagation();
       setFileList(
         CNAMES.DRAFT_PAGE_LIST,
-        `<ul>${getDraftPages()
+        `<ul>${getDrafts()
           .sort(sortDescending)
           .map((p) => `<li>${p.date} - <a href="${p.file}">${p.title}</a></li>`)
           .join('')}</ul>`
@@ -152,7 +151,7 @@ loadInfo()
       ev.stopPropagation();
       setFileList(
         CNAMES.DRAFT_POST_LIST,
-        `<ul>${getDraftPosts()
+        `<ul>${getDrafts(true)
           .sort(sortDescending)
           .map((p) => `<li>${p.date} - <a href="${p.file}">${p.title}</a></li>`)
           .join('')}</ul>`

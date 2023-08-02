@@ -23,21 +23,15 @@ export const getTags = () => info.tags;
 export const getAuthors = () => info.authors;
 export const getPages = () => info.pages;
 export const getPosts = () => info.posts;
-export const getDraftPages = () => info.draftPages ?? [];
-export const getDraftPosts = () => info.draftPosts ?? [];
+export const getDrafts = (post = false) =>
+  info.drafts.filter((p) => p.isPost === post);
 
 export const saveInfo = () => writeJson(DRAFTS_INFO, info);
 
 export const removeDraftInfo = async () => {
-  if (isPost) {
-    info.draftsPosts = info.draftsPosts.filter(
-      (data) => data.file !== fileName
-    );
-  } else {
-    info.draftsPages = info.draftsPages.filter(
-      (data) => data.file !== fileName
-    );
-  }
+  info.drafts = info.drafts.filter(
+    (data) => !(data.file === fileName && data.isPost === isPost)
+  );
   await saveInfo();
 };
 
@@ -45,29 +39,17 @@ export const addDraftInfo = async (fileInfo) => {
   const newInfo = {
     ...fileInfo,
     file: fileName,
+    isPost,
   };
-  if (isPost) {
-    if (
-      !info.draftPosts.some((p) => {
-        if (p.file === fileName) {
-          p = newInfo;
-          return true;
-        }
-      })
-    ) {
-      info.draftPosts.push(newInfo);
-    }
-  } else {
-    if (
-      !info.draftPages.some((p) => {
-        if (p.file === fileName) {
-          p = newInfo;
-          return true;
-        }
-      })
-    ) {
-      info.draftPages.push(newInfo);
-    }
+  if (
+    !info.drafts.some((p) => {
+      if (p.file === fileName && p.isPost === isPost) {
+        p = newInfo;
+        return true;
+      }
+    })
+  ) {
+    info.drafts.push(newInfo);
   }
   await saveInfo();
 };
@@ -83,9 +65,9 @@ const INFO_PROPS = [
   'categories',
   'tags',
   'authors',
-  'draftPages',
-  'draftPosts',
+  'drafts',
 ];
+
 export const loadInfo = async () => {
   info = await readJson(DRAFTS_INFO);
   INFO_PROPS.forEach((p) => {

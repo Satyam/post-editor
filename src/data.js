@@ -42,9 +42,9 @@ export const addDraftInfo = async (fileInfo) => {
     isPost,
   };
   if (
-    !info.drafts.some((p) => {
-      if (p.file === fileName && p.isPost === isPost) {
-        p = newInfo;
+    !info.drafts.some((data, index) => {
+      if (data.file === fileName && data.isPost === isPost) {
+        info.drafts[index] = newInfo;
         return true;
       }
     })

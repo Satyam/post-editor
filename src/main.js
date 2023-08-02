@@ -23,10 +23,10 @@ import {
   isDraft,
   isPost,
   setMdType,
-  saveInfo,
   setFileName,
   fileName,
   addDraftInfo,
+  removeDraftInfo,
 } from './data';
 import { imagesToEditor } from './images';
 

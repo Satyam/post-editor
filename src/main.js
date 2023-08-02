@@ -29,7 +29,7 @@ import {
   removeDraftInfo,
   updateProps,
 } from './data';
-import { imagesToEditor } from './images';
+import { imagesToEditor, replaceImages } from './images';
 
 import { on } from './events';
 
@@ -96,6 +96,7 @@ loadInfo()
         matter.layout = 'page';
         if (!fileName) setFileName(`${slugify(matter.title)}.md`);
       }
+      await replaceImages();
       await saveMD(matter, editor.getContents());
       await addDraftInfo({ title: matter.title, date: today });
       setDraftButtons();
@@ -216,127 +217,9 @@ loadInfo()
     // editor.onChange = function (contents, core) {
     //   console.log('onChange', contents);
     // };
-
-    editor.onImageUploadBefore = (files, info, core, uploadHandler) => {
-      // https://github.com/JiHong88/suneditor/discussions/1109
-      console.log('-------image onImageUploadBefore ');
-      console.log(JSON.stringify({ files, info }, null, 2));
-      return true;
-      // return Boolean || return (new FileList) || return undefined;
-    };
-
-    //stackoverflow.com/questions/35940290/how-to-convert-base64-string-to-javascript-file-object-like-as-from-file-input-f
-    https: editor.onImageUpload = async (
-      targetElement,
-      index,
-      state,
-      info,
-      remainingFilesCount,
-      core
-    ) => {
-      console.log('-------image onImageUpload ');
-      console.log(
-        JSON.stringify(
-          {
-            tag: targetElement?.tagName,
-            index,
-            state,
-            info,
-            remainingFilesCount,
-          },
-          null,
-          2
-        )
-      );
-    };
   })
   .catch((err) => {
     console.log(err);
     window.close();
     Neutralino.app.exit(1);
   });
-
-// // https://stackoverflow.com/questions/68248551/base64-to-image-file-convertion-in-js
-
-// export function getFileFromBase64(string64:string, fileName:string) {
-//   const trimmedString = string64.replace('dataimage/jpegbase64', '');
-//   const imageContent = atob(trimmedString);
-//   const buffer = new ArrayBuffer(imageContent.length);
-//   const view = new Uint8Array(buffer);
-
-//   for (let n = 0; n < imageContent.length; n++) {
-//     view[n] = imageContent.charCodeAt(n);
-//   }
-//   const type = 'image/jpeg';
-//   const blob = new Blob([buffer], { type });
-//   return new File([blob], fileName, { lastModified: new Date().getTime(), type });
-// }
-
-//---------------------------
-// https://stackoverflow.com/questions/38658654/how-to-convert-a-base64-string-into-a-file/38659875
-
-// data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgICA...
-
-function base64ImageToBlob(str) {
-  // extract content type and base64 payload from original string
-  var pos = str.indexOf(';base64,');
-  var type = str.substring(5, pos);
-  var b64 = str.substr(pos + 8);
-
-  // decode base64
-  var imageContent = atob(b64);
-
-  // create an ArrayBuffer and a view (as unsigned 8-bit)
-  var buffer = new ArrayBuffer(imageContent.length);
-  var view = new Uint8Array(buffer);
-
-  // fill the view, using the decoded base64
-  for (var n = 0; n < imageContent.length; n++) {
-    view[n] = imageContent.charCodeAt(n);
-  }
-
-  // convert ArrayBuffer to Blob
-  var blob = new Blob([buffer], { type: type });
-
-  return blob;
-}
-
-// https://stackoverflow.com/questions/21227078/convert-base64-to-image-in-javascript-jquery
-
-function base64toBlob(base64Data, contentType) {
-  contentType = contentType || '';
-  var sliceSize = 1024;
-  var byteCharacters = atob(base64Data);
-  var bytesLength = byteCharacters.length;
-  var slicesCount = Math.ceil(bytesLength / sliceSize);
-  var byteArrays = new Array(slicesCount);
-
-  for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
-    var begin = sliceIndex * sliceSize;
-    var end = Math.min(begin + sliceSize, bytesLength);
-
-    var bytes = new Array(end - begin);
-    for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
-      bytes[i] = byteCharacters[offset].charCodeAt(0);
-    }
-    byteArrays[sliceIndex] = new Uint8Array(bytes);
-  }
-  return new Blob(byteArrays, { type: contentType });
-}
-
-// new Regex(@"data:(?<mime>[\w/\-\.]+);(?<encoding>\w+),(?<data>.*)", RegexOptions.Compiled);
-// {
-//   "tag": "IMG",
-//   "index": 0,
-//   "state": "create",
-//   "info": {
-//     "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABEoAAAStCAAAAAB2bOEGAAA+NXpUWHRSYXc
-// .....
-// o2mb+N3HZ+EBbONohu66wdVm1FzFrVmiPpNC6u2Ha/mSq5agBANkyDbtH03EyVIlC3lYj+B8Uh81qmOr4aAAAAAElFTkSuQmCC",
-//     "index": 0,
-//     "name": "posterizada.png",
-//     "size": 103044,
-//     "element": {}
-//   },
-//   "remainingFilesCount": 0
-// }

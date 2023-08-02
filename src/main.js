@@ -26,8 +26,8 @@ import {
   setMdType,
   saveInfo,
   setFileName,
-  SRC_PAGES_DIR,
-  DRAFTS_DIR,
+  fileName,
+  addDraftInfo,
 } from './data';
 import { imagesToEditor } from './images';
 
@@ -83,38 +83,31 @@ loadInfo()
     });
 
     on('draft', async (matter) => {
-      const fName = fileName?.split('/').at(-1);
       matter.updated = today;
+      setMdType(isPost, true);
       if (isPost) {
         matter.layout = 'post';
-        const file = join(
-          'posts',
-          fName ?? `${matter.date}-${slugify(matter.title)}.md`
-        );
-        await saveMD(join(DRAFTS_DIR, file), matter, editor.getContents());
-        getDraftPosts()
-          .filter((p) => p.file !== file)
-          .push({ file, title: matter.title, date: today });
+        if (!fileName)
+          setFileName(`${matter.date}-${slugify(matter.title)}.md`);
       } else {
         matter.layout = 'page';
-        const file = join('pages', fName ?? `${slugify(matter.title)}.md`);
-        await saveMD(join(DRAFTS_DIR, file), matter, editor.getContents());
-        getDraftPages()
-          .filter((p) => p.file !== file)
-          .push({ file, title: matter.title, date: today });
+        if (!fileName) setFileName(`${slugify(matter.title)}.md`);
       }
-      await saveInfo();
+      await saveMD(matter, editor.getContents());
+      await addDraftInfo({ title: matter.title, date: today });
       setDraftButtons();
     });
 
     on('remove', async () => {
       console.log('Borrar', fileName, isDraft, isPost);
       await removeMd();
+      await removeDraftInfo();
       clearSelect();
     });
 
     btnNewPage.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
+      editor.setContents('');
       setMdType(false);
       setFileName();
       setForm();
@@ -122,6 +115,7 @@ loadInfo()
 
     btnNewPost.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
+      editor.setContents('');
       setMdType(true);
       setFileName();
       setForm();
@@ -136,10 +130,7 @@ loadInfo()
       setFileList(
         CNAMES.PAGE_LIST,
         `<ul>${getPages()
-          .map(
-            (p) =>
-              `<li><a href="${join(SRC_PAGES_DIR, p.file)}">${p.title}</a></li>`
-          )
+          .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
           .join('')}</ul>`
       );
       setMdType(false);
@@ -151,12 +142,7 @@ loadInfo()
         CNAMES.DRAFT_PAGE_LIST,
         `<ul>${getDraftPages()
           .sort(sortDescending)
-          .map(
-            (p) =>
-              `<li>${p.date} - <a href="${join(DRAFTS_DIR, p.file)}">${
-                p.title
-              }</a></li>`
-          )
+          .map((p) => `<li>${p.date} - <a href="${p.file}">${p.title}</a></li>`)
           .join('')}</ul>`
       );
       setMdType(false, true);
@@ -168,12 +154,7 @@ loadInfo()
         CNAMES.DRAFT_POST_LIST,
         `<ul>${getDraftPosts()
           .sort(sortDescending)
-          .map(
-            (p) =>
-              `<li>${p.date} - <a href="${join(DRAFTS_DIR, p.file)}">${
-                p.title
-              }</a></li>`
-          )
+          .map((p) => `<li>${p.date} - <a href="${p.file}">${p.title}</a></li>`)
           .join('')}</ul>`
       );
       setMdType(true, true);
@@ -183,7 +164,7 @@ loadInfo()
       ev.stopPropagation();
 
       const tree = {};
-      getPosts.forEach((p) => {
+      getPosts().forEach((p) => {
         const [y, m, d] = p.date.split('-');
         if (!(y in tree)) tree[y] = {};
         if (!(m in tree[y])) tree[y][m] = {};
@@ -203,12 +184,7 @@ loadInfo()
                   (d) =>
                     `<details><summary>${d}</summary><p>${d}/${m}/${y}</p><ul>
                   ${tree[y][m][d]
-                    .map(
-                      (p) =>
-                        `<li><a href="${join(SRC_PAGES_DIR, p.file)}">${
-                          p.title
-                        }</a></li>`
-                    )
+                    .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
                     .join('\n')}</ul></details>`,
                   sortDescending
                 )}</details>`,

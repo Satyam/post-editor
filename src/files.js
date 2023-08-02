@@ -1,29 +1,25 @@
-import { readJson, writeJson } from './utils';
+import { join } from './utils';
 import { parse, stringify } from './frontmatter';
-import {
-  isPost,
-  isDraft,
-  fileName,
-  removeDraftInfo,
-  SRC_PAGES_DIR,
-  DRAFTS_DIR,
-} from './data';
+import { isPost, isDraft, fileName, SRC_PAGES_DIR, DRAFTS_DIR } from './data';
 
 const fs = Neutralino.filesystem;
 
-export const readMd = async () => parse(await fs.readFile(fileName));
-
-const draftsDirRx = new RegExp(`^${DRAFTS_DIR}/`);
-const srcDirRx = new RegExp(`^${SRC_PAGES_DIR}/`);
+const fullFileName = () => {
+  if (isDraft) {
+    return join(DRAFTS_DIR, isPost ? 'posts' : 'pages', fileName);
+  } else {
+    return join(SRC_PAGES_DIR, isPost ? '_posts' : '', fileName);
+  }
+};
+export const readMd = async () => parse(await fs.readFile(fullFileName()));
 
 export const removeMd = async () => {
   if (isDraft) {
-    await fs.removeFile(fileName);
-    await removeDraftInfo(fileName.replace(draftsDirRx, ''));
+    await fs.removeFile(fullFileName());
   } else {
-    let which = isPost ? posts : pages;
-    const fn = fileName.replace(srcDirRx, '');
-    which = which.filter((data) => data.file !== fn);
+    // let which = isPost ? posts : pages;
+    // const fn = fileName.replace(srcDirRx, '');
+    // which = which.filter((data) => data.file !== fn);
     /// TODO
     console.log('remove', fileName);
     debugger;
@@ -32,6 +28,5 @@ export const removeMd = async () => {
   }
 };
 
-export const saveMD = async (path, matter, content) => {
-  return await fs.writeFile(path, stringify(matter, content));
-};
+export const saveMD = async (matter, content) =>
+  await fs.writeFile(fullFileName(), stringify(matter, content));

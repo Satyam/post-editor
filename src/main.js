@@ -1,5 +1,5 @@
 import editor from './editor';
-import { join, objMapString, sortDescending, slugify, today } from './utils';
+import { objMapString, sortDescending, slugify, today } from './utils';
 import { form, setDataLists, setForm } from './form';
 import {
   btnNewPage,
@@ -27,6 +27,7 @@ import {
   fileName,
   addDraftInfo,
   removeDraftInfo,
+  updateProps,
 } from './data';
 import { imagesToEditor } from './images';
 
@@ -86,6 +87,9 @@ loadInfo()
       setMdType(isPost, true);
       if (isPost) {
         matter.layout = 'post';
+        if (await updateProps(matter)) {
+          setDataLists();
+        }
         if (!fileName)
           setFileName(`${matter.date}-${slugify(matter.title)}.md`);
       } else {

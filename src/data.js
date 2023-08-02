@@ -54,6 +54,32 @@ export const addDraftInfo = async (fileInfo) => {
   await saveInfo();
 };
 
+export const updateProps = async (matter) => {
+  const { categories, tags, author } = matter;
+  let changed = false;
+  categories.forEach((cat) => {
+    if (!info.categories.includes(cat)) {
+      info.categories.push(cat);
+      changed = true;
+    }
+  });
+  tags.forEach((tag) => {
+    if (!info.tags.includes(tag)) {
+      info.tags.push(tag);
+      changed = true;
+    }
+  });
+  if (!info.authors.includes(author)) {
+    info.authors.push(author);
+    changed = true;
+  }
+
+  if (changed) {
+    await saveInfo();
+  }
+  return changed;
+};
+
 export const setMdType = (post = false, draft = false) => {
   isPost = post;
   isDraft = draft;

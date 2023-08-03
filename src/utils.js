@@ -17,8 +17,8 @@ export const writeJson = (filename, obj) =>
 //     (joined, p) => joined.concat(p.replace(stripStartSlashRx, '/$1')),
 //     first.replace(stripEndSlashRx, '$1')
 //   );
-
-export const join = (...args) => args.join('/').replaceAll('//', '/');
+const manySlashesRx = /\/{2,}/g;
+export const join = (...args) => args.join('/').replaceAll(manySlashesRx, '/');
 
 export const objMap = (obj, fn, sortFn) =>
   Object.keys(obj, fn)

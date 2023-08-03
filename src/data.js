@@ -2,13 +2,14 @@ import { readJson, writeJson, join } from './utils';
 
 const fs = Neutralino.filesystem;
 
-const HEXO_DIR = '../roxygrabber/hexo';
+const HEXO_DIR = '../roxygrabber/hexo/';
+export const DOCUMENT_ROOT = 'resources/';
 // export const HEXO_FILES_LIST = join(HEXO_DIR, 'files.json');
-export const SRC_PAGES_DIR = join(HEXO_DIR, 'source');
-export const HEXO_IMG_DIR = join(SRC_PAGES_DIR, 'assets/img');
-export const DRAFTS_DIR = 'resources/drafts';
+export const SRC_PAGES_DIR = join(HEXO_DIR, 'source/');
+export const HEXO_IMG_DIR = join(SRC_PAGES_DIR, 'assets/img/');
+export const DRAFTS_DIR = join(DOCUMENT_ROOT, 'drafts/');
 const DRAFTS_INFO = join(DRAFTS_DIR, 'info.json');
-export const EDITOR_IMG_DIR = 'resources/assets/img';
+export const EDITOR_IMG_DIR = join(DOCUMENT_ROOT, 'assets/img/');
 
 export let fileName;
 export let isPost = false;

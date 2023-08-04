@@ -185,3 +185,7 @@ dialog h1 {
   padding: 1rem;
   border-bottom: thin solid;
 }
+
+canvas {
+  display: none;
+}

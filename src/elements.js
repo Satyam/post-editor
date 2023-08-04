@@ -7,3 +7,4 @@ export const btnDraftPost = document.getElementById('draftPost');
 export const btnExit = document.getElementById('exit');
 export const divFileList = document.getElementById('fileList');
 export const main = document.getElementById('main');
+export const canvas = document.getElementById('canvas');

@@ -80,6 +80,7 @@ loadInfo()
 
     on('save', (data) => {
       console.log('save', data);
+      clearSelect();
     });
 
     on('draft', async (matter) => {
@@ -99,7 +100,7 @@ loadInfo()
       await replaceImages();
       await saveMD(matter, editor.getContents());
       await addDraftInfo({ title: matter.title, date: today });
-      setDraftButtons();
+      clearSelect();
     });
 
     on('remove', async () => {

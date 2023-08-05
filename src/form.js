@@ -9,7 +9,7 @@ import {
   fileName,
 } from './data';
 
-import { dispatch } from './events';
+import { dispatch, on } from './events';
 import { confirm } from './dialog';
 
 export const form = document.forms[0];
@@ -101,6 +101,12 @@ form.addEventListener('submit', (ev) => {
   return false;
 });
 
+on('typeChange', () => {
+  form.className = isPost ? 'is-post' : 'is-page';
+  if (isDraft) form.classList.add('is-draft');
+  if (fileName) form.classList.add('can-delete');
+});
+
 export const setForm = (
   data = {
     title: '',
@@ -110,9 +116,6 @@ export const setForm = (
     author: 'Roxana Cabut',
   }
 ) => {
-  form.className = isPost ? 'is-post' : 'is-page';
-  if (fileName) form.classList.add('can-delete');
-
   Array.from(els)
     .filter((el) => el.tagName === 'INPUT')
     .forEach((el) => showError(el));

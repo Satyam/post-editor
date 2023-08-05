@@ -1,3 +1,4 @@
+import { dispatch } from './events';
 import { readJson, writeJson, join } from './utils';
 
 const fs = Neutralino.filesystem;
@@ -17,7 +18,10 @@ export let isDraft = false;
 
 let info;
 
-export const setFileName = (fn = null) => (fileName = fn);
+export const setFileName = (fn = null) => {
+  fileName = fn;
+  dispatch('typeChange');
+};
 
 export const getCategories = () => info.categories;
 export const getTags = () => info.tags;
@@ -84,6 +88,7 @@ export const updateProps = async (matter) => {
 export const setMdType = (post = false, draft = false) => {
   isPost = post;
   isDraft = draft;
+  dispatch('typeChange');
 };
 
 const INFO_PROPS = [

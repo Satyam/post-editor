@@ -113,7 +113,7 @@ loadInfo()
     btnNewPage.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
       editor.setContents('');
-      setMdType(false);
+      setMdType(false, true);
       setFileName();
       setForm();
     });
@@ -121,7 +121,7 @@ loadInfo()
     btnNewPost.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
       editor.setContents('');
-      setMdType(true);
+      setMdType(true, true);
       setFileName();
       setForm();
     });

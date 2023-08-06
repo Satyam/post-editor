@@ -100,7 +100,6 @@ loadInfo()
       await replaceImages();
       await saveMD(matter, editor.getContents());
       await addDraftInfo({ title: matter.title, date: today });
-      clearSelect();
     });
 
     on('remove', async () => {

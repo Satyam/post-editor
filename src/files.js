@@ -4,11 +4,11 @@ import { isPost, isDraft, fileName, SRC_PAGES_DIR, DRAFTS_DIR } from './data';
 
 const fs = Neutralino.filesystem;
 
-const fullFileName = () => {
+const fullFileName = (fName) => {
   if (isDraft) {
-    return join(DRAFTS_DIR, isPost ? 'posts' : 'pages', fileName);
+    return join(DRAFTS_DIR, isPost ? 'posts' : 'pages', fName ?? fileName);
   } else {
-    return join(SRC_PAGES_DIR, isPost ? '_posts' : '', fileName);
+    return join(SRC_PAGES_DIR, isPost ? '_posts' : '', fName ?? fileName);
   }
 };
 export const readMd = async () => parse(await fs.readFile(fullFileName()));
@@ -30,3 +30,13 @@ export const removeMd = async () => {
 
 export const saveMD = async (matter, content) =>
   await fs.writeFile(fullFileName(), stringify(matter, content));
+
+export const fileExists = async (fName) => {
+  try {
+    await fs.getStats(fullFileName(fName));
+    return true;
+  } catch (err) {
+    if (err === NE_FS_NOPATHE) return false;
+    throw err;
+  }
+};

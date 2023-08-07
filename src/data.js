@@ -15,6 +15,7 @@ export const EDITOR_IMG_DIR = join(DOCUMENT_ROOT, 'assets/img/');
 export let fileName;
 export let isPost = false;
 export let isDraft = false;
+export let isNew = false;
 
 let info;
 
@@ -45,6 +46,7 @@ export const addDraftInfo = async (fileInfo) => {
     ...fileInfo,
     file: fileName,
     isPost,
+    isNew,
   };
   if (
     !info.drafts.some((data, index) => {
@@ -85,9 +87,24 @@ export const updateProps = async (matter) => {
   return changed;
 };
 
-export const setMdType = (post = false, draft = false) => {
+export const uniqueFileName = (fName) => {
+  let newName;
+  for (let count = 0, found = false; !found; count++) {
+    newName = count ? `${fName}-${count}.md` : `${fName}.md`;
+    if (isPost) {
+      found = info.posts.every((data) => data.file !== newName);
+    } else {
+      found = info.pages.every((data) => data.file !== newName);
+    }
+    found = found && info.drafts.every((data) => data.file !== newName);
+  }
+  return newName;
+};
+
+export const setMdType = (post = false, draft = false, _new = false) => {
   isPost = post;
   isDraft = draft;
+  isNew = _new;
   dispatch('typeChange');
 };
 

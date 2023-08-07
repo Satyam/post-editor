@@ -109,14 +109,43 @@
             </div>
           </div>
           <div>
-            <button name="save" type="submit">Guardar</button>
-            <button name="draft" type="submit">Guardar como borrador</button>
-            <button class="warning" id="remove">Eliminar</button>
-            <button type="reset">Volver</button>
+            <button
+              name="publish"
+              type="submit"
+              title="Guarda este borrador como original para publicar"
+            >
+              Publicar
+            </button>
+            <button
+              name="save"
+              type="submit"
+              title="Guarda el borrador sin afectar el original"
+            >
+              Guardar
+            </button>
+            <button
+              name="discard"
+              type="submit"
+              class="warning"
+              title="Descarta este borrador sin afectar el original"
+            >
+              Descartar
+            </button>
+            <button
+              name="remove"
+              type="submit"
+              class="warning"
+              title="Borra este borrador y el original"
+            >
+              Borrar
+            </button>
+            <button type="reset" title="Vuelve a la selección de archivos">
+              Volver
+            </button>
           </div>
         </form>
 
-        <textarea id="suneditor">Hi</textarea>
+        <textarea id="suneditor"></textarea>
       </section>
     </main>
     <canvas id="canvas" width="800" height="600"></canvas>

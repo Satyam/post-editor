@@ -68,37 +68,67 @@ const showError = (el, msg) => {
   }
 };
 
-form.addEventListener('submit', (ev) => {
+form.addEventListener('submit', async (ev) => {
   ev.preventDefault();
   ev.stopImmediatePropagation();
+  const action = ev.submitter.name;
 
-  let valid = true;
-  const title = els.title.value;
-  if (title.length < 5) {
-    showError(els.title, 'Los títulos han de tener al menos 5 caracteres');
-    valid = false;
-  } else showError(els.title);
-  const date = els.date.value;
-  if (date.length === 0) {
-    showError(els.date, 'Se debe indicar una fecha para el artículo');
-    valid = false;
-  } else showError(els.date);
+  switch (action) {
+    case 'save': {
+      let valid = true;
+      const title = els.title.value;
+      if (title.length < 5) {
+        showError(els.title, 'Los títulos han de tener al menos 5 caracteres');
+        valid = false;
+      } else showError(els.title);
+      const date = els.date.value;
+      if (date.length === 0) {
+        showError(els.date, 'Se debe indicar una fecha para el artículo');
+        valid = false;
+      } else showError(els.date);
 
-  if (valid) {
-    const data = {
-      title: els.title.value,
-      date: els.date.value,
-    };
-    if (isPost) {
-      data.author = els.author.value;
-      data.categories = Array.from(selectedCats.children).map(
-        (li) => li.innerHTML
-      );
-      data.tags = Array.from(selectedTags.children).map((li) => li.innerHTML);
+      if (valid) {
+        const data = {
+          title: els.title.value,
+          date: els.date.value,
+        };
+        if (isPost) {
+          data.author = els.author.value;
+          data.categories = Array.from(selectedCats.children).map(
+            (li) => li.innerHTML
+          );
+          data.tags = Array.from(selectedTags.children).map(
+            (li) => li.innerHTML
+          );
+        }
+        dispatch('save', data);
+      }
+      break;
     }
-    dispatch(ev.submitter.name, data);
+    case 'publish': {
+      dispatch('publish');
+      break;
+    }
+    case 'discard': {
+      if (
+        await confirm(
+          `¿Desea borrar "${els.title.value}" de fecha ${els.date.value}?`,
+          'Confirmación'
+        )
+      ) {
+        dispatch('discard');
+      }
+      break;
+    }
+    case 'remove': {
+      break;
+    }
   }
-  return false;
+});
+
+form.addEventListener('reset', (ev) => {
+  ev.stopImmediatePropagation();
+  dispatch('reset');
 });
 
 on('typeChange', () => {
@@ -138,14 +168,3 @@ export const setForm = (
     });
   }
 };
-
-document.getElementById('remove').addEventListener('click', async () => {
-  if (
-    await confirm(
-      `¿Desea borrar "${els.title.value}" de fecha ${els.date.value}?`,
-      'Confirmación'
-    )
-  ) {
-    dispatch('remove');
-  }
-});

@@ -22,12 +22,14 @@ import {
   getDrafts,
   isDraft,
   isPost,
+  isNew,
   setMdType,
   setFileName,
   fileName,
   addDraftInfo,
   removeDraftInfo,
   updateProps,
+  uniqueFileName,
 } from './data';
 import { imagesToEditor, replaceImages } from './images';
 
@@ -78,24 +80,22 @@ loadInfo()
       Neutralino.app.exit();
     });
 
-    on('save', (data) => {
-      console.log('save', data);
-      clearSelect();
-    });
-
-    on('draft', async (matter) => {
+    on('save', async (matter) => {
       matter.updated = today;
-      setMdType(isPost, true);
+      setMdType(isPost, true, isNew);
+      debugger;
       if (isPost) {
         matter.layout = 'post';
         if (await updateProps(matter)) {
           setDataLists();
         }
         if (!fileName)
-          setFileName(`${matter.date}-${slugify(matter.title)}.md`);
+          setFileName(
+            uniqueFileName(`${matter.date}-${slugify(matter.title)}`)
+          );
       } else {
         matter.layout = 'page';
-        if (!fileName) setFileName(`${slugify(matter.title)}.md`);
+        if (!fileName) setFileName(uniqueFileName(slugify(matter.title)));
       }
       await replaceImages();
       await saveMD(matter, editor.getContents());
@@ -109,10 +109,21 @@ loadInfo()
       clearSelect();
     });
 
+    on('publish', async () => {
+      console.log('publish event', fileName);
+    });
+
+    on('discard', async () => {
+      console.log('discard event', fileName);
+    });
+    on('reset', () => {
+      clearSelect();
+    });
+
     btnNewPage.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
       editor.setContents('');
-      setMdType(false, true);
+      setMdType(false, true, true);
       setFileName();
       setForm();
     });
@@ -120,13 +131,9 @@ loadInfo()
     btnNewPost.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
       editor.setContents('');
-      setMdType(true, true);
+      setMdType(true, true, true);
       setFileName();
       setForm();
-    });
-
-    form.addEventListener('reset', (ev) => {
-      clearSelect();
     });
 
     btnEditPage.addEventListener('click', async (ev) => {

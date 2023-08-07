@@ -1,0 +1,157 @@
+[select]:{
+  estado: isSelect
+  botones: nuevo, modificar, modificar borrador, subir
+  acciones: {
+    nuevo: {
+      estado: isDraft, !fileName, !isChanged, isNew
+      ir a [nuevo]
+    }
+    modificar: {
+      if (existe borrador del mismo nombre?) {
+        if (confirm: Quiere retormar edicion?) {
+          abrir borrador
+          estado: isDraft, fileName, !isChanged, !isNew 
+          ir a [borrador]
+        } else {
+          remachar el borrador con nueva copia del original.
+          estado: isDraft, fileName, !isChanged, !isNew 
+          ir a [borrador]
+        }
+      }
+    }
+    modificar borrador: {
+      estado: isDraft, fileName, !isChanged
+      leer isNew de info
+      if (isNew) {
+        estado: isDraft, fileName, !isChanged, isNew
+        ir a [borrador]
+      } else {
+        ir a [borrador]
+      }
+    }
+    subir: {
+      listar cambios
+      if (confirma) {
+        transferir cambios (guardar en info.json) al server.
+      }
+    }
+  }
+}
+
+[nuevo]: {
+  estado: isDraft, !fileName, !isChanged, isNew
+  botones: volver
+  acciones: {
+    editar
+      ir a [nuevo cambiado]
+    volver
+      ir a [select]
+  }
+}
+
+[nuevo cambiado] {
+  estado: isDraft, !fileName, isChanged, isNew
+  botones: volver, guardar
+  acciones: {
+    editar: {
+      seguir en [nuevo cambiado]
+    }
+    guardar: {
+      controlar que no exista un archivo igual;
+      guardar: title, date, fileName, isNew;
+      estado: isDraft, fileName, !isChanged, isNew
+      ir a [borrador]
+    }
+    volver: {
+      if (confirma) {
+        descartar {
+          ir a [select]
+        }
+        guardar {
+          controlar que no exista un archivo igual;
+          guardar: title, date, fileName, isNew;
+          ir a [select]
+        } 
+      }
+    }
+  }
+}
+
+[borrador] {
+  estado: isDraft, fileName, !isChanged, !isNew
+  botones: volver, borrar (original), publicar, descartar (borrador)
+  acciones: {
+    editar: {
+      isChanged = true
+      ir a [borrador cambiado]
+    }
+    borrar (original): {
+      if (confirm: está seguro?) {
+        borrar borrador;
+        borrar original
+      }
+    }
+    descartar (borrador):{
+      if (confirm: está seguro?) {
+        borrar borrador;
+        ir a [select]
+      }
+    }
+    publicar: {
+      if (confirm) {
+        remachar original;
+        borrar borrador;
+        ir a [select]
+      }
+    }
+    volver: {
+      ir a [select]
+    }
+  }
+}
+
+[borrador cambiado] {
+  estado: isDraft, fileName, isChanged, ~isNew:
+  botones: volver, descartar, guardar, publicar 
+
+  acciones: {
+    guardar como borrador: {
+      guardar el archivo
+
+      agregar la info
+      estado: isDraft, fileName, !isChanged
+      ir a [borrador]
+    }
+    publicar: {
+      if (confirm) {
+        if (isNew) {
+          grabar original
+        } else {
+          remachar original;
+        }
+        borrar borrador;
+        ir a [select]
+      }
+    }
+    volver: {
+      preguntar si quiere descartar cambios
+      if (descartar) {
+        volver a [select];
+      } else {
+        guardar el archivo
+        agregar la info
+        estado: isDraft, fileName, !isChanged
+        ir a [borrador]
+      }
+    }
+  }
+}
+
+
+Botones:
+
+Volver: siempre
+Guardar: isChanged
+Publicar: fileName && !isChanged
+Borrar (original): !isNew
+Descartar (borrador): siempre

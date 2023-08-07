@@ -19,3 +19,13 @@ export const dispatch = async (name, data) => {
     for (const fn of ev[name]) await fn(data);
   }
 };
+
+export const EVENT = {
+  SAVE: 'save',
+  TYPE_CHANGE: 'typeChange',
+  REMOVE: 'remove',
+  PUBLISH: 'publish',
+  DISCARD: 'discard',
+  RESET: 'reset',
+  EDITOR_CHANGED: 'editorChanged',
+};

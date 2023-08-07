@@ -6,10 +6,13 @@ import {
   getAuthors,
   isDraft,
   isPost,
+  isNew,
   fileName,
 } from './data';
 
-import { dispatch, on } from './events';
+import { isChanged } from './editor';
+
+import { dispatch, on, EVENT } from './events';
 import { confirm } from './dialog';
 
 export const form = document.forms[0];
@@ -101,12 +104,12 @@ form.addEventListener('submit', async (ev) => {
             (li) => li.innerHTML
           );
         }
-        dispatch('save', data);
+        dispatch(EVENT.SAVE, data);
       }
       break;
     }
     case 'publish': {
-      dispatch('publish');
+      dispatch(EVENT.PUBLISH);
       break;
     }
     case 'discard': {
@@ -116,11 +119,13 @@ form.addEventListener('submit', async (ev) => {
           'Confirmación'
         )
       ) {
-        dispatch('discard');
+        dispatch(EVENT.DISCARD);
       }
       break;
     }
     case 'remove': {
+      // TODO
+
       break;
     }
   }
@@ -128,13 +133,14 @@ form.addEventListener('submit', async (ev) => {
 
 form.addEventListener('reset', (ev) => {
   ev.stopImmediatePropagation();
-  dispatch('reset');
+  dispatch(EVENT.RESET);
 });
 
-on('typeChange', () => {
+on(EVENT.TYPE_CHANGE, () => {
   form.className = isPost ? 'is-post' : 'is-page';
-  if (isDraft) form.classList.add('is-draft');
-  if (fileName) form.classList.add('can-delete');
+  els.save.disabled = !isChanged;
+  els.publish.disabled = !fileName || isChanged;
+  els.remove.disabled = isNew;
 });
 
 export const setForm = (

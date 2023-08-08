@@ -1,6 +1,7 @@
 import { join } from './utils';
 import { parse, stringify } from './frontmatter';
-import { isPost, isDraft, fileName, SRC_PAGES_DIR, DRAFTS_DIR } from './data';
+import { SRC_PAGES_DIR, DRAFTS_DIR } from './data';
+import { isPost, isDraft, fileName } from './state';
 
 const fs = Neutralino.filesystem;
 

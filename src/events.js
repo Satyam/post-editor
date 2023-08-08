@@ -22,10 +22,10 @@ export const dispatch = async (name, data) => {
 
 export const EVENT = {
   SAVE: 'save',
-  TYPE_CHANGE: 'typeChange',
   REMOVE: 'remove',
   PUBLISH: 'publish',
   DISCARD: 'discard',
   RESET: 'reset',
   EDITOR_CHANGED: 'editorChanged',
+  STATE_CHANGED: 'stateChanged',
 };

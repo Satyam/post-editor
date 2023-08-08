@@ -1,6 +1,6 @@
 import { join } from './utils';
 import { HEXO_IMG_DIR, EDITOR_IMG_DIR, DOCUMENT_ROOT } from './data';
-import editor from './editor';
+import { getEditorImages } from './editor';
 import { canvas } from './elements';
 const fs = Neutralino.filesystem;
 
@@ -27,7 +27,7 @@ const getBlob = (canvas) =>
 
 export const replaceImages = async () => {
   const ctx = canvas.getContext('2d');
-  const images = editor.getImagesInfo();
+  const images = getEditorImages();
 
   for (const img of images) {
     const imgEl = img.element;

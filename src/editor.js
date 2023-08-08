@@ -1,6 +1,7 @@
 import suneditor from 'suneditor';
 import plugins from 'suneditor/src/plugins';
 import es from 'suneditor/src/lang/es';
+import { dispatch, EVENT } from './events';
 
 const editor = suneditor.create('suneditor', {
   height: '300',
@@ -48,4 +49,22 @@ const editor = suneditor.create('suneditor', {
   lang: es,
 });
 
-export default editor;
+export let isChanged = false;
+
+let _contents = '';
+
+editor.onChange = (contents) => {
+  let ch = contents !== _contents;
+  if (ch !== isChanged) {
+    isChanged = ch;
+    dispatch(EVENT.EDITOR_CHANGED);
+  }
+};
+
+export const setEditorContents = (contents) => {
+  editor.setContents(contents);
+  _contents = editor.getContents();
+};
+
+export const getEditorContents = editor.getContents;
+export const getEditorImages = editor.getImagesInfo;

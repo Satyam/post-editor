@@ -1,7 +1,5 @@
-import { dispatch } from './events';
 import { readJson, writeJson, join } from './utils';
-
-const fs = Neutralino.filesystem;
+import { fileName, isPost, isNew } from './state';
 
 const HEXO_DIR = '../roxygrabber/hexo/';
 export const DOCUMENT_ROOT = 'resources/';
@@ -12,17 +10,7 @@ export const DRAFTS_DIR = join(DOCUMENT_ROOT, 'drafts/');
 const DRAFTS_INFO = join(DRAFTS_DIR, 'info.json');
 export const EDITOR_IMG_DIR = join(DOCUMENT_ROOT, 'assets/img/');
 
-export let fileName;
-export let isPost = false;
-export let isDraft = false;
-export let isNew = false;
-
 let info;
-
-export const setFileName = (fn = null) => {
-  fileName = fn;
-  dispatch('typeChange');
-};
 
 export const getCategories = () => info.categories;
 export const getTags = () => info.tags;
@@ -99,13 +87,6 @@ export const uniqueFileName = (fName) => {
     found = found && info.drafts.every((data) => data.file !== newName);
   }
   return newName;
-};
-
-export const setMdType = (post = false, draft = false, _new = false) => {
-  isPost = post;
-  isDraft = draft;
-  isNew = _new;
-  dispatch('typeChange');
 };
 
 const INFO_PROPS = [

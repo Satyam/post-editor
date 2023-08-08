@@ -1,6 +1,6 @@
-import editor from './editor';
+import { getEditorContents, setEditorContents } from './editor';
 import { objMapString, sortDescending, slugify, today } from './utils';
-import { form, setDataLists, setForm } from './form';
+import { setDataLists, setForm } from './form';
 import {
   btnNewPage,
   btnEditPage,
@@ -20,20 +20,23 @@ import {
   getPages,
   getPosts,
   getDrafts,
-  isDraft,
-  isPost,
-  isNew,
-  setMdType,
-  setFileName,
-  fileName,
   addDraftInfo,
   removeDraftInfo,
   updateProps,
   uniqueFileName,
 } from './data';
+
+import {
+  fileName,
+  isDraft,
+  isPost,
+  isNew,
+  setFileName,
+  setMdType,
+} from './state';
 import { imagesToEditor, replaceImages } from './images';
 
-import { on } from './events';
+import { EVENT, on } from './events';
 
 const CNAMES = {
   PAGE_LIST: 'page-list',
@@ -80,7 +83,7 @@ loadInfo()
       Neutralino.app.exit();
     });
 
-    on('save', async (matter) => {
+    on(EVENT.SAVE, async (matter) => {
       matter.updated = today;
       setMdType(isPost, true, isNew);
       debugger;
@@ -98,31 +101,36 @@ loadInfo()
         if (!fileName) setFileName(uniqueFileName(slugify(matter.title)));
       }
       await replaceImages();
-      await saveMD(matter, editor.getContents());
+      await saveMD(matter, getEditorContents());
       await addDraftInfo({ title: matter.title, date: today });
     });
 
-    on('remove', async () => {
+    on(EVENT.REMOVE, async () => {
+      // TODO
+      // ojo, hay que diferenciar entre remove y discard
       console.log('Borrar', fileName, isDraft, isPost);
       await removeMd();
       await removeDraftInfo();
       clearSelect();
     });
 
-    on('publish', async () => {
+    on(EVENT.PUBLISH, async () => {
       console.log('publish event', fileName);
+      // TODO
     });
 
-    on('discard', async () => {
+    on(EVENT.DISCARD, async () => {
       console.log('discard event', fileName);
+      // TODO
     });
-    on('reset', () => {
+
+    on(EVENT.RESET, () => {
       clearSelect();
     });
 
     btnNewPage.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
-      editor.setContents('');
+      setEditorContents('');
       setMdType(false, true, true);
       setFileName();
       setForm();
@@ -130,7 +138,7 @@ loadInfo()
 
     btnNewPost.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
-      editor.setContents('');
+      setEditorContents('');
       setMdType(true, true, true);
       setFileName();
       setForm();
@@ -217,13 +225,9 @@ loadInfo()
       const { matter, content } = await readMd();
 
       setForm(matter);
-      editor.setContents(content);
+      setEditorContents(content);
       main.className = CNAMES.EDIT;
     });
-
-    // editor.onChange = function (contents, core) {
-    //   console.log('onChange', contents);
-    // };
   })
   .catch((err) => {
     console.log(err);

@@ -1,14 +1,8 @@
 import { today } from './utils';
 
-import {
-  getCategories,
-  getTags,
-  getAuthors,
-  isDraft,
-  isPost,
-  isNew,
-  fileName,
-} from './data';
+import { getCategories, getTags, getAuthors } from './data';
+
+import { isPost, isNew, fileName } from './state';
 
 import { isChanged } from './editor';
 
@@ -136,7 +130,7 @@ form.addEventListener('reset', (ev) => {
   dispatch(EVENT.RESET);
 });
 
-on(EVENT.TYPE_CHANGE, () => {
+on(EVENT.STATE_CHANGED, () => {
   form.className = isPost ? 'is-post' : 'is-page';
   els.save.disabled = !isChanged;
   els.publish.disabled = !fileName || isChanged;

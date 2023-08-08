@@ -15,8 +15,7 @@ const editor = suneditor.create('suneditor', {
   mode: 'classic',
   rtl: false,
   // katex: 'window.katex',
-  imageGalleryUrl:
-    'https://etyswjpn79.execute-api.ap-northeast-1.amazonaws.com/suneditor-demo',
+  imageGalleryUrl: 'assets/img/gallery.json',
   videoFileInput: false,
   tabDisable: false,
   buttonList: [

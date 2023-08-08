@@ -108,10 +108,6 @@ loadInfo()
     on(EVENT.REMOVE, async () => {
       // TODO
       // ojo, hay que diferenciar entre remove y discard
-      console.log('Borrar', fileName, isDraft, isPost);
-      await removeMd();
-      await removeDraftInfo();
-      clearSelect();
     });
 
     on(EVENT.PUBLISH, async () => {
@@ -120,8 +116,9 @@ loadInfo()
     });
 
     on(EVENT.DISCARD, async () => {
-      console.log('discard event', fileName);
-      // TODO
+      await removeMd();
+      await removeDraftInfo();
+      clearSelect();
     });
 
     on(EVENT.RESET, () => {

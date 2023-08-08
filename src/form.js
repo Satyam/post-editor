@@ -109,7 +109,7 @@ form.addEventListener('submit', async (ev) => {
     case 'discard': {
       if (
         await confirm(
-          `¿Desea borrar "${els.title.value}" de fecha ${els.date.value}?`,
+          `¿Desea descartar el borrador de "${els.title.value}" de fecha ${els.date.value}?`,
           'Confirmación'
         )
       ) {
@@ -118,7 +118,14 @@ form.addEventListener('submit', async (ev) => {
       break;
     }
     case 'remove': {
-      // TODO
+      if (
+        await confirm(
+          `¿Desea borrar <b>el original y el borrador</b> de <br/>"${els.title.value}" de fecha ${els.date.value}?`,
+          'Confirmación'
+        )
+      ) {
+        dispatch(EVENT.REMOVE);
+      }
 
       break;
     }

@@ -66,5 +66,5 @@ export const setEditorContents = (contents) => {
   _contents = editor.getContents();
 };
 
-export const getEditorContents = editor.getContents;
-export const getEditorImages = editor.getImagesInfo;
+export const getEditorContents = () => editor.getContents();
+export const getEditorImages = () => editor.getImagesInfo();

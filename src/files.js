@@ -22,7 +22,7 @@ export const removeMd = async () => {
     // const fn = fileName.replace(srcDirRx, '');
     // which = which.filter((data) => data.file !== fn);
     /// TODO
-    console.log('remove', fileName);
+    console.log('remove', fileName, fullFileName());
     debugger;
 
     return;

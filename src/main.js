@@ -86,7 +86,6 @@ loadInfo()
     on(EVENT.SAVE, async (matter) => {
       matter.updated = today;
       setMdType(isPost, true, isNew);
-      debugger;
       if (isPost) {
         matter.layout = 'post';
         if (await updateProps(matter)) {
@@ -106,6 +105,8 @@ loadInfo()
     });
 
     on(EVENT.REMOVE, async () => {
+      debugger;
+      await removeMd();
       // TODO
       // ojo, hay que diferenciar entre remove y discard
     });
@@ -158,7 +159,12 @@ loadInfo()
         CNAMES.DRAFT_PAGE_LIST,
         `<ul>${getDrafts()
           .sort(sortDescending)
-          .map((p) => `<li>${p.date} - <a href="${p.file}">${p.title}</a></li>`)
+          .map(
+            (p) =>
+              `<li>${p.date} - <a href="${p.file}"
+              ${p.isNew ? 'data-is-new' : ''}
+              >${p.title}</a></li>`
+          )
           .join('')}</ul>`
       );
       setMdType(false, true);
@@ -170,7 +176,12 @@ loadInfo()
         CNAMES.DRAFT_POST_LIST,
         `<ul>${getDrafts(true)
           .sort(sortDescending)
-          .map((p) => `<li>${p.date} - <a href="${p.file}">${p.title}</a></li>`)
+          .map(
+            (p) =>
+              `<li>${p.date} - <a href="${p.file}" 
+              ${p.isNew ? 'data-is-new' : ''}
+              >${p.title}</a></li>`
+          )
           .join('')}</ul>`
       );
       setMdType(true, true);
@@ -213,11 +224,15 @@ loadInfo()
     });
 
     divFileList.addEventListener('click', async (ev) => {
+      const aEl = ev.target;
       ev.stopPropagation();
-      if (ev.target.tagName !== 'A') return;
+      if (aEl.tagName !== 'A') return;
       ev.preventDefault();
 
-      setFileName(ev.target.getAttribute('href'));
+      setFileName(aEl.getAttribute('href'));
+      if ('isNew' in aEl.dataset) {
+        setMdType(isPost, isDraft, true);
+      }
 
       const { matter, content } = await readMd();
 

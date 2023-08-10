@@ -22,6 +22,7 @@ import {
   getDrafts,
   addDraftInfo,
   removeDraftInfo,
+  removePostInfo,
   updateProps,
   uniqueFileName,
 } from './data';
@@ -105,10 +106,10 @@ loadInfo()
     });
 
     on(EVENT.REMOVE, async () => {
-      debugger;
-      await removeMd();
-      // TODO
-      // ojo, hay que diferenciar entre remove y discard
+      await removeMd(true);
+      await removePostInfo();
+      await removeDraftInfo();
+      clearSelect();
     });
 
     on(EVENT.PUBLISH, async () => {
@@ -117,7 +118,7 @@ loadInfo()
     });
 
     on(EVENT.DISCARD, async () => {
-      await removeMd();
+      await removeMd(false);
       await removeDraftInfo();
       clearSelect();
     });

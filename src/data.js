@@ -6,6 +6,7 @@ export const DOCUMENT_ROOT = 'resources/';
 export const IMG_DIR = 'assets/img/';
 // export const HEXO_FILES_LIST = join(HEXO_DIR, 'files.json');
 export const SRC_PAGES_DIR = join(HEXO_DIR, 'source/');
+export const DELETED_PAGS_DIR = join(SRC_PAGES_DIR, '_deleted');
 export const HEXO_IMG_DIR = join(SRC_PAGES_DIR, IMG_DIR);
 export const DRAFTS_DIR = join(DOCUMENT_ROOT, 'drafts/');
 const DRAFTS_INFO = join(DRAFTS_DIR, 'info.json');
@@ -27,6 +28,15 @@ export const removeDraftInfo = async () => {
   info.drafts = info.drafts.filter(
     (data) => !(data.file === fileName && data.isPost === isPost)
   );
+  await saveInfo();
+};
+
+export const removePostInfo = async () => {
+  if (isPost) {
+    info.posts = info.posts.filter((data) => data.file !== fileName);
+  } else {
+    info.pages = info.pages.filter((data) => data.file !== fileName);
+  }
   await saveInfo();
 };
 

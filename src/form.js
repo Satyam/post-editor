@@ -2,9 +2,9 @@ import { today } from './utils';
 
 import { getCategories, getTags, getAuthors } from './data';
 
-import { isPost, isNew, fileName } from './state';
+import { isPost, isNew, fileName, isDraft } from './state';
 
-import { isChanged } from './editor';
+import { isChanged, getEditorContents, setEditorContents } from './editor';
 
 import { dispatch, on, EVENT } from './events';
 import { confirm } from './dialog';
@@ -98,7 +98,9 @@ form.addEventListener('submit', async (ev) => {
             (li) => li.innerHTML
           );
         }
-        dispatch(EVENT.SAVE, data);
+        dispatch(EVENT.SAVE, { matter: data, contents: getEditorContents() });
+        // TODO: must set isChanged to false;
+        // must differentiate between editorIsChanged and formIsChanged
       }
       break;
     }
@@ -137,11 +139,14 @@ form.addEventListener('reset', (ev) => {
   dispatch(EVENT.RESET);
 });
 
-on(EVENT.STATE_CHANGED, () => {
+on(EVENT.STATE_CHANGED, (arg) => {
+  console.log(arg, !isChanged || isDraft, isChanged, isDraft);
+  debugger;
   form.className = isPost ? 'is-post' : 'is-page';
-  els.save.disabled = !isChanged;
+  els.save.disabled = !isChanged || isDraft;
   els.publish.disabled = !fileName || isChanged;
   els.remove.disabled = isNew;
+  els.discard.disabled = !isDraft;
 });
 
 export const setForm = (
@@ -151,8 +156,10 @@ export const setForm = (
     categories: [],
     tags: [],
     author: 'Roxana Cabut',
-  }
+  },
+  contents = ''
 ) => {
+  setEditorContents(contents);
   Array.from(els)
     .filter((el) => el.tagName === 'INPUT')
     .forEach((el) => showError(el));

@@ -1,4 +1,3 @@
-import { getEditorContents, setEditorContents } from './editor';
 import { objMapString, sortDescending, slugify, today } from './utils';
 import { setDataLists, setForm } from './form';
 import {
@@ -84,7 +83,7 @@ loadInfo()
       Neutralino.app.exit();
     });
 
-    on(EVENT.SAVE, async (matter) => {
+    on(EVENT.SAVE, async ({ matter, contents }) => {
       matter.updated = today;
       setMdType(isPost, true, isNew);
       if (isPost) {
@@ -101,7 +100,7 @@ loadInfo()
         if (!fileName) setFileName(uniqueFileName(slugify(matter.title)));
       }
       await replaceImages();
-      await saveMD(matter, getEditorContents());
+      await saveMD(matter, contents);
       await addDraftInfo({ title: matter.title, date: today });
     });
 
@@ -129,7 +128,6 @@ loadInfo()
 
     btnNewPage.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
-      setEditorContents('');
       setMdType(false, true, true);
       setFileName();
       setForm();
@@ -137,7 +135,6 @@ loadInfo()
 
     btnNewPost.addEventListener('click', (ev) => {
       main.className = CNAMES.EDIT;
-      setEditorContents('');
       setMdType(true, true, true);
       setFileName();
       setForm();
@@ -237,8 +234,7 @@ loadInfo()
 
       const { matter, content } = await readMd();
 
-      setForm(matter);
-      setEditorContents(content);
+      setForm(matter, content);
       main.className = CNAMES.EDIT;
     });
   })

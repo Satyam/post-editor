@@ -66,17 +66,20 @@ export const updateProps = async (matter) => {
   categories.forEach((cat) => {
     if (!info.categories.includes(cat)) {
       info.categories.push(cat);
+      info.categories.sort();
       changed = true;
     }
   });
   tags.forEach((tag) => {
     if (!info.tags.includes(tag)) {
       info.tags.push(tag);
+      info.tags.sort();
       changed = true;
     }
   });
   if (!info.authors.includes(author)) {
     info.authors.push(author);
+    info.authors.sort();
     changed = true;
   }
 

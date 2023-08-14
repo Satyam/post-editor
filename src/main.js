@@ -1,5 +1,5 @@
 import { objMapString, sortDescending, slugify, today } from './utils';
-import { setDataLists, setForm } from './form';
+import { setDataLists, setForm, acceptChanges } from './form';
 import {
   btnNewPage,
   btnEditPage,
@@ -102,6 +102,7 @@ loadInfo()
       await replaceImages();
       await saveMD(matter, contents);
       await addDraftInfo({ title: matter.title, date: today });
+      acceptChanges();
     });
 
     on(EVENT.REMOVE, async () => {
@@ -109,21 +110,25 @@ loadInfo()
       await removePostInfo();
       await removeDraftInfo();
       clearSelect();
+      acceptChanges();
     });
 
     on(EVENT.PUBLISH, async () => {
       console.log('publish event', fileName);
       // TODO
+      acceptChanges();
     });
 
     on(EVENT.DISCARD, async () => {
       await removeMd(false);
       await removeDraftInfo();
       clearSelect();
+      acceptChanges();
     });
 
     on(EVENT.RESET, () => {
       clearSelect();
+      acceptChanges();
     });
 
     btnNewPage.addEventListener('click', (ev) => {

@@ -2,12 +2,13 @@ import { today } from './utils';
 
 import { getCategories, getTags, getAuthors } from './data';
 
-import { isPost, isNew, fileName, isDraft } from './state';
+import { isPost, isNew, fileName, isDraft, isChanged } from './state';
 
 import {
-  isChanged as editorChanged,
+  isEditorChanged,
   getEditorContents,
   setEditorContents,
+  acceptEditorChanges,
 } from './editor';
 
 import { dispatch, on, EVENT } from './events';
@@ -28,12 +29,10 @@ const defaultValues = {
   tags: [],
   author: 'Roxana Cabut',
 };
-const originalValues = Object.assign({}, defaultValues);
+let originalValues = structuredClone(defaultValues);
 
 let categories = [];
 let tags = [];
-
-export let isChanged = false;
 
 const fillDataList = (input, list) => {
   input.list.innerHTML = list
@@ -41,11 +40,12 @@ const fillDataList = (input, list) => {
     .join('\n');
 };
 
-const li = (value) => `<li>${value}</li>`;
+const li = (value, extra = '') => `<li ${extra}>${value}</li>`;
 
-const refreshCats = (newVal = '') => {
+const refreshCats = () => {
   const list = [];
-  const sel = newVal.length ? [li(newVal)] : [];
+  const newVal = els.newCat.value;
+  const sel = newVal.length ? [li(newVal, 'data-is-new')] : [];
   getCategories().forEach((cat) => {
     if (categories.includes(cat)) sel.push(li(cat));
     else list.push(li(cat));
@@ -53,9 +53,11 @@ const refreshCats = (newVal = '') => {
   catList.innerHTML = list.join('\n');
   selectedCats.innerHTML = sel.join('\n');
 };
-const refreshTags = (newVal = '') => {
+
+const refreshTags = () => {
   const list = [];
-  const sel = newVal.length ? [li(newVal)] : [];
+  const newVal = els.newTag.value;
+  const sel = newVal.length ? [li(newVal, 'data-is-new')] : [];
   getTags().forEach((tag) => {
     if (tags.includes(tag)) sel.push(li(tag));
     else list.push(li(tag));
@@ -65,8 +67,8 @@ const refreshTags = (newVal = '') => {
 };
 
 const refreshLists = () => {
-  refreshCats(els.newCat.value);
-  refreshTags(els.newTag.value);
+  refreshCats();
+  refreshTags();
 };
 export const setDataLists = () => {
   els.newCat.value = '';
@@ -75,28 +77,6 @@ export const setDataLists = () => {
 
   fillDataList(els.author, getAuthors());
 };
-
-// const copySelectedCats = (ev) => {
-//   const cats = Array.from(els.catList.options)
-//     .filter((opt) => opt.selected)
-//     .map((opt) => opt.value);
-//   if (els.newCat.value.length) cats.unshift(els.newCat.value);
-
-//   els.selectedCats.innerHTML = cats.map((cat) => `<li>${cat}</li>`).join('\n');
-// };
-// els.catList.addEventListener('input', copySelectedCats);
-// els.newCat.addEventListener('input', copySelectedCats);
-
-// const copySelectedTags = (ev) => {
-//   const tags = Array.from(els.tagsList.options)
-//     .filter((opt) => opt.selected)
-//     .map((opt) => opt.value);
-//   if (els.newTag.value.length) tags.unshift(els.newTag.value);
-
-//   els.selectedTags.innerHTML = tags.map((tag) => `<li>${tag}</li>`).join('\n');
-// };
-// els.tagsList.addEventListener('input', copySelectedTags);
-// els.newTag.addEventListener('input', copySelectedTags);
 
 const showError = (el, msg) => {
   if (msg) {
@@ -137,8 +117,6 @@ form.addEventListener('submit', async (ev) => {
           data.tags = tags;
         }
         dispatch(EVENT.SAVE, { matter: data, contents: getEditorContents() });
-        // TODO: must set isChanged to false;
-        // must differentiate between editorIsChanged and formIsChanged
       }
       break;
     }
@@ -177,65 +155,100 @@ form.addEventListener('reset', (ev) => {
   dispatch(EVENT.RESET);
 });
 
+const checkChanges = () => {
+  const ch =
+    isEditorChanged ||
+    originalValues.categories.length !== categories.length ||
+    originalValues.categories.some((cat) => !categories.includes(cat)) ||
+    els.newCat.value.length ||
+    originalValues.tags.length !== tags.length ||
+    originalValues.tags.some((tag) => !tags.includes(tag)) ||
+    els.newTag.value.length ||
+    originalValues.title !== els.title.value ||
+    originalValues.date !== els.date.value ||
+    originalValues.author !== els.author.value;
+  if (ch !== isChanged) {
+    dispatch(EVENT.FORM_CHANGED, ch);
+  }
+};
+export const acceptChanges = () => {
+  acceptEditorChanges();
+  originalValues = structuredClone({
+    categories,
+    tags,
+    title: els.title.value,
+    date: els.date.value,
+    author: els.author.value,
+  });
+  dispatch(EVENT.FORM_CHANGED, false);
+};
+
+on(EVENT.EDITOR_CHANGED, checkChanges);
+
 catList.addEventListener('click', (ev) => {
   categories.push(ev.target.innerText);
   refreshCats();
+  checkChanges();
 });
 selectedCats.addEventListener('click', (ev) => {
-  categories = categories.filter((cat) => cat !== ev.target.innerText);
+  const li = ev.target;
+  if (li.tagName !== 'LI') return;
+  if ('isNew' in li.dataset) {
+    els.newCat.value = '';
+  } else {
+    categories = categories.filter((cat) => cat !== li.innerText);
+  }
   refreshCats();
+  checkChanges();
 });
 tagsList.addEventListener('click', (ev) => {
   tags.push(ev.target.innerText);
   refreshTags();
+  checkChanges();
 });
 selectedTags.addEventListener('click', (ev) => {
-  tags = tags.filter((tag) => tag !== ev.target.innerText);
+  const li = ev.target;
+  if (li.tagName !== 'LI') return;
+  if ('isNew' in li.dataset) {
+    els.newTag.value = '';
+  } else {
+    tags = tags.filter((tag) => tag !== ev.target.innerText);
+  }
   refreshTags();
+  checkChanges();
 });
 
 form.addEventListener('input', (ev) => {
-  const { name, value } = ev.target;
-  let ch = false;
+  const { name } = ev.target;
   switch (name) {
     case 'newCat':
-      refreshCats(value);
-      ch =
-        originalValues.categories.length !== categories.length ||
-        originalValues.categories.some((cat) => !categories.includes(cat));
+      refreshCats();
+      checkChanges();
       break;
     case 'newTag':
-      refreshTags(value);
-      ch =
-        originalValues.tags.length !== tags.length ||
-        originalValues.tags.some((tag) => !tags.includes(tag));
+      refreshTags();
+      checkChanges();
       break;
     default:
-      if (name in originalValues) ch = originalValues[name] !== value;
+      if (name in originalValues) checkChanges();
       break;
-  }
-  console.log(name, value, ch, isChanged);
-  if (ch !== isChanged) {
-    isChanged = ch;
-    dispatch(EVENT.FORM_CHANGED, isChanged);
   }
 });
 
-on(EVENT.STATE_CHANGED, (arg) => {
-  console.log(arg, !isChanged || isDraft, isChanged, isDraft);
-  // debugger;
+on(EVENT.STATE_CHANGED, () => {
   form.className = isPost ? 'is-post' : 'is-page';
-  els.save.disabled = !isChanged || isDraft;
+  els.save.disabled = !isChanged;
   els.publish.disabled = !fileName || isChanged;
   els.remove.disabled = isNew;
   els.discard.disabled = !isDraft;
 });
 
-export const setForm = (data = defaultValues, contents = '') => {
-  Object.assign(originalValues, data);
+export const setForm = (
+  data = structuredClone(defaultValues),
+  contents = ''
+) => {
+  originalValues = structuredClone(data);
   if (isChanged) dispatch(EVENT.FORM_CHANGED, false);
-  isChanged = false;
-  console.log(originalValues, data);
   setEditorContents(contents);
   Array.from(els)
     .filter((el) => el.tagName === 'INPUT')

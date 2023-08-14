@@ -48,16 +48,22 @@ const editor = suneditor.create('suneditor', {
   lang: es,
 });
 
-export let isChanged = false;
+export let isEditorChanged = false;
 
 let _contents = '';
 
 editor.onChange = (contents) => {
   let ch = contents !== _contents;
-  if (ch !== isChanged) {
-    isChanged = ch;
-    dispatch(EVENT.EDITOR_CHANGED);
+  if (ch !== isEditorChanged) {
+    isEditorChanged = ch;
+    dispatch(EVENT.EDITOR_CHANGED, isEditorChanged);
   }
+};
+
+export const acceptEditorChanges = () => {
+  _contents = editor.getContents();
+  isEditorChanged = false;
+  dispatch(EVENT.EDITOR_CHANGED, false);
 };
 
 export const setEditorContents = (contents) => {

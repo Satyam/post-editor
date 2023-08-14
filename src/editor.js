@@ -68,7 +68,7 @@ export const acceptEditorChanges = () => {
 
 export const setEditorContents = (contents) => {
   editor.setContents(contents);
-  _contents = editor.getContents();
+  acceptEditorChanges();
 };
 
 export const getEditorContents = () => editor.getContents();

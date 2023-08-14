@@ -262,4 +262,5 @@ export const setForm = (
     tags = data.tags ?? [];
     setDataLists();
   }
+  checkChanges();
 };

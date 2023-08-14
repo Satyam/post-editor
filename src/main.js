@@ -19,6 +19,7 @@ import {
   getPages,
   getPosts,
   getDrafts,
+  addPostInfo,
   addDraftInfo,
   removeDraftInfo,
   removePostInfo,
@@ -31,6 +32,7 @@ import {
   isDraft,
   isPost,
   isNew,
+  isChanged,
   setFileName,
   setMdType,
 } from './state';
@@ -110,13 +112,21 @@ loadInfo()
       await removePostInfo();
       await removeDraftInfo();
       clearSelect();
-      acceptChanges();
     });
 
-    on(EVENT.PUBLISH, async () => {
-      console.log('publish event', fileName);
-      // TODO
-      acceptChanges();
+    on(EVENT.PUBLISH, async ({ matter, contents }) => {
+      setMdType(isPost, false, isNew);
+      saveMD(matter, contents);
+      if (isNew) {
+        await addPostInfo({
+          file: fileName,
+          title: matter.title,
+          date: matter.date,
+        });
+      }
+      await removeDraftInfo();
+      await removeMd();
+      clearSelect();
     });
 
     on(EVENT.DISCARD, async () => {

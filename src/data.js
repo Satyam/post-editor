@@ -40,6 +40,13 @@ export const removePostInfo = async () => {
   await saveInfo();
 };
 
+export const addPostInfo = async (fileInfo) => {
+  if (isPost) {
+    info.posts.push(fileInfo);
+  } else {
+    info.pages.push(fileInfo);
+  }
+};
 export const addDraftInfo = async (fileInfo) => {
   const newInfo = {
     ...fileInfo,

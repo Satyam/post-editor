@@ -87,6 +87,19 @@ const showError = (el, msg) => {
   }
 };
 
+const getForm = () => {
+  const data = {
+    title: els.title.value,
+    date: els.date.value,
+  };
+  if (isPost) {
+    data.author = els.author.value;
+    data.categories = categories;
+    data.tags = tags;
+  }
+  return data;
+};
+
 form.addEventListener('submit', async (ev) => {
   ev.preventDefault();
   ev.stopImmediatePropagation();
@@ -107,21 +120,18 @@ form.addEventListener('submit', async (ev) => {
       } else showError(els.date);
 
       if (valid) {
-        const data = {
-          title: els.title.value,
-          date: els.date.value,
-        };
-        if (isPost) {
-          data.author = els.author.value;
-          data.categories = categories;
-          data.tags = tags;
-        }
-        dispatch(EVENT.SAVE, { matter: data, contents: getEditorContents() });
+        dispatch(EVENT.SAVE, {
+          matter: getForm(),
+          contents: getEditorContents(),
+        });
       }
       break;
     }
     case 'publish': {
-      dispatch(EVENT.PUBLISH);
+      dispatch(EVENT.PUBLISH, {
+        matter: getForm(),
+        contents: getEditorContents(),
+      });
       break;
     }
     case 'discard': {

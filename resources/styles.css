@@ -126,12 +126,6 @@ section {
   width: 100%;
 }
 
-.selectedItems {
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-left: 1em;
-}
-
 button {
   cursor: pointer;
   border-radius: 5px;
@@ -180,4 +174,24 @@ dialog h1 {
 
 canvas {
   display: none;
+}
+
+.selection {
+  cursor: pointer;
+  list-style-type: none;
+  margin-top: 2px;
+  padding-left: 0.5rem;
+  border: solid silver thin;
+  max-height: 5rem;
+  overflow-y: scroll;
+}
+
+.selectedItems {
+  cursor: pointer;
+  list-style-type: none;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 0;
+  max-height: 8rem;
+  overflow-y: scroll;
 }

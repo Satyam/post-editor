@@ -28,4 +28,5 @@ export const EVENT = {
   RESET: 'reset',
   EDITOR_CHANGED: 'editorChanged',
   STATE_CHANGED: 'stateChanged',
+  FORM_CHANGED: 'formChanged',
 };

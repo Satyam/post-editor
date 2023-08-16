@@ -8,6 +8,7 @@ import {
   btnDraftPage,
   btnDraftPost,
   btnGenerate,
+  btnViewLocal,
   btnExit,
   main,
   divFileList,
@@ -302,6 +303,50 @@ loadInfo()
                 },
                 { once: true }
               );
+              break;
+          }
+        }
+      });
+    });
+
+    const hexoURL = /(http:\/\/localhost:\d+\/\S*)/;
+    btnViewLocal.addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+
+      setFileList(CNAMES.CONSOLE, 'Generando sitio<hr/>');
+
+      const generation = await Neutralino.os.spawnProcess(
+        `cd ${HEXO_DIR} && ./node_modules/.bin/hexo server`
+      );
+
+      Neutralino.events.on('spawnedProcess', (ev) => {
+        if (generation.id == ev.detail.id) {
+          switch (ev.detail.action) {
+            case 'stdOut':
+              const m = hexoURL.exec(ev.detail.data);
+              if (m) {
+                appendFileList(`<hr/>Haga click en esta ventana para cerrar el servidor<br/>
+                La solapa del navegador debe cerrarla independientemente`);
+                Neutralino.os.open(m[1]);
+                divFileList.addEventListener(
+                  'click',
+                  async () => {
+                    await Neutralino.os.updateSpawnedProcess(
+                      generation.id,
+                      'exit'
+                    );
+                  },
+                  { once: true }
+                );
+              } else {
+                appendFileList(ev.detail.data);
+              }
+              break;
+            case 'stdErr':
+              appendFileList(ev.detail.data);
+              break;
+            case 'exit':
+              clearSelect();
               break;
           }
         }

@@ -15,7 +15,7 @@ const fullFileName = (draft) => {
 export const readMd = async () => parse(await fs.readFile(fullFileName()));
 
 export const removeMd = async (both = false) => {
-  await fs.removeFile(fullFileName(true));
+  if (isDraft) await fs.removeFile(fullFileName(true));
   if (both) {
     await fs.moveFile(fullFileName(false), join(DELETED_PAGS_DIR, fileName));
   }

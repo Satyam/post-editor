@@ -195,3 +195,7 @@ canvas {
   max-height: 8rem;
   overflow-y: scroll;
 }
+
+li.can-t-edit {
+  cursor: no-drop;
+}

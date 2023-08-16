@@ -157,10 +157,15 @@ loadInfo()
 
     btnEditPage.addEventListener('click', async (ev) => {
       ev.stopPropagation();
+      const drafts = getDrafts();
       setFileList(
         CNAMES.PAGE_LIST,
         `<ul>${getPages()
-          .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
+          .map((p) =>
+            drafts.some((d) => d.file === p.file)
+              ? `<li class="can-t-edit" title="Está en Borradores">${p.title}</li>`
+              : `<li><a href="${p.file}">${p.title}</a></li>`
+          )
           .join('')}</ul>`
       );
       setMdType(false);
@@ -202,6 +207,7 @@ loadInfo()
 
     btnEditPost.addEventListener('click', async (ev) => {
       ev.stopPropagation();
+      const drafts = getDrafts(true);
 
       const tree = {};
       getPosts().forEach((p) => {
@@ -224,7 +230,11 @@ loadInfo()
                   (d) =>
                     `<details><summary>${d}</summary><p>${d}/${m}/${y}</p><ul>
                   ${tree[y][m][d]
-                    .map((p) => `<li><a href="${p.file}">${p.title}</a></li>`)
+                    .map((p) =>
+                      drafts.some((d) => d.file === p.file)
+                        ? `<li class="can-t-edit" title="Está en Borradores">${p.title}</li>`
+                        : `<li><a href="${p.file}">${p.title}</a></li>`
+                    )
                     .join('\n')}</ul></details>`,
                   sortDescending
                 )}</details>`,

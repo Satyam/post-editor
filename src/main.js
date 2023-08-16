@@ -116,7 +116,7 @@ loadInfo()
 
     on(EVENT.PUBLISH, async ({ matter, contents }) => {
       setMdType(isPost, false, isNew);
-      saveMD(matter, contents);
+      await saveMD(matter, contents);
       if (isNew) {
         await addPostInfo({
           file: fileName,

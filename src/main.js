@@ -7,6 +7,7 @@ import {
   btnEditPost,
   btnDraftPage,
   btnDraftPost,
+  btnGenerate,
   btnExit,
   main,
   divFileList,
@@ -15,6 +16,7 @@ import {
 import { readMd, removeMd, saveMD } from './files';
 
 import {
+  HEXO_DIR,
   loadInfo,
   getPages,
   getPosts,
@@ -47,6 +49,7 @@ const CNAMES = {
   DRAFT_PAGE_LIST: 'draft-page-list',
   SELECT: 'select',
   EDIT: 'edit',
+  CONSOLE: 'console',
 };
 
 Neutralino.init();
@@ -63,6 +66,7 @@ const setDraftButtons = () => {
 };
 
 const clearSelect = () => {
+  divFileList.innerHTML = '';
   divFileList.className = '';
   main.className = CNAMES.SELECT;
   setDraftButtons();
@@ -71,6 +75,10 @@ const clearSelect = () => {
 const setFileList = (className, contents) => {
   divFileList.className = className;
   divFileList.innerHTML = contents;
+};
+
+const appendFileList = (contents) => {
+  divFileList.innerHTML = `${divFileList.innerHTML}<br/>${contents}`;
 };
 
 loadInfo()
@@ -262,9 +270,48 @@ loadInfo()
       setForm(matter, content);
       main.className = CNAMES.EDIT;
     });
+
+    btnGenerate.addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+
+      setFileList(CNAMES.CONSOLE, 'Generando sitio<hr/>');
+
+      const generation = await Neutralino.os.spawnProcess(
+        `cd ${HEXO_DIR} && ./node_modules/.bin/hexo generate`
+      );
+
+      Neutralino.events.on('spawnedProcess', (ev) => {
+        if (generation.id == ev.detail.id) {
+          switch (ev.detail.action) {
+            case 'stdOut':
+              appendFileList(ev.detail.data);
+              break;
+            case 'stdErr':
+              appendFileList(ev.detail.data);
+              break;
+            case 'exit':
+              appendFileList(
+                `<hr/>La generación terminó con ${
+                  ev.detail.data ? `error ${ev.detail.data}` : `éxito`
+                }<hr/>Haga click [aquí] para cerrar`
+              );
+              divFileList.addEventListener(
+                'click',
+                () => {
+                  clearSelect();
+                },
+                { once: true }
+              );
+              break;
+          }
+        }
+      });
+    });
   })
   .catch((err) => {
     console.log(err);
     window.close();
     Neutralino.app.exit(1);
   });
+
+//

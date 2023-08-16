@@ -56,7 +56,8 @@ section {
 #fileList.post-list,
 #fileList.page-list,
 #fileList.draft-post-list,
-#fileList.draft-page-list {
+#fileList.draft-page-list,
+#fileList.console {
   display: block;
 }
 #fileList.post-list details ul {
@@ -198,4 +199,10 @@ canvas {
 
 li.can-t-edit {
   cursor: no-drop;
+}
+
+.console {
+  background-color: black;
+  color: white;
+  padding: 1rem;
 }

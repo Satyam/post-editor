@@ -46,7 +46,9 @@ export const addPostInfo = async (fileInfo) => {
   } else {
     info.pages.push(fileInfo);
   }
+  await saveInfo();
 };
+
 export const addDraftInfo = async (fileInfo) => {
   const newInfo = {
     ...fileInfo,
@@ -120,8 +122,18 @@ const INFO_PROPS = [
 ];
 
 export const loadInfo = async () => {
-  info = await readJson(DRAFTS_INFO);
-  INFO_PROPS.forEach((p) => {
-    if (!info[p]) info[p] = [];
+  info = Object.assign(
+    {
+      pages: [],
+      posts: [],
+      categories: [],
+      tags: [],
+      authors: [],
+      drafts: [],
+    },
+    await readJson(DRAFTS_INFO)
+  );
+  ['categories', 'tags', 'authors'].forEach((sel) => {
+    info[sel].sort();
   });
 };

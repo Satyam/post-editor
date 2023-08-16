@@ -168,15 +168,16 @@ form.addEventListener('reset', (ev) => {
 const checkChanges = () => {
   const ch =
     isEditorChanged ||
-    originalValues.categories.length !== categories.length ||
-    originalValues.categories.some((cat) => !categories.includes(cat)) ||
-    els.newCat.value.length ||
-    originalValues.tags.length !== tags.length ||
-    originalValues.tags.some((tag) => !tags.includes(tag)) ||
-    els.newTag.value.length ||
     originalValues.title !== els.title.value ||
-    originalValues.date !== els.date.value ||
-    originalValues.author !== els.author.value;
+    (originalValues.date !== els.date.value &&
+      isPost &&
+      (originalValues.categories.length !== categories.length ||
+        originalValues.categories.some((cat) => !categories.includes(cat)) ||
+        els.newCat.value.length ||
+        originalValues.tags.length !== tags.length ||
+        originalValues.tags.some((tag) => !tags.includes(tag)) ||
+        els.newTag.value.length ||
+        originalValues.author !== els.author.value));
   if (ch !== isChanged) {
     dispatch(EVENT.FORM_CHANGED, ch);
   }

@@ -9,6 +9,8 @@ import {
   btnDraftPost,
   btnGenerate,
   btnViewLocal,
+  btnMenu,
+  btnBackMenu,
   btnExit,
   main,
   divFileList,
@@ -42,7 +44,7 @@ import {
 import { imagesToEditor, replaceImages } from './images';
 
 import { EVENT, on } from './events';
-
+import { editMenu } from './menu';
 const CNAMES = {
   PAGE_LIST: 'page-list',
   POST_LIST: 'post-list',
@@ -50,6 +52,7 @@ const CNAMES = {
   DRAFT_PAGE_LIST: 'draft-page-list',
   SELECT: 'select',
   EDIT: 'edit',
+  MENU: 'menu',
   CONSOLE: 'console',
 };
 
@@ -58,8 +61,6 @@ Neutralino.init();
 Neutralino.events.on('windowClose', () => {
   Neutralino.app.exit();
 });
-
-const fs = Neutralino.filesystem;
 
 const setDraftButtons = () => {
   btnDraftPage.disabled = !getDrafts(false).length;
@@ -352,11 +353,18 @@ loadInfo()
         }
       });
     });
+    btnMenu.addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+      main.className = CNAMES.MENU;
+      editMenu();
+    });
+    btnBackMenu.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      main.className = CNAMES.SELECT;
+    });
   })
   .catch((err) => {
     console.log(err);
     window.close();
     Neutralino.app.exit(1);
   });
-
-//

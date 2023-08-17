@@ -28,6 +28,7 @@
         </div>
         <button id="generate">Regenerar sitio</button>
         <button id="viewLocal">Ver servidor local</button>
+        <button id="menu">Editar Menú</button>
         <button id="exit">Salir</button>
       </section>
       <section id="editor">
@@ -154,6 +155,11 @@
 
         <textarea id="suneditor"></textarea>
       </section>
+      <section id="menuEditor">
+        <ul id="currentMenu"></ul>
+        <ul id="morePages"></ul>
+        <button id="backMenu">Volver</button>
+      </section>
     </main>
     <canvas id="canvas" width="800" height="600"></canvas>
     <dialog id="confirm">
@@ -163,6 +169,7 @@
       <button value="false">Cancelar</button>
     </dialog>
     <script src="js/neutralino.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="js/main.js"></script>
   </body>
 </html>

@@ -76,18 +76,20 @@ section {
 .wide {
   width: 90%;
 }
-
+#select,
+#editor,
+#menuEditor {
+  display: none;
+}
 #main.select #select {
   display: block;
 }
-#main.select #editor {
-  display: none;
+
+#main.edit #editor {
+  display: block;
 }
 
-#main.edit #select {
-  display: none;
-}
-#main.edit #editor {
+#main.menu #menuEditor {
   display: block;
 }
 

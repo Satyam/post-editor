@@ -11,6 +11,7 @@ export const HEXO_IMG_DIR = join(SRC_PAGES_DIR, IMG_DIR);
 export const DRAFTS_DIR = join(DOCUMENT_ROOT, 'drafts/');
 const DRAFTS_INFO = join(DRAFTS_DIR, 'info.json');
 export const EDITOR_IMG_DIR = join(DOCUMENT_ROOT, IMG_DIR);
+export const MENU_CONFIG = join(HEXO_DIR, '_config.roxy.yml');
 
 let info;
 

@@ -150,3 +150,5 @@ resources/js/main.js
 resources/suneditor.min.css
 resources/assets/img/
 resources/drafts/
+hexo/
+resources/Sortable.min.js

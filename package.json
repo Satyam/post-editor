@@ -8,7 +8,8 @@
     "start": "rollup --config rollup.config.mjs &&neu run --disable-auto-reload",
     "help": "neu help",
     "neu": "neu",
-    "build": "rollup --config rollup.config.mjs"
+    "build": "rollup --config rollup.config.mjs",
+    "postupdate": "cp node_modules/suneditor/dist/css/suneditor.min.css node_modules/sortablejs/Sortable.min.js resources/"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "rollup": "^3.26.3"
   },
   "dependencies": {
+    "sortablejs": "^1.15.0",
     "suneditor": "^2.45.1",
     "yaml": "^2.3.1"
   }

@@ -1,7 +1,7 @@
 import { readJson, writeJson, join } from './utils';
 import { fileName, isPost, isNew } from './state';
 
-export const HEXO_DIR = '../roxygrabber/hexo/';
+export const HEXO_DIR = 'hexo/';
 export const DOCUMENT_ROOT = 'resources/';
 export const IMG_DIR = 'assets/img/';
 // export const HEXO_FILES_LIST = join(HEXO_DIR, 'files.json');

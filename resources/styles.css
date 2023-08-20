@@ -208,3 +208,72 @@ li.can-t-edit {
   color: white;
   padding: 1rem;
 }
+
+#menuEditor ul {
+  list-style-type: none;
+  padding-left: 1rem;
+}
+#menuEditor ul ul {
+  margin-left: 1rem;
+}
+
+#menuEditor li {
+  cursor: grab;
+  background-color: #e6e6e6;
+  border: thin solid gray;
+  border-radius: 0.2rem;
+}
+#menuEditor li li {
+  background-color: #cccccc;
+}
+#menuEditor li li li {
+  background-color: #b3b3b3;
+}
+
+.sortable-ghost {
+  opacity: 0.5;
+}
+.sortable-chosen {
+  font-weight: bold;
+}
+.sortable-drag {
+  background-color: black;
+}
+
+#descarte li {
+  background-color: #f44336;
+}
+
+#descarte li li {
+  opacity: 0.5;
+}
+.icon-left {
+  background-repeat: no-repeat;
+  background-position-y: center;
+  height: 1rem;
+  width: 1rem;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+.icon-right {
+  background-repeat: no-repeat;
+  background-position-y: center;
+  background-position-x: right;
+  height: 1rem;
+  width: 1rem;
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+.delete {
+  background-image: url(icons/trash-can-outline.svg);
+}
+.new-folder {
+  background-image: url(icons/folder-plus-outline.svg);
+}
+
+.updown {
+  background-image: url(icons/arrow-up-down-bold-outline.svg);
+}
+.save {
+  background-image: url(icons/content-save-outline.svg);
+}

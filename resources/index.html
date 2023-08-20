@@ -156,8 +156,18 @@
         <textarea id="suneditor"></textarea>
       </section>
       <section id="menuEditor">
-        <ul id="currentMenu"></ul>
-        <ul id="morePages"></ul>
+        <ul id="nuevaCarpeta" class="draggable">
+          <li><span class="icon-left new-folder"></span>Nueva carpeta</li>
+        </ul>
+        <ul id="currentMenu" class="draggable"></ul>
+        <ul id="morePages" class="draggable"></ul>
+        <ul id="descarte">
+          <li>
+            <span class="icon-left delete"></span>
+            Descarte
+            <ul class="draggable"></ul>
+          </li>
+        </ul>
         <button id="backMenu">Volver</button>
       </section>
     </main>
@@ -169,7 +179,7 @@
       <button value="false">Cancelar</button>
     </dialog>
     <script src="js/neutralino.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="Sortable.min.js"></script>
     <script src="js/main.js"></script>
   </body>
 </html>

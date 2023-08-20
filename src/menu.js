@@ -10,6 +10,7 @@ const fs = Neutralino.filesystem;
 let pages = [];
 const currentMenu = document.getElementById('currentMenu');
 const morePages = document.getElementById('morePages');
+const menuEditor = document.getElementById('menuEditor');
 
 const basePartRx = /\/?([^\.]+).*/;
 
@@ -26,9 +27,11 @@ const renderMenuObj = (menu) =>
             return true;
           }
         });
-        return `<li  title="${value}">${label}</li>`;
+        return `<li title="${value}"><span class="icon-left updown"></span><span contentEditable >${label}</span></li>`;
       } else {
-        return `<li>${label}<ul>${renderMenuObj(menu[label])}</ul></li>`;
+        return `<li><span class="icon-left updown"></span><span contentEditable>${label}</span><ul class="draggable">${renderMenuObj(
+          menu[label]
+        )}</ul></li>`;
       }
     })
     .join('\n');
@@ -44,12 +47,51 @@ export const editMenu = async () => {
     .map((p) => `<li title="${p.file}">${p.title}</li>`)
     .join('\n');
 
-  for (const el of currentMenu.querySelectorAll('ul')) {
-    new Sortable(el, {
-      group: 'nested',
-      animation: 150,
-      fallbackOnBody: true,
-      swapThreshold: 0.65,
-    });
+  var options = {
+    group: 'nested',
+    animation: 150,
+    fallbackOnBody: true,
+    swapThreshold: 0.65,
+  };
+
+  [
+    // 'onChoose',
+    // 'onStart',
+    'onEnd',
+    // 'onAdd',
+    // 'onUpdate',
+    // 'onSort',
+    // 'onRemove',
+    // 'onChange',
+    // 'onUnchoose',
+  ].forEach(function (name) {
+    options[name] = (ev) => {
+      const {
+        item,
+        to,
+        from,
+        oldIndex,
+        newIndex,
+        oldDraggableIndex,
+        newDraggableIndex,
+        clone,
+        pullMode,
+      } = ev;
+      console.log(name, {
+        item,
+        to,
+        from,
+        oldIndex,
+        newIndex,
+        oldDraggableIndex,
+        newDraggableIndex,
+        clone,
+        pullMode,
+      });
+    };
+  });
+
+  for (const el of menuEditor.querySelectorAll('.draggable')) {
+    new Sortable(el, options);
   }
 };

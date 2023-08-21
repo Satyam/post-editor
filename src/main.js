@@ -11,6 +11,7 @@ import {
   btnViewLocal,
   btnMenu,
   btnBackMenu,
+  btnFilezilla,
   btnExit,
   main,
   divFileList,
@@ -351,6 +352,13 @@ loadInfo()
               break;
           }
         }
+      });
+    });
+    btnFilezilla.addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+      debugger;
+      await Neutralino.os.execCommand('filezilla -c "0/roxanacabut"', {
+        background: true,
       });
     });
     btnMenu.addEventListener('click', async (ev) => {

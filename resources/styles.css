@@ -289,3 +289,22 @@ ul.draggable li {
 .document {
   background-image: url(icons/file-document-outline.svg);
 }
+.back {
+  background-image: url(icons/arrow-top-left-bold-outline.svg);
+}
+.new-doc {
+  background-image: url(icons/file-document-plus-outline.svg);
+}
+
+.edit-doc {
+  background-image: url(icons/file-document-edit-outline.svg);
+}
+.draft-doc {
+  background-image: url(icons/file-sign.svg);
+}
+.edit-menu {
+  background-image: url(icons/playlist-edit.svg);
+}
+.exit {
+  background-image: url(icons/exit-to-app.svg);
+}

@@ -13,23 +13,37 @@
           <div>
             <fieldset>
               <legend>Página</legend>
-              <button id="newPage">Nueva</button>
-              <button id="editPage">Modificar</button>
-              <button id="draftPage">Borradores</button>
+              <button id="newPage">
+                <span class="icon-left new-doc"></span>Nueva
+              </button>
+              <button id="editPage">
+                <span class="icon-left edit-doc"></span>Modificar
+              </button>
+              <button id="draftPage">
+                <span class="icon-left draft-doc"></span>Borradores
+              </button>
             </fieldset>
             <fieldset>
               <legend>Post</legend>
-              <button id="newPost">Nuevo</button>
-              <button id="editPost">Modificar</button>
-              <button id="draftPost">Borradores</button>
+              <button id="newPost">
+                <span class="icon-left new-doc"></span>Nuevo
+              </button>
+              <button id="editPost">
+                <span class="icon-left edit-doc"></span>Modificar
+              </button>
+              <button id="draftPost">
+                <span class="icon-left draft-doc"></span>Borradores
+              </button>
             </fieldset>
           </div>
           <div id="fileList"></div>
         </div>
         <button id="generate">Regenerar sitio</button>
         <button id="viewLocal">Ver servidor local</button>
-        <button id="menu">Editar Menú</button>
-        <button id="exit">Salir</button>
+        <button id="menu">
+          <span class="icon-left edit-menu"></span>Editar Menú
+        </button>
+        <button id="exit"><span class="icon-left exit"></span>Salir</button>
       </section>
       <section id="editor">
         <form id="form" novalidate>
@@ -117,37 +131,48 @@
             </div>
           </div>
           <div>
-            <button
-              name="publish"
-              type="submit"
-              title="Guarda este borrador como original para publicar"
-            >
-              Publicar
-            </button>
-            <button
-              name="save"
-              type="submit"
-              title="Guarda el borrador sin afectar el original"
-            >
-              Guardar
-            </button>
-            <button
-              name="discard"
-              type="submit"
-              class="warning"
-              title="Descarta este borrador sin afectar el original"
-            >
-              Descartar
-            </button>
-            <button
-              name="remove"
-              type="submit"
-              class="warning"
-              title="Borra este borrador y el original"
-            >
-              Borrar
-            </button>
+            <fieldset>
+              <legend>Original</legend>
+              <button
+                name="publish"
+                type="submit"
+                title="Guarda este borrador como original para publicar"
+              >
+                <span class="icon-left save"></span>
+                Guardar
+              </button>
+              <button
+                name="remove"
+                type="submit"
+                class="warning"
+                title="Borra este borrador y el original"
+              >
+                <span class="icon-left delete"></span>
+                Borrar
+              </button>
+            </fieldset>
+            <fieldset>
+              <legend>Borrador</legend>
+              <button
+                name="save"
+                type="submit"
+                title="Guarda el borrador sin afectar el original"
+              >
+                <span class="icon-left save"></span>
+                Guardar
+              </button>
+              <button
+                name="discard"
+                type="submit"
+                class="warning"
+                title="Descarta este borrador sin afectar el original"
+              >
+                <span class="icon-left delete"></span>
+                Descartar
+              </button>
+            </fieldset>
             <button type="reset" title="Vuelve a la selección de archivos">
+              <span class="icon-left back"></span>
               Volver
             </button>
           </div>
@@ -171,8 +196,12 @@
             <ul id="morePages" class="draggable"></ul>
           </li>
         </ul>
-        <button id="saveMenu">Guardar</button>
-        <button id="backMenu">Volver</button>
+        <button id="saveMenu">
+          <span class="icon-left save"></span>Guardar
+        </button>
+        <button id="backMenu">
+          <span class="icon-left back"></span>Volver
+        </button>
       </section>
     </main>
     <canvas id="canvas" width="800" height="600"></canvas>

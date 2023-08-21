@@ -157,17 +157,21 @@
       </section>
       <section id="menuEditor">
         <ul id="nuevaCarpeta" class="draggable">
-          <li><span class="icon-left new-folder"></span>Nueva carpeta</li>
-        </ul>
-        <ul id="currentMenu" class="draggable"></ul>
-        <ul id="morePages" class="draggable"></ul>
-        <ul id="descarte">
           <li>
-            <span class="icon-left delete"></span>
-            Descarte
-            <ul class="draggable"></ul>
+            <span class="icon-left updown"></span>
+            <span class="icon-left new-folder"></span>
+            Nueva carpeta
           </li>
         </ul>
+        <ul id="currentMenu" class="draggable"></ul>
+        <ul>
+          <li>
+            <span class="icon-left folder"></span>
+            Páginas sin usar
+            <ul id="morePages" class="draggable"></ul>
+          </li>
+        </ul>
+        <button id="saveMenu">Guardar</button>
         <button id="backMenu">Volver</button>
       </section>
     </main>

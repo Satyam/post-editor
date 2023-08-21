@@ -209,6 +209,10 @@ li.can-t-edit {
   padding: 1rem;
 }
 
+#menuEditor {
+  cursor: default;
+}
+
 #menuEditor ul {
   list-style-type: none;
   padding-left: 1rem;
@@ -218,7 +222,6 @@ li.can-t-edit {
 }
 
 #menuEditor li {
-  cursor: grab;
   background-color: #e6e6e6;
   border: thin solid gray;
   border-radius: 0.2rem;
@@ -229,7 +232,9 @@ li.can-t-edit {
 #menuEditor li li li {
   background-color: #b3b3b3;
 }
-
+li.empty {
+  opacity: 0.5;
+}
 .sortable-ghost {
   opacity: 0.5;
 }
@@ -240,20 +245,20 @@ li.can-t-edit {
   background-color: black;
 }
 
-#descarte li {
-  background-color: #f44336;
+span[contentEditable] {
+  cursor: text;
 }
 
-#descarte li li {
-  opacity: 0.5;
+ul.draggable li {
+  cursor: grab;
 }
 .icon-left {
   background-repeat: no-repeat;
+  background-position-x: center;
   background-position-y: center;
   height: 1rem;
-  width: 1rem;
+  width: 1.5rem;
   display: inline-block;
-  margin-right: 0.5rem;
 }
 .icon-right {
   background-repeat: no-repeat;
@@ -276,4 +281,11 @@ li.can-t-edit {
 }
 .save {
   background-image: url(icons/content-save-outline.svg);
+}
+
+.folder {
+  background-image: url(icons/folder-outline.svg);
+}
+.document {
+  background-image: url(icons/file-document-outline.svg);
 }

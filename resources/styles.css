@@ -308,3 +308,12 @@ ul.draggable li {
 .exit {
   background-image: url(icons/exit-to-app.svg);
 }
+.upload {
+  background-image: url(icons/cloud-upload-outline.svg);
+}
+.viewLocal {
+  background-image: url(icons/eye-circle-outline.svg);
+}
+.generate {
+  background-image: url(icons/cloud-refresh-variant-outline.svg);
+}

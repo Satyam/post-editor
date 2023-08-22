@@ -11,7 +11,7 @@ import {
   btnViewLocal,
   btnMenu,
   btnBackMenu,
-  btnFilezilla,
+  btnUpload,
   btnExit,
   main,
   divFileList,
@@ -20,7 +20,6 @@ import {
 import { readMd, removeMd, saveMD } from './files';
 
 import {
-  HEXO_DIR,
   loadInfo,
   getPages,
   getPosts,
@@ -46,6 +45,8 @@ import { imagesToEditor, replaceImages } from './images';
 
 import { EVENT, on } from './events';
 import { editMenu } from './menu';
+
+import { generate, server, upload } from './hexo';
 const CNAMES = {
   PAGE_LIST: 'page-list',
   POST_LIST: 'post-list',
@@ -276,90 +277,25 @@ loadInfo()
 
     btnGenerate.addEventListener('click', async (ev) => {
       ev.stopPropagation();
-
       setFileList(CNAMES.CONSOLE, 'Generando sitio<hr/>');
-
-      const generation = await Neutralino.os.spawnProcess(
-        `cd ${HEXO_DIR} && ./node_modules/.bin/hexo generate`
-      );
-
-      Neutralino.events.on('spawnedProcess', (ev) => {
-        if (generation.id == ev.detail.id) {
-          switch (ev.detail.action) {
-            case 'stdOut':
-              appendFileList(ev.detail.data);
-              break;
-            case 'stdErr':
-              appendFileList(ev.detail.data);
-              break;
-            case 'exit':
-              appendFileList(
-                `<hr/>La generación terminó con ${
-                  ev.detail.data ? `error ${ev.detail.data}` : `éxito`
-                }<hr/>Haga click [aquí] para cerrar`
-              );
-              divFileList.addEventListener(
-                'click',
-                () => {
-                  clearSelect();
-                },
-                { once: true }
-              );
-              break;
-          }
-        }
-      });
+      await generate(true);
+      clearSelect();
     });
 
-    const hexoURL = /(http:\/\/localhost:\d+\/\S*)/;
     btnViewLocal.addEventListener('click', async (ev) => {
       ev.stopPropagation();
-
       setFileList(CNAMES.CONSOLE, 'Generando sitio<hr/>');
-
-      const generation = await Neutralino.os.spawnProcess(
-        `cd ${HEXO_DIR} && ./node_modules/.bin/hexo server`
-      );
-
-      Neutralino.events.on('spawnedProcess', (ev) => {
-        if (generation.id == ev.detail.id) {
-          switch (ev.detail.action) {
-            case 'stdOut':
-              const m = hexoURL.exec(ev.detail.data);
-              if (m) {
-                appendFileList(`<hr/>Haga click en esta ventana para cerrar el servidor<br/>
-                La solapa del navegador debe cerrarla independientemente`);
-                Neutralino.os.open(m[1]);
-                divFileList.addEventListener(
-                  'click',
-                  async () => {
-                    await Neutralino.os.updateSpawnedProcess(
-                      generation.id,
-                      'exit'
-                    );
-                  },
-                  { once: true }
-                );
-              } else {
-                appendFileList(ev.detail.data);
-              }
-              break;
-            case 'stdErr':
-              appendFileList(ev.detail.data);
-              break;
-            case 'exit':
-              clearSelect();
-              break;
-          }
-        }
-      });
+      await server();
+      clearSelect();
     });
-    btnFilezilla.addEventListener('click', async (ev) => {
+
+    btnUpload.addEventListener('click', async (ev) => {
       ev.stopPropagation();
-      debugger;
-      await Neutralino.os.execCommand('filezilla -c "0/roxanacabut"', {
-        background: true,
-      });
+      setFileList(CNAMES.CONSOLE, 'Generando sitio<hr/>');
+      await generate();
+      appendFileList('Subiendo el sitio<hr/>');
+      await upload();
+      clearSelect();
     });
     btnMenu.addEventListener('click', async (ev) => {
       ev.stopPropagation();

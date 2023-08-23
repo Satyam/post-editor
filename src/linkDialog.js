@@ -1,5 +1,7 @@
 // Import "dialog" module
 import dialog from 'suneditor/src/plugins/modules/dialog';
+
+import { pagesList, postsList } from './lists';
 // <script src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/plugins/modules/dialog.js"></script>
 
 // ex) ex) A link dialog plugin with multiple target options.
@@ -99,6 +101,7 @@ export const plugin_dialog = {
             <label>${lang.dialogBox.linkBox.text}</label>
             <input class="se-input-form _se_link_text" type="text" />
           </div>
+          <div class="satyam-pages-link"></div>
           <div class="se-dialog-form se-dialog-form-footer">
             <select class="se-input-select" title="links">
               ${targetList
@@ -145,7 +148,7 @@ export const plugin_dialog = {
         <span><a target="_blank" href=""></a>&nbsp;</span>
         <div class="se-btn-group">
           <button type="button" data-command="update" tabindex="-1" class="se-tooltip">
-            ${icons.edit}
+            <span class="suneditor-svg update"></span>
             <span class="se-tooltip-inner">
               <span class="se-tooltip-text">
                 ${lang.controller.edit}
@@ -153,7 +156,7 @@ export const plugin_dialog = {
             </span>
           </button>
           <button type="button" data-command="unlink" tabindex="-1" class="se-tooltip">
-            ${icons.unlink}
+          <span class="suneditor-svg unlink"></span>
             <span class="se-tooltip-inner">
               <span class="se-tooltip-text">
                 ${lang.controller.unlink} 
@@ -161,7 +164,7 @@ export const plugin_dialog = {
             </span>
           </button>
           <button type="button" data-command="delete" tabindex="-1" class="se-tooltip">
-            ${icons.delete}
+          <span class="suneditor-svg  remove"></span>
             <span class="se-tooltip-inner"><span class="se-tooltip-text">
               ${lang.controller.remove}
             </span>
@@ -178,6 +181,10 @@ export const plugin_dialog = {
   // Open the modal window here.
   open: function () {
     // open.call(core, pluginName, isModify)
+
+    // this.context.customLink.modal.querySelector(
+    //   '.satyam-pages-link'
+    // ).innerHTML = pagesList();
     this.plugins.dialog.open.call(
       this,
       'customLink',

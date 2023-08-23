@@ -47,6 +47,8 @@ import { EVENT, on } from './events';
 import { editMenu } from './menu';
 
 import { generate, server, upload } from './hexo';
+
+import { pagesList, postsList } from './lists';
 const CNAMES = {
   PAGE_LIST: 'page-list',
   POST_LIST: 'post-list',
@@ -170,16 +172,7 @@ loadInfo()
     btnEditPage.addEventListener('click', async (ev) => {
       ev.stopPropagation();
       const drafts = getDrafts();
-      setFileList(
-        CNAMES.PAGE_LIST,
-        `<ul>${getPages()
-          .map((p) =>
-            drafts.some((d) => d.file === p.file)
-              ? `<li class="can-t-edit" title="Está en Borradores">${p.title}</li>`
-              : `<li><a href="${p.file}">${p.title}</a></li>`
-          )
-          .join('')}</ul>`
-      );
+      setFileList(CNAMES.PAGE_LIST, pagesList());
       setMdType(false);
     });
 
@@ -219,42 +212,7 @@ loadInfo()
 
     btnEditPost.addEventListener('click', async (ev) => {
       ev.stopPropagation();
-      const drafts = getDrafts(true);
-
-      const tree = {};
-      getPosts().forEach((p) => {
-        const [y, m, d] = p.date.split('-');
-        if (!(y in tree)) tree[y] = {};
-        if (!(m in tree[y])) tree[y][m] = {};
-        if (!(d in tree[y][m])) tree[y][m][d] = [];
-        tree[y][m][d].push(p);
-      });
-      setFileList(
-        CNAMES.POST_LIST,
-        objMapString(
-          tree,
-          (y) =>
-            `<details><summary>${y}</summary>${objMapString(
-              tree[y],
-              (m) =>
-                `<details><summary>${m}</summary>${objMapString(
-                  tree[y][m],
-                  (d) =>
-                    `<details><summary>${d}</summary><p>${d}/${m}/${y}</p><ul>
-                  ${tree[y][m][d]
-                    .map((p) =>
-                      drafts.some((d) => d.file === p.file)
-                        ? `<li class="can-t-edit" title="Está en Borradores">${p.title}</li>`
-                        : `<li><a href="${p.file}">${p.title}</a></li>`
-                    )
-                    .join('\n')}</ul></details>`,
-                  sortDescending
-                )}</details>`,
-              sortDescending
-            )}</details>`,
-          sortDescending
-        )
-      );
+      setFileList(CNAMES.POST_LIST, postsList());
       setMdType(true);
     });
 

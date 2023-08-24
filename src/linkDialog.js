@@ -1,4 +1,3 @@
-// Import "dialog" module
 import dialog from 'suneditor/src/plugins/modules/dialog';
 
 import { pagesList, postsList } from './lists';
@@ -51,6 +50,9 @@ export const plugin_dialog = {
     link_dialog
       .querySelector('form')
       .addEventListener('submit', this.submit.bind(core));
+    link_dialog
+      .querySelector('.satyam-pages-link')
+      .addEventListener('click', this.clickPost.bind(core));
     link_controller.addEventListener(
       'click',
       this.onClick_linkController.bind(core)
@@ -97,11 +99,11 @@ export const plugin_dialog = {
             <label>${lang.dialogBox.linkBox.url}</label>
             <input class="se-input-form _se_link_url" type="text" />
           </div>
+          <div class="satyam-pages-link"></div>
           <div class="se-dialog-form">
             <label>${lang.dialogBox.linkBox.text}</label>
             <input class="se-input-form _se_link_text" type="text" />
           </div>
-          <div class="satyam-pages-link"></div>
           <div class="se-dialog-form se-dialog-form-footer">
             <select class="se-input-select" title="links">
               ${targetList
@@ -182,9 +184,11 @@ export const plugin_dialog = {
   open: function () {
     // open.call(core, pluginName, isModify)
 
-    // this.context.customLink.modal.querySelector(
-    //   '.satyam-pages-link'
-    // ).innerHTML = pagesList();
+    this.context.customLink.modal.querySelector(
+      '.satyam-pages-link'
+    ).innerHTML = `
+      <details><summary>Páginas</summary>${pagesList()}</details>
+      <details><summary>Posts</summary>${postsList()}</details>`;
     this.plugins.dialog.open.call(
       this,
       'customLink',
@@ -262,6 +266,16 @@ export const plugin_dialog = {
     return false;
   },
 
+  clickPost: function (ev) {
+    const aEl = ev.target;
+    ev.stopPropagation();
+    if (aEl.tagName !== 'A') return;
+    ev.preventDefault();
+    console.log(aEl.href, aEl.innerHTML);
+    const contextLink = this.context.customLink;
+    contextLink.focusElement.value = aEl.getAttribute('href');
+    contextLink.linkAnchorText.value = aEl.innerHTML;
+  },
   // @Override core
   // Plugins with active methods load immediately when the edicontrollerArraytor loads.
   // Called each time the selection is moved.

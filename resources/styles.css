@@ -335,3 +335,13 @@ ul.draggable li {
 .remove {
   background-image: url(icons/delete.svg);
 }
+
+.satyam-pages-link {
+  font-size: 14px;
+}
+.satyam-pages-link ul {
+  padding-left: 1rem;
+}
+.satyam-pages-link details > details {
+  padding-left: 1rem;
+}

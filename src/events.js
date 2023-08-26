@@ -14,11 +14,17 @@ export const off = (name, fn) => {
   }
 };
 
-export const dispatch = async (name, data) => {
+export const dispatch2 = async (name, data) => {
   if (name in ev) {
     for (const fn of ev[name]) await fn(data);
   }
 };
+
+export const dispatch = async (name, data) =>
+  ev[name]?.reduce(
+    (final, listener) => final.then((ev) => (ev ? ev : listener(data))),
+    Promise.resolve()
+  );
 
 export const EVENT = {
   SAVE: 'save',
@@ -29,4 +35,5 @@ export const EVENT = {
   EDITOR_CHANGED: 'editorChanged',
   STATE_CHANGED: 'stateChanged',
   FORM_CHANGED: 'formChanged',
+  EXIT: 'exit',
 };

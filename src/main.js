@@ -43,7 +43,7 @@ import {
 } from './state';
 import { imagesToEditor, replaceImages } from './images';
 
-import { EVENT, on } from './events';
+import { EVENT, dispatch, on } from './events';
 import { editMenu } from './menu';
 
 import { generate, server, upload } from './hexo';
@@ -95,8 +95,12 @@ loadInfo()
     setDataLists();
 
     btnExit.addEventListener('click', (ev) => {
-      window.close();
-      Neutralino.app.exit();
+      dispatch(EVENT.EXIT).then((ev) => {
+        if (!ev) {
+          window.close();
+          Neutralino.app.exit();
+        }
+      });
     });
 
     on(EVENT.SAVE, async ({ matter, contents }) => {

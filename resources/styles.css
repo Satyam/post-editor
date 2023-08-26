@@ -1,3 +1,17 @@
+header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
+  border-bottom: black solid thin;
+  margin-bottom: 0.5rem;
+}
+
+header button {
+  width: 80%;
+}
+
 main {
   max-width: 820px;
   margin-left: auto;
@@ -78,7 +92,8 @@ section {
 }
 #select,
 #editor,
-#menuEditor {
+#menuEditor,
+#site {
   display: none;
 }
 #main.select #select {
@@ -90,6 +105,9 @@ section {
 }
 
 #main.menu #menuEditor {
+  display: block;
+}
+#main.site #site {
   display: block;
 }
 
@@ -203,7 +221,7 @@ li.can-t-edit {
   cursor: no-drop;
 }
 
-.console {
+#console {
   background-color: black;
   color: white;
   padding: 1rem;
@@ -211,6 +229,7 @@ li.can-t-edit {
 
 #menuEditor {
   cursor: default;
+  font-size: 14px;
 }
 
 #menuEditor ul {
@@ -289,6 +308,9 @@ ul.draggable li {
 .document {
   background-image: url(icons/file-document-outline.svg);
 }
+.documents {
+  background-image: url(icons/file-document-multiple-outline.svg);
+}
 .back {
   background-image: url(icons/arrow-top-left-bold-outline.svg);
 }
@@ -307,6 +329,9 @@ ul.draggable li {
 }
 .exit {
   background-image: url(icons/exit-to-app.svg);
+}
+.cloud {
+  background-image: url(icons/cloud-circle-outline.svg);
 }
 .upload {
   background-image: url(icons/cloud-upload-outline.svg);

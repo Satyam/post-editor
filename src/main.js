@@ -57,7 +57,8 @@ const CNAMES = {
   SELECT: 'select',
   EDIT: 'edit',
   MENU: 'menu',
-  CONSOLE: 'console',
+  // CONSOLE: 'console',
+  SITE: 'site',
 };
 
 Neutralino.init();
@@ -93,15 +94,43 @@ loadInfo()
     clearSelect();
 
     setDataLists();
-
-    btnExit.addEventListener('click', (ev) => {
-      dispatch(EVENT.EXIT).then((ev) => {
-        if (!ev) {
-          window.close();
-          Neutralino.app.exit();
-        }
-      });
+    let tabSelected = document.querySelector('header button[disabled]');
+    document.querySelector('header').addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const btn = ev.target;
+      if (btn === tabSelected) return;
+      tabSelected.removeAttribute('disabled');
+      tabSelected = btn;
+      btn.setAttribute('disabled', '');
+      switch (btn.dataset.section) {
+        case 'select':
+          clearSelect();
+          break;
+        case 'menuEditor':
+          main.className = CNAMES.MENU;
+          editMenu();
+          break;
+        case 'site':
+          main.className = CNAMES.SITE;
+          break;
+        case 'exit':
+          dispatch(EVENT.EXIT).then((ev) => {
+            if (!ev) {
+              window.close();
+              Neutralino.app.exit();
+            }
+          });
+          break;
+      }
     });
+    // btnExit.addEventListener('click', (ev) => {
+    //   dispatch(EVENT.EXIT).then((ev) => {
+    //     if (!ev) {
+    //       window.close();
+    //       Neutralino.app.exit();
+    //     }
+    //   });
+    // });
 
     on(EVENT.SAVE, async ({ matter, contents }) => {
       matter.updated = today;

@@ -7,6 +7,20 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <header>
+      <button disabled data-section="select">
+        <span class="icon-left documents"></span>Páginas / Posts
+      </button>
+      <button data-section="menuEditor">
+        <span class="icon-left edit-menu"></span>Editor de Menú
+      </button>
+      <button data-section="site">
+        <span class="icon-left cloud"></span>Adm. Sitio
+      </button>
+      <button data-section="exit">
+        <span class="icon-left exit"></span>Salir
+      </button>
+    </header>
     <main id="main">
       <section id="select">
         <div class="two-grid">
@@ -53,7 +67,7 @@
         <button id="menu">
           <span class="icon-left edit-menu"></span>Editar Menú
         </button>
-        <button id="exit"><span class="icon-left exit"></span>Salir</button>
+        <!-- <button id="exit"><span class="icon-left exit"></span>Salir</button> -->
       </section>
       <section id="editor">
         <form id="form" novalidate>
@@ -212,6 +226,22 @@
         <button id="backMenu">
           <span class="icon-left back"></span>Volver
         </button>
+      </section>
+      <section id="site">
+        <div class="two-grid">
+          <div>
+            <button id="generate">
+              <span class="icon-left generate"></span>Regenerar sitio
+            </button>
+            <button id="viewLocal">
+              <span class="icon-left viewLocal"></span>Ver servidor local
+            </button>
+            <button id="upload">
+              <span class="icon-left upload"></span>Subir
+            </button>
+          </div>
+          <div id="console"></div>
+        </div>
       </section>
     </main>
     <canvas id="canvas" width="800" height="600"></canvas>

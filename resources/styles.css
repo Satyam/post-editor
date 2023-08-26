@@ -318,24 +318,6 @@ ul.draggable li {
   background-image: url(icons/cloud-refresh-variant-outline.svg);
 }
 
-.suneditor-svg {
-  background-repeat: no-repeat;
-  background-position-x: center;
-  background-position-y: center;
-  height: 12px;
-  width: 12px;
-  display: inline-block;
-}
-.unlink {
-  background-image: url(icons/unlink.svg);
-}
-.update {
-  background-image: url(icons/update.svg);
-}
-.remove {
-  background-image: url(icons/delete.svg);
-}
-
 .satyam-pages-link {
   font-size: 14px;
 }

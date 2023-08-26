@@ -150,7 +150,7 @@ export const plugin_dialog = {
         <span><a target="_blank" href=""></a>&nbsp;</span>
         <div class="se-btn-group">
           <button type="button" data-command="update" tabindex="-1" class="se-tooltip">
-            <span class="suneditor-svg update"></span>
+            ${icons.edit}
             <span class="se-tooltip-inner">
               <span class="se-tooltip-text">
                 ${lang.controller.edit}
@@ -158,7 +158,7 @@ export const plugin_dialog = {
             </span>
           </button>
           <button type="button" data-command="unlink" tabindex="-1" class="se-tooltip">
-          <span class="suneditor-svg unlink"></span>
+            ${icons.unlink}
             <span class="se-tooltip-inner">
               <span class="se-tooltip-text">
                 ${lang.controller.unlink} 
@@ -166,7 +166,7 @@ export const plugin_dialog = {
             </span>
           </button>
           <button type="button" data-command="delete" tabindex="-1" class="se-tooltip">
-          <span class="suneditor-svg  remove"></span>
+            ${icons.delete}
             <span class="se-tooltip-inner"><span class="se-tooltip-text">
               ${lang.controller.remove}
             </span>

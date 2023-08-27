@@ -27,8 +27,7 @@ import { imagesToEditor, replaceImages } from './images';
 
 import { EVENT, dispatch, on } from './events';
 import { editMenu } from './menu';
-
-import { generate, server, upload } from './hexo';
+import './hexo';
 
 import { pagesList, postsList } from './lists';
 
@@ -71,17 +70,15 @@ const setFileList = (className, contents) => {
   divFileList.innerHTML = contents;
 };
 
-const appendFileList = (contents) => {
-  divFileList.innerHTML = `${divFileList.innerHTML}<br/>${contents}`;
-};
-
 loadInfo()
   .then(async () => {
     await imagesToEditor();
-    clearSelect();
 
+    let tabSelected = document.querySelector('header button[name="select"]');
+    tabSelected.setAttribute('disabled', '');
+    clearSelect();
     setDataLists();
-    let tabSelected = document.querySelector('header button[disabled]');
+
     onClick('header', (btn) => {
       if (btn === tabSelected) return;
       tabSelected.removeAttribute('disabled');
@@ -234,35 +231,6 @@ loadInfo()
 
       setForm(matter, content);
       main.className = CNAMES.EDIT;
-    });
-
-    onClick('#generate', async () => {
-      setFileList(CNAMES.CONSOLE, 'Generando sitio<hr/>');
-      await generate(true);
-      clearSelect();
-    });
-
-    onClick('#viewLocal', async () => {
-      setFileList(CNAMES.CONSOLE, 'Generando sitio<hr/>');
-      await server();
-      clearSelect();
-    });
-
-    onClick('#upload', async () => {
-      setFileList(CNAMES.CONSOLE, 'Generando sitio<hr/>');
-      await generate();
-      appendFileList('Subiendo el sitio<hr/>');
-      await upload();
-      clearSelect();
-    });
-
-    onClick('#menu', () => {
-      main.className = CNAMES.MENU;
-      editMenu();
-    });
-
-    onClick('#backMenu', () => {
-      main.className = CNAMES.SELECT;
     });
   })
   .catch((err) => {

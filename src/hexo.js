@@ -1,8 +1,17 @@
 import { HEXO_DIR } from './data';
+import { onClick } from './utils';
 
 const terminal = document.getElementById('terminal');
 
-const appendFileList = (contents) => {
+const clearTerminal = () => {
+  terminal.innerHTML = '';
+};
+
+const setTerminal = (contents) => {
+  terminal.innerHTML = contents.replaceAll('\n', '<br/>');
+};
+
+const appendTerminal = (contents) => {
   terminal.innerHTML = `${terminal.innerHTML}${contents.replaceAll(
     '\n',
     '<br/>'
@@ -24,21 +33,21 @@ export const generate = async (wait = false) => {
       if (process.id == ev.detail.id) {
         switch (ev.detail.action) {
           case 'stdOut':
-            appendFileList(ev.detail.data);
+            appendTerminal(ev.detail.data);
             break;
           case 'stdErr':
-            appendFileList(ev.detail.data);
+            appendTerminal(ev.detail.data);
             reject();
             break;
           case 'exit':
-            appendFileList(
+            appendTerminal(
               `<hr/>La generación terminó con ${
                 ev.detail.data ? `error ${ev.detail.data}` : `éxito`
               }`
             );
             if (wait) {
-              appendFileList('<hr/>Haga click [aquí] para cerrar');
-              onclick(
+              appendTerminal('<hr/>Haga click [aquí] para cerrar');
+              onClick(
                 terminal,
                 () => {
                   Neutralino.events.off('spawnedProcess', handler);
@@ -68,10 +77,10 @@ export const server = async () => {
           case 'stdOut':
             const m = hexoURL.exec(ev.detail.data);
             if (m) {
-              appendFileList(`<hr/>Haga click en esta ventana para cerrar el servidor<br/>
+              appendTerminal(`<hr/>Haga click en esta ventana para cerrar el servidor<br/>
             La solapa del navegador debe cerrarla independientemente`);
               Neutralino.os.open(m[1]);
-              onclick(
+              onClick(
                 terminal,
                 async () => {
                   await Neutralino.os.updateSpawnedProcess(process.id, 'exit');
@@ -79,11 +88,11 @@ export const server = async () => {
                 true
               );
             } else {
-              appendFileList(ev.detail.data);
+              appendTerminal(ev.detail.data);
             }
             break;
           case 'stdErr':
-            appendFileList(ev.detail.data);
+            appendTerminal(ev.detail.data);
             reject();
             break;
           case 'exit':
@@ -115,25 +124,25 @@ export const upload = async () => {
               terminal.querySelector('pre').innerHTML = text;
             } else {
               if (text.includes('----')) {
-                appendFileList('<pre></pre>');
+                appendTerminal('<pre></pre>');
                 inside = true;
               } else {
-                appendFileList(text);
+                appendTerminal(text);
               }
             }
             break;
           case 'stdErr':
-            appendFileList(ev.detail.data);
+            appendTerminal(ev.detail.data);
             reject();
             break;
           case 'exit':
             inside = false;
-            appendFileList(
+            appendTerminal(
               `<hr/>La generación terminó con ${
                 ev.detail.data ? `error ${ev.detail.data}` : `éxito`
               }<hr/>Haga click [aquí] para cerrar`
             );
-            onclick(
+            onClick(
               terminal,
               () => {
                 Neutralino.events.off('spawnedProcess', handler);
@@ -148,3 +157,23 @@ export const upload = async () => {
     Neutralino.events.on('spawnedProcess', handler);
   });
 };
+
+onClick('#generate', async () => {
+  setTerminal('Generando sitio<hr/>');
+  await generate(true);
+  clearTerminal();
+});
+
+onClick('#viewLocal', async () => {
+  setTerminal('Generando sitio<hr/>');
+  await server();
+  clearTerminal();
+});
+
+onClick('#upload', async () => {
+  setTerminal('Generando sitio<hr/>');
+  await generate();
+  appendTerminal('Subiendo el sitio<hr/>');
+  await upload();
+  clearTerminal();
+});

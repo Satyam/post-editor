@@ -87,7 +87,7 @@ loadInfo()
       tabSelected.removeAttribute('disabled');
       tabSelected = btn;
       btn.setAttribute('disabled', '');
-      switch (btn.dataset.section) {
+      switch (btn.name) {
         case 'select':
           clearSelect();
           break;

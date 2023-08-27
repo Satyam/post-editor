@@ -1,3 +1,4 @@
+import { onClick } from './utils';
 const dialogEl = document.getElementById('confirm');
 const msgEl = document.getElementById('confirmMsg');
 const titleEl = document.getElementById('confirmTitle');
@@ -17,9 +18,9 @@ export const confirm = (msg, title = 'Roxy post editor') => {
   });
 };
 
-dialogEl.addEventListener('click', (ev) => {
-  if (ev.target.tagName === 'BUTTON') {
-    dialogEl.returnValue = ev.target.value;
+onClick(dialogEl, (target) => {
+  if (target.tagName === 'BUTTON') {
+    dialogEl.returnValue = target.value;
     dialogEl.close();
   }
 });

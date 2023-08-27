@@ -1,12 +1,13 @@
 import { HEXO_DIR } from './data';
-import { divFileList } from './elements';
+
+const terminal = document.getElementById('terminal');
 
 const appendFileList = (contents) => {
-  divFileList.innerHTML = `${divFileList.innerHTML}${contents.replaceAll(
+  terminal.innerHTML = `${terminal.innerHTML}${contents.replaceAll(
     '\n',
     '<br/>'
   )}`;
-  divFileList.lastElementChild.scrollIntoView({
+  terminal.lastElementChild.scrollIntoView({
     behavior: 'smooth',
     block: 'center',
     inline: 'nearest',
@@ -37,13 +38,13 @@ export const generate = async (wait = false) => {
             );
             if (wait) {
               appendFileList('<hr/>Haga click [aquí] para cerrar');
-              divFileList.addEventListener(
-                'click',
+              onclick(
+                terminal,
                 () => {
                   Neutralino.events.off('spawnedProcess', handler);
                   resolve();
                 },
-                { once: true }
+                true
               );
             } else resolve();
             break;
@@ -70,12 +71,12 @@ export const server = async () => {
               appendFileList(`<hr/>Haga click en esta ventana para cerrar el servidor<br/>
             La solapa del navegador debe cerrarla independientemente`);
               Neutralino.os.open(m[1]);
-              divFileList.addEventListener(
-                'click',
+              onclick(
+                terminal,
                 async () => {
                   await Neutralino.os.updateSpawnedProcess(process.id, 'exit');
                 },
-                { once: true }
+                true
               );
             } else {
               appendFileList(ev.detail.data);
@@ -111,7 +112,7 @@ export const upload = async () => {
           case 'stdOut':
             const text = ev.detail.data;
             if (inside) {
-              divFileList.querySelector('pre').innerHTML = text;
+              terminal.querySelector('pre').innerHTML = text;
             } else {
               if (text.includes('----')) {
                 appendFileList('<pre></pre>');
@@ -132,13 +133,13 @@ export const upload = async () => {
                 ev.detail.data ? `error ${ev.detail.data}` : `éxito`
               }<hr/>Haga click [aquí] para cerrar`
             );
-            divFileList.addEventListener(
-              'click',
+            onclick(
+              terminal,
               () => {
                 Neutralino.events.off('spawnedProcess', handler);
                 resolve();
               },
-              { once: true }
+              true
             );
             break;
         }

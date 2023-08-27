@@ -1,28 +1,10 @@
-import { objMapString, sortDescending, slugify, today } from './utils';
+import { sortDescending, slugify, today, onClick } from './utils';
 import { setDataLists, setForm, acceptChanges } from './form';
-import {
-  btnNewPage,
-  btnEditPage,
-  btnNewPost,
-  btnEditPost,
-  btnDraftPage,
-  btnDraftPost,
-  btnGenerate,
-  btnViewLocal,
-  btnMenu,
-  btnBackMenu,
-  btnUpload,
-  btnExit,
-  main,
-  divFileList,
-} from './elements';
 
 import { readMd, removeMd, saveMD } from './files';
 
 import {
   loadInfo,
-  getPages,
-  getPosts,
   getDrafts,
   addPostInfo,
   addDraftInfo,
@@ -49,6 +31,7 @@ import { editMenu } from './menu';
 import { generate, server, upload } from './hexo';
 
 import { pagesList, postsList } from './lists';
+
 const CNAMES = {
   PAGE_LIST: 'page-list',
   POST_LIST: 'post-list',
@@ -57,9 +40,13 @@ const CNAMES = {
   SELECT: 'select',
   EDIT: 'edit',
   MENU: 'menu',
-  // CONSOLE: 'console',
   SITE: 'site',
 };
+
+const btnDraftPage = document.getElementById('draftPage');
+const btnDraftPost = document.getElementById('draftPost');
+const divFileList = document.getElementById('fileList');
+const main = document.getElementById('main');
 
 Neutralino.init();
 
@@ -95,9 +82,7 @@ loadInfo()
 
     setDataLists();
     let tabSelected = document.querySelector('header button[disabled]');
-    document.querySelector('header').addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      const btn = ev.target;
+    onClick('header', (btn) => {
       if (btn === tabSelected) return;
       tabSelected.removeAttribute('disabled');
       tabSelected = btn;
@@ -123,14 +108,6 @@ loadInfo()
           break;
       }
     });
-    // btnExit.addEventListener('click', (ev) => {
-    //   dispatch(EVENT.EXIT).then((ev) => {
-    //     if (!ev) {
-    //       window.close();
-    //       Neutralino.app.exit();
-    //     }
-    //   });
-    // });
 
     on(EVENT.SAVE, async ({ matter, contents }) => {
       matter.updated = today;
@@ -188,29 +165,27 @@ loadInfo()
       acceptChanges();
     });
 
-    btnNewPage.addEventListener('click', (ev) => {
+    onClick('#newPage', () => {
       main.className = CNAMES.EDIT;
       setMdType(false, true, true);
       setFileName();
       setForm();
     });
 
-    btnNewPost.addEventListener('click', (ev) => {
+    onClick('#newPost', () => {
       main.className = CNAMES.EDIT;
       setMdType(true, true, true);
       setFileName();
       setForm();
     });
 
-    btnEditPage.addEventListener('click', async (ev) => {
-      ev.stopPropagation();
+    onClick('#editPage', () => {
       const drafts = getDrafts();
       setFileList(CNAMES.PAGE_LIST, pagesList());
       setMdType(false);
     });
 
-    btnDraftPage.addEventListener('click', async (ev) => {
-      ev.stopPropagation();
+    onClick(btnDraftPage, () => {
       setFileList(
         CNAMES.DRAFT_PAGE_LIST,
         `<ul>${getDrafts()
@@ -226,8 +201,7 @@ loadInfo()
       setMdType(false, true);
     });
 
-    btnDraftPost.addEventListener('click', async (ev) => {
-      ev.stopPropagation();
+    onClick(btnDraftPost, () => {
       setFileList(
         CNAMES.DRAFT_POST_LIST,
         `<ul>${getDrafts(true)
@@ -243,17 +217,13 @@ loadInfo()
       setMdType(true, true);
     });
 
-    btnEditPost.addEventListener('click', async (ev) => {
-      ev.stopPropagation();
+    onClick('#editPost', () => {
       setFileList(CNAMES.POST_LIST, postsList());
       setMdType(true);
     });
 
-    divFileList.addEventListener('click', async (ev) => {
-      const aEl = ev.target;
-      ev.stopPropagation();
+    onClick(divFileList, async (aEl) => {
       if (aEl.tagName !== 'A') return;
-      ev.preventDefault();
 
       setFileName(aEl.getAttribute('href'));
       if ('isNew' in aEl.dataset) {
@@ -266,35 +236,32 @@ loadInfo()
       main.className = CNAMES.EDIT;
     });
 
-    btnGenerate.addEventListener('click', async (ev) => {
-      ev.stopPropagation();
+    onClick('#generate', async () => {
       setFileList(CNAMES.CONSOLE, 'Generando sitio<hr/>');
       await generate(true);
       clearSelect();
     });
 
-    btnViewLocal.addEventListener('click', async (ev) => {
-      ev.stopPropagation();
+    onClick('#viewLocal', async () => {
       setFileList(CNAMES.CONSOLE, 'Generando sitio<hr/>');
       await server();
       clearSelect();
     });
 
-    btnUpload.addEventListener('click', async (ev) => {
-      ev.stopPropagation();
+    onClick('#upload', async () => {
       setFileList(CNAMES.CONSOLE, 'Generando sitio<hr/>');
       await generate();
       appendFileList('Subiendo el sitio<hr/>');
       await upload();
       clearSelect();
     });
-    btnMenu.addEventListener('click', async (ev) => {
-      ev.stopPropagation();
+
+    onClick('#menu', () => {
       main.className = CNAMES.MENU;
       editMenu();
     });
-    btnBackMenu.addEventListener('click', (ev) => {
-      ev.stopPropagation();
+
+    onClick('#backMenu', () => {
       main.className = CNAMES.SELECT;
     });
   })

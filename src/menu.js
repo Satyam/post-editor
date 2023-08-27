@@ -1,4 +1,5 @@
 import { parse, stringify } from 'yaml';
+import { onClick } from './utils';
 // For some reason it works when imported via <script> but dies if imported
 // and rolled up.
 // import Sortable from 'sortablejs';
@@ -106,8 +107,7 @@ export const editMenu = async () => {
   }
 };
 
-btnSave.addEventListener('click', async (ev) => {
-  ev.stopPropagation();
+onClick('#saveMenu', async () => {
   const parseUl = (ulEl) => {
     const subMenu = {};
     for (const liEl of ulEl.children) {

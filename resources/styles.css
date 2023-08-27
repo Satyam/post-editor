@@ -70,8 +70,7 @@ section {
 #fileList.post-list,
 #fileList.page-list,
 #fileList.draft-post-list,
-#fileList.draft-page-list,
-#fileList.console {
+#fileList.draft-page-list {
   display: block;
 }
 #fileList.post-list details ul {
@@ -221,10 +220,12 @@ li.can-t-edit {
   cursor: no-drop;
 }
 
-#console {
+#terminal {
   background-color: black;
   color: white;
   padding: 1rem;
+  max-height: 800px;
+  overflow-y: scroll;
 }
 
 #menuEditor {

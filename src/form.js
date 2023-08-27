@@ -1,4 +1,4 @@
-import { today } from './utils';
+import { today, onClick } from './utils';
 
 import { getCategories, getTags, getAuthors } from './data';
 
@@ -196,13 +196,12 @@ export const acceptChanges = () => {
 
 on(EVENT.EDITOR_CHANGED, checkChanges);
 
-catList.addEventListener('click', (ev) => {
-  categories.push(ev.target.innerText);
+onClick(catList, (target) => {
+  categories.push(target.innerText);
   refreshCats();
   checkChanges();
 });
-selectedCats.addEventListener('click', (ev) => {
-  const li = ev.target;
+onClick(selectedCats, (li) => {
   if (li.tagName !== 'LI') return;
   if ('isNew' in li.dataset) {
     els.newCat.value = '';
@@ -212,18 +211,19 @@ selectedCats.addEventListener('click', (ev) => {
   refreshCats();
   checkChanges();
 });
-tagsList.addEventListener('click', (ev) => {
-  tags.push(ev.target.innerText);
+
+onClick(tagsList, (tagEl) => {
+  tags.push(tagEl.innerText);
   refreshTags();
   checkChanges();
 });
-selectedTags.addEventListener('click', (ev) => {
-  const li = ev.target;
+
+onClick(selectedTags, (li) => {
   if (li.tagName !== 'LI') return;
   if ('isNew' in li.dataset) {
     els.newTag.value = '';
   } else {
-    tags = tags.filter((tag) => tag !== ev.target.innerText);
+    tags = tags.filter((tag) => tag !== li.innerText);
   }
   refreshTags();
   checkChanges();

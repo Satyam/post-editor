@@ -52,3 +52,17 @@ export const slugify = (str) => {
     .replaceAll(multipleSpacesRx, '-') // collapse whitespace and replace by -
     .replaceAll(multipleDashesRx, '-'); // collapse dashes
 };
+
+export const onClick = (selector, fn, once) => {
+  const el =
+    typeof selector === 'string' ? document.querySelector(selector) : selector;
+  el.addEventListener(
+    'click',
+    (ev) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+      fn(ev.target);
+    },
+    once && { once: true }
+  );
+};

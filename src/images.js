@@ -1,9 +1,10 @@
 import { join, readJson, writeJson } from './utils';
 import { HEXO_IMG_DIR, EDITOR_IMG_DIR, DOCUMENT_ROOT, IMG_DIR } from './data';
 import { getEditorImages } from './editor';
-import { canvas } from './elements';
 
 const fs = Neutralino.filesystem;
+
+const canvas = document.getElementById('canvas');
 
 let gallery = null;
 

@@ -1,5 +1,7 @@
 import { HEXO_DIR } from './data';
+import { EVENT, on } from './events';
 import { onClick } from './utils';
+import { confirm } from './dialog';
 
 const terminal = document.getElementById('terminal');
 
@@ -66,10 +68,29 @@ export const generate = async (wait = false) => {
 
 const hexoURL = /(http:\/\/localhost:\d+\/\S*)/;
 
+let activeProcess = false;
+
+on(EVENT.PAGE_SWITCH, async () => {
+  if (activeProcess === false) return false;
+  if (
+    await confirm(
+      'El servidor local está activo y no se puede cambiar de solapa mientras lo esté.<br/>¿Desea apagarlo?',
+      '¿Quiere apagarlo?'
+    )
+  ) {
+    await Neutralino.os.updateSpawnedProcess(activeProcess, 'exit');
+    activeProcess = false;
+    return false;
+  } else {
+    return true; // stop switch;
+  }
+});
+
 export const server = async () => {
   const process = await Neutralino.os.spawnProcess(
     `cd ${HEXO_DIR} && ./node_modules/.bin/hexo server`
   );
+  activeProcess = process.id;
   await new Promise((resolve, reject) => {
     const handler = (ev) => {
       if (process.id == ev.detail.id) {
@@ -78,12 +99,13 @@ export const server = async () => {
             const m = hexoURL.exec(ev.detail.data);
             if (m) {
               appendTerminal(`<hr/>Haga click en esta ventana para cerrar el servidor<br/>
-            La solapa del navegador debe cerrarla independientemente`);
+            La solapa del navegador debe cerrarla independientemente<br/>`);
               Neutralino.os.open(m[1]);
               onClick(
                 terminal,
                 async () => {
                   await Neutralino.os.updateSpawnedProcess(process.id, 'exit');
+                  activeProcess = false;
                 },
                 true
               );
@@ -97,6 +119,7 @@ export const server = async () => {
             break;
           case 'exit':
             Neutralino.events.off('spawnedProcess', handler);
+            activeProcess = false;
             resolve();
             break;
         }

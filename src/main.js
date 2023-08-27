@@ -79,8 +79,10 @@ loadInfo()
     clearSelect();
     setDataLists();
 
-    onClick('header', (btn) => {
+    onClick('header', async (btn) => {
       if (btn === tabSelected) return;
+
+      if (await dispatch(EVENT.PAGE_SWITCH)) return;
       tabSelected.removeAttribute('disabled');
       tabSelected = btn;
       btn.setAttribute('disabled', '');

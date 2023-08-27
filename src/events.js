@@ -36,4 +36,5 @@ export const EVENT = {
   STATE_CHANGED: 'stateChanged',
   FORM_CHANGED: 'formChanged',
   EXIT: 'exit',
+  PAGE_SWITCH: 'pageSwitch',
 };

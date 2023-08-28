@@ -343,6 +343,9 @@ ul.draggable li {
 .generate {
   background-image: url(icons/cloud-refresh-variant-outline.svg);
 }
+.home {
+  background-image: url(icons/home-outline.svg);
+}
 
 .satyam-pages-link {
   font-size: 14px;

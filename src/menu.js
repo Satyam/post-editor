@@ -12,9 +12,12 @@ let pages = [];
 const currentMenu = document.getElementById('currentMenu');
 const morePages = document.getElementById('morePages');
 const menuEditor = document.getElementById('menuEditor');
-const btnSave = document.getElementById('saveMenu');
+const homePage = document.getElementById('homePage');
 
 const basePartRx = /\/?([^\.]+).*/;
+
+const toRootHtml = (f) =>
+  `/${f}`.replace(/^\/\//, '/').replace(/\.md$/, '.html');
 
 const renderMenuObj = (menu) =>
   Object.keys(menu)
@@ -32,13 +35,13 @@ const renderMenuObj = (menu) =>
         return `<li title="${value}">
           <span class="icon-left updown"></span>
           <span class="icon-left document"></span>
-          <span contentEditable >${label}</span>
+          <span class="title" contentEditable >${label}</span>
         </li>`;
       } else {
         return `<li>
           <span class="icon-left updown"></span>
           <span class="icon-left folder"></span>
-          <span contentEditable>${label}</span>
+          <span class="title" contentEditable>${label}</span>
             <ul class="draggable">${renderMenuObj(menu[label])}</ul>
           </li>`;
       }
@@ -51,13 +54,20 @@ export const editMenu = async () => {
   const { menu } = parse(await fs.readFile(MENU_CONFIG));
 
   currentMenu.innerHTML = renderMenuObj(menu);
+  const h = pages.find((p) => p.file === 'index.md');
+  h.used = true;
+  homePage.innerHTML = `<li title="${toRootHtml(h.file)}">
+    <span class="icon-left home"></span>
+    <span class="icon-left document"></span>
+    ${h.title}
+  </li>`;
   morePages.innerHTML = pages
     .filter((p) => !p.used)
     .map(
-      (p) => `<li title="${p.file}">
+      (p) => `<li title="${toRootHtml(p.file)}">
       <span class="icon-left updown"></span>
       <span class="icon-left document"></span>
-      ${p.title}
+      <span class="title" contentEditable>${p.title}</span>
     </li>`
     )
     .join('\n');
@@ -79,7 +89,7 @@ export const editMenu = async () => {
         </li>`;
         item.innerHTML = `<span class="icon-left updown"></span>
           <span class="icon-left folder"></span>
-          <span contentEditable>--- editar ---</span>
+          <span class="title" contentEditable>--- editar ---</span>
           <ul class="draggable">
             <li class="empty">--vacía--</li>
           </ul>`;
@@ -111,9 +121,7 @@ onClick('#saveMenu', async () => {
   const parseUl = (ulEl) => {
     const subMenu = {};
     for (const liEl of ulEl.children) {
-      const label = liEl
-        .querySelector('span[contentEditable]')
-        .innerText.trim();
+      const label = liEl.querySelector('span.title').innerText.trim();
       const subUl = liEl.querySelector('ul');
       if (subUl) {
         subMenu[label] = parseUl(subUl);

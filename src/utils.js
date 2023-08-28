@@ -66,3 +66,6 @@ export const onClick = (selector, fn, once) => {
     once && { once: true }
   );
 };
+
+export const md2rootHtml = (f) =>
+  `/${f}`.replace(/^\/\//, '/').replace(/\.md$/, '.html');

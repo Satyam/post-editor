@@ -1,6 +1,7 @@
 import dialog from 'suneditor/src/plugins/modules/dialog';
 
 import { pagesList, postsList } from './lists';
+import { md2rootHtml } from './utils';
 // <script src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/plugins/modules/dialog.js"></script>
 
 // ex) ex) A link dialog plugin with multiple target options.
@@ -273,7 +274,9 @@ export const plugin_dialog = {
     ev.preventDefault();
     console.log(aEl.href, aEl.innerHTML);
     const contextLink = this.context.customLink;
-    contextLink.focusElement.value = aEl.getAttribute('href');
+    contextLink.focusElement.value = `/roxanacabut${md2rootHtml(
+      aEl.getAttribute('href')
+    )}`;
     contextLink.linkAnchorText.value = aEl.innerHTML;
   },
   // @Override core

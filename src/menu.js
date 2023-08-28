@@ -1,5 +1,5 @@
 import { parse, stringify } from 'yaml';
-import { onClick } from './utils';
+import { onClick, md2rootHtml } from './utils';
 // For some reason it works when imported via <script> but dies if imported
 // and rolled up.
 // import Sortable from 'sortablejs';
@@ -15,9 +15,6 @@ const menuEditor = document.getElementById('menuEditor');
 const homePage = document.getElementById('homePage');
 
 const basePartRx = /\/?([^\.]+).*/;
-
-const toRootHtml = (f) =>
-  `/${f}`.replace(/^\/\//, '/').replace(/\.md$/, '.html');
 
 const renderMenuObj = (menu) =>
   Object.keys(menu)
@@ -56,7 +53,7 @@ export const editMenu = async () => {
   currentMenu.innerHTML = renderMenuObj(menu);
   const h = pages.find((p) => p.file === 'index.md');
   h.used = true;
-  homePage.innerHTML = `<li title="${toRootHtml(h.file)}">
+  homePage.innerHTML = `<li title="${md2rootHtml(h.file)}">
     <span class="icon-left home"></span>
     <span class="icon-left document"></span>
     ${h.title}
@@ -64,7 +61,7 @@ export const editMenu = async () => {
   morePages.innerHTML = pages
     .filter((p) => !p.used)
     .map(
-      (p) => `<li title="${toRootHtml(p.file)}">
+      (p) => `<li title="${md2rootHtml(p.file)}">
       <span class="icon-left updown"></span>
       <span class="icon-left document"></span>
       <span class="title" contentEditable>${p.title}</span>

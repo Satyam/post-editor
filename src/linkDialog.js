@@ -185,11 +185,6 @@ export const plugin_dialog = {
   open: function () {
     // open.call(core, pluginName, isModify)
 
-    this.context.customLink.modal.querySelector(
-      '.satyam-pages-link'
-    ).innerHTML = `
-      <details><summary>Páginas</summary>${pagesList()}</details>
-      <details><summary>Posts</summary>${postsList()}</details>`;
     this.plugins.dialog.open.call(
       this,
       'customLink',
@@ -272,7 +267,6 @@ export const plugin_dialog = {
     ev.stopPropagation();
     if (aEl.tagName !== 'A') return;
     ev.preventDefault();
-    console.log(aEl.href, aEl.innerHTML);
     const contextLink = this.context.customLink;
     contextLink.focusElement.value = `/roxanacabut${md2rootHtml(
       aEl.getAttribute('href')
@@ -309,6 +303,17 @@ export const plugin_dialog = {
   // This method is called just before the dialog opens.
   // If "update" argument is true, it is not a new call, but a call to modify an already created element.
   on: function (update) {
+    const satyamDiv =
+      this.context.customLink.modal.querySelector('.satyam-pages-link');
+    if (satyamDiv.childNodes.length) {
+      for (const detailEl of satyamDiv.querySelectorAll('details')) {
+        detailEl.open = false;
+      }
+    } else {
+      satyamDiv.innerHTML = `
+      <details><summary>Páginas</summary>${pagesList()}</details>
+      <details><summary>Posts</summary>${postsList()}</details>`;
+    }
     if (!update) {
       this.plugins.customLink.init.call(this);
       this.context.customLink.linkAnchorText.value =

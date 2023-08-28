@@ -250,7 +250,7 @@ on(EVENT.STATE_CHANGED, () => {
   form.className = isPost ? 'is-post' : 'is-page';
   els.save.disabled = !isChanged;
   els.publish.disabled = !fileName || isChanged;
-  els.remove.disabled = isNew;
+  els.remove.disabled = isNew || fileName === 'index.md';
   els.discard.disabled = !isDraft;
 });
 

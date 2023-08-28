@@ -3,14 +3,18 @@ import { objMapString, sortDescending } from './utils';
 
 export const pagesList = () => {
   const drafts = getDrafts();
+  const [home, ...pages] = getPages();
 
-  return `<ul>${getPages()
-    .map((p) =>
-      drafts.some((d) => d.file === p.file)
-        ? `<li class="can-t-edit" title="Está en Borradores">${p.title}</li>`
-        : `<li><a href="${p.file}">${p.title}</a></li>`
-    )
-    .join('')}</ul>`;
+  return `<p><span class="icon-left home"></span>
+      <a href="${home.file}">${home.title}</a>
+    </p>
+    <ul>${pages
+      .map((p) =>
+        drafts.some((d) => d.file === p.file)
+          ? `<li class="can-t-edit" title="Está en Borradores">${p.title}</li>`
+          : `<li><a href="${p.file}">${p.title}</a></li>`
+      )
+      .join('')}</ul>`;
 };
 
 export const postsList = () => {

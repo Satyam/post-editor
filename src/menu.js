@@ -13,8 +13,15 @@ const currentMenu = document.getElementById('currentMenu');
 const morePages = document.getElementById('morePages');
 const menuEditor = document.getElementById('menuEditor');
 const homePage = document.getElementById('homePage');
+const saveMenu = document.getElementById('saveMenu');
 
 const basePartRx = /\/?([^\.]+).*/;
+
+const enableSaveMenu = (enable) => {
+  saveMenu.disabled = !enable;
+};
+
+enableSaveMenu(false);
 
 const renderMenuObj = (menu) =>
   Object.keys(menu)
@@ -76,6 +83,7 @@ export const editMenu = async () => {
     fallbackOnBody: true,
     swapThreshold: 0.65,
     onEnd: (ev) => {
+      enableSaveMenu(true);
       const { from, item, to } = ev;
       console.log({ from, item, to });
       if (from.getAttribute('id') === 'nuevaCarpeta') {
@@ -114,7 +122,7 @@ export const editMenu = async () => {
   }
 };
 
-onClick('#saveMenu', async () => {
+onClick(saveMenu, async () => {
   const parseUl = (ulEl) => {
     const subMenu = {};
     for (const liEl of ulEl.children) {
@@ -128,5 +136,10 @@ onClick('#saveMenu', async () => {
     }
     return subMenu;
   };
+  enableSaveMenu(false);
   await fs.writeFile(MENU_CONFIG, stringify({ menu: parseUl(currentMenu) }));
+});
+
+currentMenu.addEventListener('input', (ev) => {
+  enableSaveMenu(true);
 });

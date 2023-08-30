@@ -18,11 +18,13 @@ const appendTerminal = (contents) => {
     '\n',
     '<br/>'
   )}`;
-  terminal.lastElementChild.scrollIntoView({
-    behavior: 'smooth',
-    block: 'center',
-    inline: 'nearest',
-  });
+  if (contents.length) {
+    terminal.lastElementChild.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+      inline: 'nearest',
+    });
+  }
 };
 
 export const generate = async (wait = false) => {
@@ -181,22 +183,25 @@ export const upload = async () => {
   });
 };
 
-onClick('#generate', async () => {
-  setTerminal('Generando sitio<hr/>');
-  await generate(true);
-  clearTerminal();
-});
+onClick('#hexoButtons', async (btn) => {
+  if (btn.tagName !== 'BUTTON') return;
+  switch (btn.name) {
+    case 'generate':
+      setTerminal('Generando sitio<hr/>');
+      await generate(true);
+      break;
 
-onClick('#viewLocal', async () => {
-  setTerminal('Generando sitio<hr/>');
-  await server();
-  clearTerminal();
-});
+    case 'viewLocal':
+      setTerminal('Generando sitio<hr/>');
+      await server();
+      break;
 
-onClick('#upload', async () => {
-  setTerminal('Generando sitio<hr/>');
-  await generate();
-  appendTerminal('Subiendo el sitio<hr/>');
-  await upload();
+    case 'upload:':
+      setTerminal('Generando sitio<hr/>');
+      await generate();
+      appendTerminal('Subiendo el sitio<hr/>');
+      await upload();
+      break;
+  }
   clearTerminal();
 });

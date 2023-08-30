@@ -37,11 +37,11 @@ const CNAMES = {
   SELECT: 'select',
 };
 
-const btnDraftPage = document.getElementById('draftPage');
-const btnDraftPost = document.getElementById('draftPost');
 const divFileList = document.getElementById('fileList');
 const main = document.getElementById('main');
 
+const btnDraftPage = document.querySelector('button[name="draftPage"]');
+const btnDraftPost = document.querySelector('button[name="draftPost"]');
 const setDraftButtons = () => {
   btnDraftPage.disabled = !getDrafts(false).length;
   btnDraftPost.disabled = !getDrafts(true).length;
@@ -118,61 +118,66 @@ on(EVENT.RESET, () => {
   acceptChanges();
 });
 
-onClick('#newPage', () => {
-  main.className = CNAMES.EDIT;
-  setMdType(false, true, true);
-  setFileName();
-  setForm();
-});
+onClick('#selectButtons', (el) => {
+  if (el.tagName !== 'BUTTON') return;
+  switch (el.name) {
+    case 'newPage':
+      main.className = CNAMES.EDIT;
+      setMdType(false, true, true);
+      setFileName();
+      setForm();
+      break;
 
-onClick('#newPost', () => {
-  main.className = CNAMES.EDIT;
-  setMdType(true, true, true);
-  setFileName();
-  setForm();
-});
+    case 'newPost':
+      main.className = CNAMES.EDIT;
+      setMdType(true, true, true);
+      setFileName();
+      setForm();
+      break;
 
-onClick('#editPage', () => {
-  const drafts = getDrafts();
-  setFileList(CNAMES.PAGE_LIST, pagesList());
-  setMdType(false);
-});
+    case 'editPage':
+      const drafts = getDrafts();
+      setFileList(CNAMES.PAGE_LIST, pagesList());
+      setMdType(false);
+      break;
 
-onClick(btnDraftPage, () => {
-  setFileList(
-    CNAMES.DRAFT_PAGE_LIST,
-    `<ul>${getDrafts()
-      .sort(sortDescending)
-      .map(
-        (p) =>
-          `<li>${p.date} - <a href="${p.file}"
+    case 'draftPage':
+      setFileList(
+        CNAMES.DRAFT_PAGE_LIST,
+        `<ul>${getDrafts()
+          .sort(sortDescending)
+          .map(
+            (p) =>
+              `<li>${p.date} - <a href="${p.file}"
           ${p.isNew ? 'data-is-new' : ''}
           >${p.title}</a></li>`
-      )
-      .join('')}</ul>`
-  );
-  setMdType(false, true);
-});
+          )
+          .join('')}</ul>`
+      );
+      setMdType(false, true);
+      break;
 
-onClick(btnDraftPost, () => {
-  setFileList(
-    CNAMES.DRAFT_POST_LIST,
-    `<ul>${getDrafts(true)
-      .sort(sortDescending)
-      .map(
-        (p) =>
-          `<li>${p.date} - <a href="${p.file}" 
+    case 'draftPost':
+      setFileList(
+        CNAMES.DRAFT_POST_LIST,
+        `<ul>${getDrafts(true)
+          .sort(sortDescending)
+          .map(
+            (p) =>
+              `<li>${p.date} - <a href="${p.file}"
           ${p.isNew ? 'data-is-new' : ''}
           >${p.title}</a></li>`
-      )
-      .join('')}</ul>`
-  );
-  setMdType(true, true);
-});
+          )
+          .join('')}</ul>`
+      );
+      setMdType(true, true);
+      break;
 
-onClick('#editPost', () => {
-  setFileList(CNAMES.POST_LIST, postsList());
-  setMdType(true);
+    case 'editPost':
+      setFileList(CNAMES.POST_LIST, postsList());
+      setMdType(true);
+      break;
+  }
 });
 
 onClick(divFileList, async (aEl) => {

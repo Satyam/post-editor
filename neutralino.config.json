@@ -37,8 +37,8 @@
       "nativeAllowList": ["app.*"]
     },
     "chrome": {
-      "width": 800,
-      "height": 500,
+      "width": 1000,
+      "height": 700,
       "args": "--user-agent=\"Neutralinojs chrome mode\""
     }
   },

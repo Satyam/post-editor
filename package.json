@@ -9,7 +9,10 @@
     "help": "neu help",
     "neu": "neu",
     "build": "rollup --config rollup.config.mjs",
-    "postupdate": "cp node_modules/suneditor/dist/css/suneditor.min.css node_modules/sortablejs/Sortable.min.js resources/"
+    "postupdate": "cp node_modules/suneditor/dist/css/suneditor.min.css node_modules/sortablejs/Sortable.min.js resources/",
+    "hexo:generate": "cd hexo && npm run build",
+    "hexo:server": "cd hexo && npm run server",
+    "hexo:deploy": "cd hexo && npm run deploy"
   },
   "repository": {
     "type": "git",

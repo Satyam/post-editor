@@ -1,10 +1,9 @@
-import { HEXO_DIR } from './data';
 import { EVENT, on } from './events';
 import { onClick } from './utils';
 import { confirm } from './dialog';
 
 const terminal = document.getElementById('terminal');
-
+const hexoButtons = document.getElementById('hexoButtons');
 const clearTerminal = () => {
   terminal.innerHTML = '';
 };
@@ -27,34 +26,60 @@ const appendTerminal = (contents) => {
   }
 };
 
+let activeProcess = false;
+
+const setActiveProcess = (id) => {
+  activeProcess = id ?? false;
+  for (const btn of hexoButtons.querySelectorAll('button')) {
+    btn.disabled = id !== false;
+  }
+};
+
+on(EVENT.PAGE_SWITCH, async () => {
+  if (activeProcess === false) return false;
+  if (
+    await confirm(
+      'El servidor local está activo y no se puede cambiar de solapa mientras lo esté.<br/>¿Desea apagarlo?',
+      '¿Quiere apagarlo?'
+    )
+  ) {
+    await Neutralino.os.updateSpawnedProcess(activeProcess, 'exit');
+    setActiveProcess(false);
+    return false;
+  } else {
+    return true; // stop switch;
+  }
+});
+
 export const generate = async (wait = false) => {
-  const process = await Neutralino.os.spawnProcess(
-    `cd ${HEXO_DIR} && ./node_modules/.bin/hexo generate`
-  );
+  const process = await Neutralino.os.spawnProcess('npm run hexo:generate');
+  setActiveProcess(process.id);
 
   await new Promise((resolve, reject) => {
     const handler = (ev) => {
-      if (process.id == ev.detail.id) {
-        switch (ev.detail.action) {
+      const { id, data, action } = ev.detail;
+      if (process.id == id) {
+        switch (action) {
           case 'stdOut':
-            appendTerminal(ev.detail.data);
+            appendTerminal(data);
             break;
           case 'stdErr':
-            appendTerminal(ev.detail.data);
+            appendTerminal(data);
             reject();
             break;
           case 'exit':
             appendTerminal(
               `<hr/>La generación terminó con ${
-                ev.detail.data ? `error ${ev.detail.data}` : `éxito`
+                data ? `error ${data}` : `éxito`
               }`
             );
+            Neutralino.events.off('spawnedProcess', handler);
+            setActiveProcess(false);
             if (wait) {
               appendTerminal('<hr/>Haga click [aquí] para cerrar');
               onClick(
                 terminal,
                 () => {
-                  Neutralino.events.off('spawnedProcess', handler);
                   resolve();
                 },
                 true
@@ -70,35 +95,16 @@ export const generate = async (wait = false) => {
 
 const hexoURL = /(http:\/\/localhost:\d+\/\S*)/;
 
-let activeProcess = false;
-
-on(EVENT.PAGE_SWITCH, async () => {
-  if (activeProcess === false) return false;
-  if (
-    await confirm(
-      'El servidor local está activo y no se puede cambiar de solapa mientras lo esté.<br/>¿Desea apagarlo?',
-      '¿Quiere apagarlo?'
-    )
-  ) {
-    await Neutralino.os.updateSpawnedProcess(activeProcess, 'exit');
-    activeProcess = false;
-    return false;
-  } else {
-    return true; // stop switch;
-  }
-});
-
 export const server = async () => {
-  const process = await Neutralino.os.spawnProcess(
-    `cd ${HEXO_DIR} && ./node_modules/.bin/hexo server`
-  );
-  activeProcess = process.id;
+  const process = await Neutralino.os.spawnProcess('npm run hexo:server');
+  setActiveProcess(process.id);
   await new Promise((resolve, reject) => {
     const handler = (ev) => {
-      if (process.id == ev.detail.id) {
-        switch (ev.detail.action) {
+      const { id, data, action } = ev.detail;
+      if (process.id == id) {
+        switch (action) {
           case 'stdOut':
-            const m = hexoURL.exec(ev.detail.data);
+            const m = hexoURL.exec(data);
             if (m) {
               appendTerminal(`<hr/>Haga click en esta ventana para cerrar el servidor<br/>
             La solapa del navegador debe cerrarla independientemente<br/>`);
@@ -107,21 +113,21 @@ export const server = async () => {
                 terminal,
                 async () => {
                   await Neutralino.os.updateSpawnedProcess(process.id, 'exit');
-                  activeProcess = false;
+                  setActiveProcess(false);
                 },
                 true
               );
             } else {
-              appendTerminal(ev.detail.data);
+              appendTerminal(data);
             }
             break;
           case 'stdErr':
-            appendTerminal(ev.detail.data);
+            appendTerminal(data);
             reject();
             break;
           case 'exit':
             Neutralino.events.off('spawnedProcess', handler);
-            activeProcess = false;
+            setActiveProcess(false);
             resolve();
             break;
         }
@@ -133,44 +139,38 @@ export const server = async () => {
 };
 
 export const upload = async () => {
-  const process = await Neutralino.os.spawnProcess(
-    `cd ${HEXO_DIR} && ./node_modules/.bin/hexo deploy  pwd="${await Neutralino.os.getEnv(
-      'ROXY_SITE_PASSWORD'
-    )}"`
-  );
-  let inside = false;
+  const process = await Neutralino.os.spawnProcess('npm run hexo:deploy');
+  setActiveProcess(process.id);
+
   await new Promise((resolve, reject) => {
     const handler = (ev) => {
-      if (process.id == ev.detail.id) {
-        switch (ev.detail.action) {
+      const { id, data, action } = ev.detail;
+      if (process.id == id) {
+        switch (action) {
           case 'stdOut':
-            const text = ev.detail.data;
-            if (inside) {
-              terminal.querySelector('pre').innerHTML = text;
+            if (data.includes('basicFTP')) {
+              appendTerminal(`${data}\n<pre class="mono"></pre>`);
+            } else if (data.includes('>>')) {
+              document.querySelector('pre.mono').innerHTML = data;
             } else {
-              if (text.includes('----')) {
-                appendTerminal('<pre></pre>');
-                inside = true;
-              } else {
-                appendTerminal(text);
-              }
+              appendTerminal(data);
             }
             break;
           case 'stdErr':
-            appendTerminal(ev.detail.data);
+            appendTerminal(data);
             reject();
             break;
           case 'exit':
-            inside = false;
             appendTerminal(
               `<hr/>La generación terminó con ${
-                ev.detail.data ? `error ${ev.detail.data}` : `éxito`
+                data ? `error ${data}` : `éxito`
               }<hr/>Haga click [aquí] para cerrar`
             );
+            Neutralino.events.off('spawnedProcess', handler);
+            setActiveProcess(false);
             onClick(
               terminal,
               () => {
-                Neutralino.events.off('spawnedProcess', handler);
                 resolve();
               },
               true
@@ -183,7 +183,7 @@ export const upload = async () => {
   });
 };
 
-onClick('#hexoButtons', async (btn) => {
+onClick(hexoButtons, async (btn) => {
   if (btn.tagName !== 'BUTTON') return;
   switch (btn.name) {
     case 'generate':
@@ -196,7 +196,7 @@ onClick('#hexoButtons', async (btn) => {
       await server();
       break;
 
-    case 'upload:':
+    case 'upload':
       setTerminal('Generando sitio<hr/>');
       await generate();
       appendTerminal('Subiendo el sitio<hr/>');
@@ -204,4 +204,5 @@ onClick('#hexoButtons', async (btn) => {
       break;
   }
   clearTerminal();
+  setActiveProcess(false); // just to make it double sure.
 });

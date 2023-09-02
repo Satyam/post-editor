@@ -180,9 +180,12 @@ onClick('#selectButtons', (el) => {
   }
 });
 
-onClick(divFileList, async (aEl) => {
+// Can't use `onCLick` from `utils.js`
+divFileList.addEventListener('click', async (ev) => {
+  const aEl = ev.target;
   if (aEl.tagName !== 'A') return;
-
+  ev.preventDefault();
+  ev.stopPropagation();
   setFileName(aEl.getAttribute('href'));
   if ('isNew' in aEl.dataset) {
     setMdType(isPost, isDraft, true);

@@ -8,15 +8,15 @@ const clearTerminal = () => {
   terminal.innerHTML = '';
 };
 
+const escRx = /\x1b\[\d\dm/g;
 const setTerminal = (contents) => {
-  terminal.innerHTML = contents.replaceAll('\n', '<br/>');
+  terminal.innerHTML = contents.replaceAll('\n', '<br/>').replaceAll(escRx, '');
 };
 
 const appendTerminal = (contents) => {
-  terminal.innerHTML = `${terminal.innerHTML}${contents.replaceAll(
-    '\n',
-    '<br/>'
-  )}`;
+  terminal.innerHTML = `${terminal.innerHTML}${contents
+    .replaceAll('\n', '<br/>')
+    .replaceAll(escRx, '')}`;
   if (contents.length) {
     terminal.lastElementChild.scrollIntoView({
       behavior: 'smooth',

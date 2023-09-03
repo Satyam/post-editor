@@ -1,3 +1,6 @@
+body {
+  font-family: sans-serif;
+}
 header {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;

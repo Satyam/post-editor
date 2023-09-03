@@ -48,9 +48,11 @@ const setActiveProcess = (id) => {
 };
 
 const killActiveProcess = async () => {
-  if (activeProcess !== false)
+  if (activeProcess !== false) {
+    setActiveProcess(false);
+    await Neutralino.os.updateSpawnedProcess(activeProcess, 'stdInEnd');
     await Neutralino.os.updateSpawnedProcess(activeProcess, 'exit');
-  setActiveProcess(false);
+  }
 };
 
 on(EVENT.PAGE_SWITCH, async () => {
@@ -90,10 +92,10 @@ export const generate = async (wait = false) => {
                 data ? `error ${data}` : `éxito`
               }`
             );
-            Neutralino.events.off('spawnedProcess', handler);
+            await Neutralino.events.off('spawnedProcess', handler);
             setActiveProcess(false);
             if (wait) {
-              appendTerminal('<hr/>Haga click [aquí] para cerrar');
+              appendTerminal('<hr/>Haga click en esta ventana para cerrar');
               await anyClick();
               resolve();
             } else resolve();
@@ -120,9 +122,11 @@ export const server = async () => {
             if (m) {
               appendTerminal(`<hr/>Haga click en esta ventana para cerrar el servidor<br/>
             La solapa del navegador debe cerrarla independientemente<br/>`);
-              Neutralino.os.open(m[1]);
+              await Neutralino.os.open(m[1]);
               await anyClick();
               await killActiveProcess();
+              await Neutralino.events.off('spawnedProcess', handler);
+              resolve();
             } else {
               appendTerminal(data);
             }
@@ -170,9 +174,9 @@ export const upload = async () => {
             appendTerminal(
               `<hr/>La generación terminó con ${
                 data ? `error ${data}` : `éxito`
-              }<hr/>Haga click [aquí] para cerrar`
+              }<hr/>Haga click en esta ventana para cerrar`
             );
-            Neutralino.events.off('spawnedProcess', handler);
+            await Neutralino.events.off('spawnedProcess', handler);
             setActiveProcess(false);
             await anyClick();
             resolve();

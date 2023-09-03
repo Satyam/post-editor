@@ -18,9 +18,11 @@ export const confirm = (msg, title = 'Roxy post editor') => {
   });
 };
 
-onClick(dialogEl, (target) => {
-  if (target.tagName === 'BUTTON') {
+onClick(
+  dialogEl,
+  (target) => {
     dialogEl.returnValue = target.value;
     dialogEl.close();
-  }
-});
+  },
+  'button'
+);

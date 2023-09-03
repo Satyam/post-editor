@@ -30,35 +30,39 @@ loadInfo()
     tabSelected.setAttribute('disabled', '');
     selectInit();
 
-    onClick('header', async (btn) => {
-      if (btn === tabSelected) return;
+    onClick(
+      'header',
+      async (btn) => {
+        if (btn === tabSelected) return;
 
-      if (await dispatch(EVENT.PAGE_SWITCH)) return;
-      tabSelected.removeAttribute('disabled');
-      tabSelected = btn;
-      btn.setAttribute('disabled', '');
-      switch (btn.name) {
-        case 'select':
-          clearSelect();
-          // main.className = CNAMES.SELECT;
-          break;
-        case 'menuEditor':
-          main.className = CNAMES.MENU;
-          editMenu();
-          break;
-        case 'site':
-          main.className = CNAMES.SITE;
-          break;
-        case 'exit':
-          dispatch(EVENT.EXIT).then((ev) => {
-            if (!ev) {
-              window.close();
-              Neutralino.app.exit();
-            }
-          });
-          break;
-      }
-    });
+        if (await dispatch(EVENT.PAGE_SWITCH)) return;
+        tabSelected.removeAttribute('disabled');
+        tabSelected = btn;
+        btn.setAttribute('disabled', '');
+        switch (btn.name) {
+          case 'select':
+            clearSelect();
+            // main.className = CNAMES.SELECT;
+            break;
+          case 'menuEditor':
+            main.className = CNAMES.MENU;
+            editMenu();
+            break;
+          case 'site':
+            main.className = CNAMES.SITE;
+            break;
+          case 'exit':
+            dispatch(EVENT.EXIT).then((ev) => {
+              if (!ev) {
+                window.close();
+                Neutralino.app.exit();
+              }
+            });
+            break;
+        }
+      },
+      'button'
+    );
   })
   .catch((err) => {
     console.log(err);

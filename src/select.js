@@ -118,81 +118,83 @@ on(EVENT.RESET, () => {
   acceptChanges();
 });
 
-onClick('#selectButtons', (el) => {
-  if (el.tagName !== 'BUTTON') return;
-  switch (el.name) {
-    case 'newPage':
-      main.className = CNAMES.EDIT;
-      setMdType(false, true, true);
-      setFileName();
-      setForm();
-      break;
+onClick(
+  '#selectButtons',
+  (el) => {
+    switch (el.name) {
+      case 'newPage':
+        main.className = CNAMES.EDIT;
+        setMdType(false, true, true);
+        setFileName();
+        setForm();
+        break;
 
-    case 'newPost':
-      main.className = CNAMES.EDIT;
-      setMdType(true, true, true);
-      setFileName();
-      setForm();
-      break;
+      case 'newPost':
+        main.className = CNAMES.EDIT;
+        setMdType(true, true, true);
+        setFileName();
+        setForm();
+        break;
 
-    case 'editPage':
-      const drafts = getDrafts();
-      setFileList(CNAMES.PAGE_LIST, pagesList());
-      setMdType(false);
-      break;
+      case 'editPage':
+        const drafts = getDrafts();
+        setFileList(CNAMES.PAGE_LIST, pagesList());
+        setMdType(false);
+        break;
 
-    case 'draftPage':
-      setFileList(
-        CNAMES.DRAFT_PAGE_LIST,
-        `<ul>${getDrafts()
-          .sort(sortDescending)
-          .map(
-            (p) =>
-              `<li>${p.date} - <a href="${p.file}"
+      case 'draftPage':
+        setFileList(
+          CNAMES.DRAFT_PAGE_LIST,
+          `<ul>${getDrafts()
+            .sort(sortDescending)
+            .map(
+              (p) =>
+                `<li>${p.date} - <a href="${p.file}"
           ${p.isNew ? 'data-is-new' : ''}
           >${p.title}</a></li>`
-          )
-          .join('')}</ul>`
-      );
-      setMdType(false, true);
-      break;
+            )
+            .join('')}</ul>`
+        );
+        setMdType(false, true);
+        break;
 
-    case 'draftPost':
-      setFileList(
-        CNAMES.DRAFT_POST_LIST,
-        `<ul>${getDrafts(true)
-          .sort(sortDescending)
-          .map(
-            (p) =>
-              `<li>${p.date} - <a href="${p.file}"
+      case 'draftPost':
+        setFileList(
+          CNAMES.DRAFT_POST_LIST,
+          `<ul>${getDrafts(true)
+            .sort(sortDescending)
+            .map(
+              (p) =>
+                `<li>${p.date} - <a href="${p.file}"
           ${p.isNew ? 'data-is-new' : ''}
           >${p.title}</a></li>`
-          )
-          .join('')}</ul>`
-      );
-      setMdType(true, true);
-      break;
+            )
+            .join('')}</ul>`
+        );
+        setMdType(true, true);
+        break;
 
-    case 'editPost':
-      setFileList(CNAMES.POST_LIST, postsList());
-      setMdType(true);
-      break;
-  }
-});
+      case 'editPost':
+        setFileList(CNAMES.POST_LIST, postsList());
+        setMdType(true);
+        break;
+    }
+  },
+  'button'
+);
 
-// Can't use `onCLick` from `utils.js`
-divFileList.addEventListener('click', async (ev) => {
-  const aEl = ev.target;
-  if (aEl.tagName !== 'A') return;
-  ev.preventDefault();
-  ev.stopPropagation();
-  setFileName(aEl.getAttribute('href'));
-  if ('isNew' in aEl.dataset) {
-    setMdType(isPost, isDraft, true);
-  }
+onClick(
+  divFileList,
+  async (aEl) => {
+    setFileName(aEl.getAttribute('href'));
+    if ('isNew' in aEl.dataset) {
+      setMdType(isPost, isDraft, true);
+    }
 
-  const { matter, content } = await readMd();
+    const { matter, content } = await readMd();
 
-  setForm(matter, content);
-  main.className = CNAMES.EDIT;
-});
+    setForm(matter, content);
+    main.className = CNAMES.EDIT;
+  },
+  'a'
+);

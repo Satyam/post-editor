@@ -201,16 +201,19 @@ onClick(catList, (target) => {
   refreshCats();
   checkChanges();
 });
-onClick(selectedCats, (li) => {
-  if (li.tagName !== 'LI') return;
-  if ('isNew' in li.dataset) {
-    els.newCat.value = '';
-  } else {
-    categories = categories.filter((cat) => cat !== li.innerText);
-  }
-  refreshCats();
-  checkChanges();
-});
+onClick(
+  selectedCats,
+  (li) => {
+    if ('isNew' in li.dataset) {
+      els.newCat.value = '';
+    } else {
+      categories = categories.filter((cat) => cat !== li.innerText);
+    }
+    refreshCats();
+    checkChanges();
+  },
+  'li'
+);
 
 onClick(tagsList, (tagEl) => {
   tags.push(tagEl.innerText);
@@ -218,16 +221,19 @@ onClick(tagsList, (tagEl) => {
   checkChanges();
 });
 
-onClick(selectedTags, (li) => {
-  if (li.tagName !== 'LI') return;
-  if ('isNew' in li.dataset) {
-    els.newTag.value = '';
-  } else {
-    tags = tags.filter((tag) => tag !== li.innerText);
-  }
-  refreshTags();
-  checkChanges();
-});
+onClick(
+  selectedTags,
+  (li) => {
+    if ('isNew' in li.dataset) {
+      els.newTag.value = '';
+    } else {
+      tags = tags.filter((tag) => tag !== li.innerText);
+    }
+    refreshTags();
+    checkChanges();
+  },
+  'li'
+);
 
 form.addEventListener('input', (ev) => {
   const { name } = ev.target;

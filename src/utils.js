@@ -53,18 +53,17 @@ export const slugify = (str) => {
     .replaceAll(multipleDashesRx, '-'); // collapse dashes
 };
 
-export const onClick = (selector, fn, once) => {
+export const onClick = (selector, fn, targetSel = '*') => {
   const el =
     typeof selector === 'string' ? document.querySelector(selector) : selector;
-  el.addEventListener(
-    'click',
-    (ev) => {
+  el.addEventListener('click', (ev) => {
+    const target = ev.target;
+    if (target.matches(targetSel)) {
       ev.stopPropagation();
       ev.preventDefault();
-      fn(ev.target);
-    },
-    once && { once: true }
-  );
+      fn(target, ev);
+    }
+  });
 };
 
 export const md2rootHtml = (f) =>

@@ -5,14 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "rollup --config rollup.config.mjs &&neu run --disable-auto-reload",
+    "start": "rollup --config rollup.config.mjs &&neu run --disable-auto-reload -- --verbose",
     "help": "neu help",
     "neu": "neu",
     "build": "rollup --config rollup.config.mjs",
     "postupdate": "cp node_modules/suneditor/dist/css/suneditor.min.css node_modules/sortablejs/Sortable.min.js resources/",
-    "hexo:generate": "cd hexo && npm run build",
-    "hexo:server": "cd hexo && npm run server",
-    "hexo:deploy": "cd hexo && npm run deploy"
+    "hexo:build": "hexo generate --cwd hexo",
+    "hexo:clean": "hexo clean --cwd hexo",
+    "hexo:deploy": "hexo deploy --cwd hexo",
+    "hexo:server": "hexo server --cwd hexo"
   },
   "repository": {
     "type": "git",
@@ -32,8 +33,21 @@
     "rollup": "^3.26.3"
   },
   "dependencies": {
+    "basic-ftp": "^5.0.3",
+    "hexo": "^6.3.0",
+    "hexo-generator-archive": "^2.0.0",
+    "hexo-generator-category": "^2.0.0",
+    "hexo-generator-tag": "^2.0.0",
+    "hexo-renderer-ejs": "^2.0.0",
+    "hexo-renderer-marked": "^6.0.0",
+    "hexo-renderer-stylus": "^3.0.0",
+    "hexo-server": "^3.0.0",
+    "hexo-theme-landscape": "^1.0.0",
+    "minimist": "^1.2.8",
     "sortablejs": "^1.15.0",
     "suneditor": "^2.45.1",
+    "uuid": "^9.0.0",
+    "websocket": "^1.0.34",
     "yaml": "^2.3.1"
   }
 }

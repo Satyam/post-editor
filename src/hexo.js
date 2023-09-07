@@ -5,11 +5,21 @@ import { confirm } from './dialog';
 const terminal = document.getElementById('terminal');
 const hexoButtons = document.getElementById('hexoButtons');
 
+const nEv = Neutralino.events;
+
+nEv.on('extensionReady', async (ev) => {
+  console.log('-- extension ready', ev.detail);
+});
+
+nEv.on('hexo', (ev) => {
+  console.log('--received from extension', ev.detail);
+});
+
 const clearTerminal = () => {
   terminal.innerHTML = '';
 };
 
-const escRx = /\x1b\[\d\dm/g;
+const escRx = /\x1b\[\d+m/g;
 const setTerminal = (contents) => {
   terminal.innerHTML = contents.replaceAll('\n', '<br/>').replaceAll(escRx, '');
 };
@@ -26,6 +36,12 @@ const appendTerminal = (contents) => {
     });
   }
 };
+
+[/*'LOG', */ 'WARN', 'INFO', 'TRACE', 'ERROR', 'FATAL'].forEach((type) => {
+  nEv.on(type, (ev) => {
+    appendTerminal(`${type}: ${ev.detail}\n`);
+  });
+});
 
 const anyClick = async () =>
   new Promise((resolve) => {
@@ -71,81 +87,85 @@ on(EVENT.PAGE_SWITCH, async () => {
 });
 
 export const generate = async (wait = false) => {
-  const process = await Neutralino.os.spawnProcess('npm run hexo:generate');
-  setActiveProcess(process.id);
+  await Neutralino.extensions.dispatch('js.neutralino.hexo', 'generate', {});
 
-  await new Promise((resolve, reject) => {
-    const handler = async (ev) => {
-      const { id, data, action } = ev.detail;
-      if (process.id == id) {
-        switch (action) {
-          case 'stdOut':
-            appendTerminal(data);
-            break;
-          case 'stdErr':
-            appendTerminal(data);
-            reject();
-            break;
-          case 'exit':
-            appendTerminal(
-              `<hr/>La generación terminó con ${
-                data ? `error ${data}` : `éxito`
-              }`
-            );
-            await Neutralino.events.off('spawnedProcess', handler);
-            setActiveProcess(false);
-            if (wait) {
-              appendTerminal('<hr/>Haga click en esta ventana para cerrar');
-              await anyClick();
-              resolve();
-            } else resolve();
-            break;
-        }
-      }
-    };
-    Neutralino.events.on('spawnedProcess', handler);
-  });
+  // const process = await Neutralino.os.spawnProcess('npm run hexo:generate');
+  // setActiveProcess(process.id);
+
+  // await new Promise((resolve, reject) => {
+  //   const handler = async (ev) => {
+  //     const { id, data, action } = ev.detail;
+  //     if (process.id == id) {
+  //       switch (action) {
+  //         case 'stdOut':
+  //           appendTerminal(data);
+  //           break;
+  //         case 'stdErr':
+  //           appendTerminal(data);
+  //           reject();
+  //           break;
+  //         case 'exit':
+  //           appendTerminal(
+  //             `<hr/>La generación terminó con ${
+  //               data ? `error ${data}` : `éxito`
+  //             }`
+  //           );
+  //           await Neutralino.events.off('spawnedProcess', handler);
+  //           setActiveProcess(false);
+  //           if (wait) {
+  //             appendTerminal('<hr/>Haga click en esta ventana para cerrar');
+  //             await anyClick();
+  //             resolve();
+  //           } else resolve();
+  //           break;
+  //       }
+  //     }
+  //   };
+  //   Neutralino.events.on('spawnedProcess', handler);
+  // });
 };
 
 const hexoURL = /(http:\/\/localhost:\d+\/[^\s\x1b\?]*)/;
 
 export const server = async () => {
-  const process = await Neutralino.os.spawnProcess('npm run hexo:server');
-  setActiveProcess(process.id);
-  await new Promise((resolve, reject) => {
-    const handler = async (ev) => {
-      const { id, data, action } = ev.detail;
-      if (process.id == id) {
-        switch (action) {
-          case 'stdOut':
-            const m = hexoURL.exec(data);
-            if (m) {
-              appendTerminal(`<hr/>Haga click en esta ventana para cerrar el servidor<br/>
-            La solapa del navegador debe cerrarla independientemente<br/>`);
-              await Neutralino.os.open(m[1]);
-              await anyClick();
-              await killActiveProcess();
-              await Neutralino.events.off('spawnedProcess', handler);
-              resolve();
-            } else {
-              appendTerminal(data);
-            }
-            break;
-          case 'stdErr':
-            appendTerminal(data);
-            reject();
-            break;
-          case 'exit':
-            Neutralino.events.off('spawnedProcess', handler);
-            setActiveProcess(false);
-            resolve();
-            break;
-        }
-      }
-    };
+  await Neutralino.extensions.dispatch('js.neutralino.hexo', 'server', {});
 
-    Neutralino.events.on('spawnedProcess', handler);
-  });
+  // const process = await Neutralino.os.spawnProcess('npm run hexo:server');
+  // setActiveProcess(process.id);
+  // await new Promise((resolve, reject) => {
+  //   const handler = async (ev) => {
+  //     const { id, data, action } = ev.detail;
+  //     if (process.id == id) {
+  //       switch (action) {
+  //         case 'stdOut':
+  //           const m = hexoURL.exec(data);
+  //           if (m) {
+  //             appendTerminal(`<hr/>Haga click en esta ventana para cerrar el servidor<br/>
+  //           La solapa del navegador debe cerrarla independientemente<br/>`);
+  //             await Neutralino.os.open(m[1]);
+  //             await anyClick();
+  //             await killActiveProcess();
+  //             await Neutralino.events.off('spawnedProcess', handler);
+  //             resolve();
+  //           } else {
+  //             appendTerminal(data);
+  //           }
+  //           break;
+  //         case 'stdErr':
+  //           appendTerminal(data);
+  //           reject();
+  //           break;
+  //         case 'exit':
+  //           Neutralino.events.off('spawnedProcess', handler);
+  //           setActiveProcess(false);
+  //           resolve();
+  //           break;
+  //       }
+  //     }
+  //   };
+
+  //   Neutralino.events.on('spawnedProcess', handler);
+  // });
 };
 
 export const upload = async () => {

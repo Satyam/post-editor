@@ -3,13 +3,14 @@ const { v4: uuidv4 } = require('uuid');
 const argv = require('minimist')(process.argv.slice(2));
 const Hexo = require('hexo');
 const { join } = require('node:path');
+const open = require('open');
 
 const NL_PORT = argv['nl-port'];
 const NL_TOKEN = argv['nl-token'];
 const NL_EXTID = argv['nl-extension-id'];
 const client = new WS(`ws://localhost:${NL_PORT}?extensionId=${NL_EXTID}`);
 
-const send = (msg, event = 'hexo') => {
+const send = (msg, event = 'LOG') => {
   client.send(
     JSON.stringify({
       id: uuidv4(),
@@ -22,10 +23,6 @@ const send = (msg, event = 'hexo') => {
 
 const escRx = /\x1b\[\d+m/g;
 
-const hexo = new Hexo(join(process.cwd(), 'hexo'), {});
-
-const originalLogger = hexo.log;
-
 function replaceStr(string, ...placeholders) {
   const replaced = string.replaceAll(/%[sd]/g, () =>
     placeholders.shift().toString()
@@ -33,7 +30,7 @@ function replaceStr(string, ...placeholders) {
   return [replaced, ...placeholders].join(' ').replaceAll(escRx, '');
 }
 
-const setFakeConsole = () => {
+const setFakeConsole = (hexo) => {
   console.log('setting fake console');
   // hexo.log.debug = (...args) => send(replaceStr(...args), 'LOG');
   hexo.log.trace = (...args) => send(replaceStr(...args), 'TRACE');
@@ -42,7 +39,7 @@ const setFakeConsole = () => {
   hexo.log.error = (...args) => send(replaceStr(...args), 'ERROR');
   hexo.log.fatal = (...args) => send(replaceStr(...args), 'FATAL');
 };
-const unsetFakeConsole = () => {
+const unsetFakeConsole = (hexo, originalLogger) => {
   console.log('restoring');
   // hexo.log.debug = originalLogger.debug;
   hexo.log.trace = originalLogger.trace;
@@ -57,46 +54,66 @@ client.onerror = (err) =>
 
 client.onopen = () => console.log('Connected');
 
-client.onclose = () => process.exit();
-
 let server = false;
-hexo.init().then(() => {
-  client.onmessage = (e) => {
-    const { event, data } = JSON.parse(e.data);
-    // console.log('message', event, data);
+let serverURL = null;
 
-    switch (event) {
-      case 'generate':
-        setFakeConsole();
-        hexo.call('generate', {}).then((s) => {
-          unsetFakeConsole();
-          send('generate done');
-        });
-        break;
-      case 'server':
-        if (server) {
-          send('Server is already running');
-        } else {
-          setFakeConsole();
-          console.log('about to start server');
-          hexo.call('server', { open: true }).then((s) => {
-            server = s;
-            send(`server active: ${JSON.stringify(s.address())}`);
-            unsetFakeConsole();
-          });
-        }
-        break;
-      case 'stopServer':
-        if (server) {
-          setFakeConsole();
-          console.log('closing server');
-          server.close();
-          hexo.unwatch();
-          server = false;
-          send('server closed');
-          unsetFakeConsole();
-        }
-        break;
+client.onclose = () => {
+  console.log('exiting...');
+  if (server) {
+    server.close();
+  }
+  process.exit();
+};
+
+const commands = {
+  generate: (hexo) =>
+    hexo.call('generate', {}).then(() => {
+      send('generate done', 'DONE');
+    }),
+  viewLocal: (hexo) => {
+    if (server) {
+      return open(serverURL).then(() => 'Server is already running');
+    } else {
+      return hexo.call('server', { open: true }).then((s) => {
+        server = s;
+        const { address, port } = s.address();
+        const { root } = hexo.config;
+        serverURL = new URL(
+          `http://${
+            address === '0.0.0.0' || address === '::' ? 'localhost' : address
+          }:${port}${root.startsWith('/') ? root : `/${root}`}`
+        ).toString();
+        return 'server done';
+      });
     }
-  };
-});
+  },
+  upload: (hexo) =>
+    hexo.call('deploy', { generate: true }).then(() => {
+      return 'deployment done';
+    }),
+};
+
+client.onmessage = (e) => {
+  const { event } = JSON.parse(e.data);
+  const command = commands[event];
+  if (command) {
+    const hexo = new Hexo(join(process.cwd(), 'hexo'), {});
+    const originalLogger = hexo.log;
+    hexo
+      .init()
+      .then(() => {
+        setFakeConsole(hexo);
+        return command(hexo);
+      })
+      .then((msg) => {
+        unsetFakeConsole(hexo, originalLogger);
+        send(msg, 'DONE');
+        hexo.exit();
+      })
+      .catch((err) => {
+        unsetFakeConsole(hexo, originalLogger);
+        send(JSON.stringify(err, null, 2), 'FATAL');
+        hexo.exit(err);
+      });
+  }
+};

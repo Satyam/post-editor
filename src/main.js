@@ -35,7 +35,7 @@ loadInfo()
       async (btn) => {
         if (btn === tabSelected) return;
 
-        if (await dispatch(EVENT.PAGE_SWITCH)) return;
+        if (await dispatch(EVENT.PAGE_SWITCH, btn.name)) return;
         tabSelected.removeAttribute('disabled');
         tabSelected = btn;
         btn.setAttribute('disabled', '');

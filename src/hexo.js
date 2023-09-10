@@ -9,9 +9,20 @@ const clearTerminal = () => {
   terminal.innerHTML = '';
 };
 
-const escRx = /\x1b\[\d+m/g;
+const escRx = /\x1b\[\d+m/gm;
+const progressRx = /--\s*.+\sTamaño:\s*\d+\s*Total:\s*\d+\s*--/m;
+const preRx = /<pre>.*<\/pre>/gms;
 
 const appendTerminal = (contents) => {
+  if (progressRx.test(contents)) {
+    const log = terminal.innerHTML;
+    if (preRx.test(log)) {
+      terminal.innerHTML = log.replace(preRx, `<pre>${contents}</pre>`);
+      return;
+    } else {
+      contents = `<pre>${contents}</pre>`;
+    }
+  }
   terminal.innerHTML = `${terminal.innerHTML}${contents
     .replaceAll('\n', '<br/>')
     .replaceAll(escRx, '')}`;

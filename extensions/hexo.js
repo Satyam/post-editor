@@ -21,32 +21,27 @@ const send = (msg, event = 'LOG') => {
   );
 };
 
-const escRx = /\x1b\[\d+m/g;
+const escRx = /\x1b\[\d+m/gm;
 
 function replaceStr(string, ...placeholders) {
-  const replaced = string.replaceAll(/%[sd]/g, () =>
-    placeholders.shift().toString()
-  );
-  return [replaced, ...placeholders].join(' ').replaceAll(escRx, '');
+  if (typeof string === 'string') {
+    const replaced = string.replaceAll(/%[sd]/g, () =>
+      placeholders.shift().toString()
+    );
+    return [replaced, ...placeholders].join('\n').replaceAll(escRx, '');
+  } else {
+    return [string, ...placeholders]
+      .map((obj) => JSON.stringify(obj, null, 2))
+      .join('\n')
+      .replaceAll(escRx, '');
+  }
 }
 
 const setFakeConsole = (hexo) => {
   console.log('setting fake console');
-  // hexo.log.debug = (...args) => send(replaceStr(...args), 'LOG');
-  hexo.log.trace = (...args) => send(replaceStr(...args), 'TRACE');
-  hexo.log.info = (...args) => send(replaceStr(...args), 'INFO');
-  hexo.log.warn = (...args) => send(replaceStr(...args), 'WARN');
-  hexo.log.error = (...args) => send(replaceStr(...args), 'ERROR');
-  hexo.log.fatal = (...args) => send(replaceStr(...args), 'FATAL');
-};
-const unsetFakeConsole = (hexo, originalLogger) => {
-  console.log('restoring');
-  // hexo.log.debug = originalLogger.debug;
-  hexo.log.trace = originalLogger.trace;
-  hexo.log.info = originalLogger.info;
-  hexo.log.warn = originalLogger.warn;
-  hexo.log.error = originalLogger.error;
-  hexo.log.fatal = originalLogger.fatal;
+  ['trace', 'info', 'warn', 'error', 'fatal' /*,'log'*/].forEach((type) => {
+    hexo.log[type] = (...args) => send(replaceStr(...args), type.toUpperCase());
+  });
 };
 
 client.onerror = (err) =>
@@ -66,54 +61,47 @@ client.onclose = () => {
 };
 
 const commands = {
-  generate: (hexo) =>
-    hexo.call('generate', {}).then(() => {
-      send('generate done', 'DONE');
-    }),
-  viewLocal: (hexo) => {
+  generate: async (hexo) => {
+    await hexo.call('generate', {});
+    return 'generate done';
+  },
+  viewLocal: async (hexo) => {
     if (server) {
-      return open(serverURL).then(() => 'Server is already running');
+      await open(serverURL);
+      return 'Server is already running';
     } else {
-      return hexo.call('server', { open: true }).then((s) => {
-        server = s;
-        const { address, port } = s.address();
-        const { root } = hexo.config;
-        serverURL = new URL(
-          `http://${
-            address === '0.0.0.0' || address === '::' ? 'localhost' : address
-          }:${port}${root.startsWith('/') ? root : `/${root}`}`
-        ).toString();
-        return 'server done';
-      });
+      server = await hexo.call('server', { open: true });
+      const { address, port } = server.address();
+      const { root } = hexo.config;
+      serverURL = new URL(
+        `http://${
+          address === '0.0.0.0' || address === '::' ? 'localhost' : address
+        }:${port}${root.startsWith('/') ? root : `/${root}`}`
+      ).toString();
+      return 'server done';
     }
   },
-  upload: (hexo) =>
-    hexo.call('deploy', { generate: true }).then(() => {
-      return 'deployment done';
-    }),
+
+  upload: async (hexo) => {
+    await hexo.call('deploy', { generate: true });
+    return 'deployment done';
+  },
 };
 
-client.onmessage = (e) => {
+client.onmessage = async (e) => {
   const { event } = JSON.parse(e.data);
   const command = commands[event];
   if (command) {
     const hexo = new Hexo(join(process.cwd(), 'hexo'), {});
-    const originalLogger = hexo.log;
-    hexo
-      .init()
-      .then(() => {
-        setFakeConsole(hexo);
-        return command(hexo);
-      })
-      .then((msg) => {
-        unsetFakeConsole(hexo, originalLogger);
-        send(msg, 'DONE');
-        hexo.exit();
-      })
-      .catch((err) => {
-        unsetFakeConsole(hexo, originalLogger);
-        send(JSON.stringify(err, null, 2), 'FATAL');
-        hexo.exit(err);
-      });
+    try {
+      await hexo.init();
+      setFakeConsole(hexo);
+      const msg = await command(hexo);
+      send(msg, 'DONE');
+      hexo.exit();
+    } catch (err) {
+      send(JSON.stringify(err, null, 2), 'FATAL');
+      hexo.exit(err);
+    }
   }
 };

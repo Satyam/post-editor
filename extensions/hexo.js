@@ -24,16 +24,13 @@ const send = (msg, event = 'LOG') => {
 const escRx = /\x1b\[\d+m/gm;
 
 function replaceStr(string, ...placeholders) {
-  if (typeof string === 'string') {
+  if (typeof string === 'object') {
+    return `${replaceStr(...placeholders)}\n${JSON.stringify(string, null, 2)}`;
+  } else {
     const replaced = string.replaceAll(/%[sd]/g, () =>
       placeholders.shift().toString()
     );
     return [replaced, ...placeholders].join('\n').replaceAll(escRx, '');
-  } else {
-    return [string, ...placeholders]
-      .map((obj) => JSON.stringify(obj, null, 2))
-      .join('\n')
-      .replaceAll(escRx, '');
   }
 }
 

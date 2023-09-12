@@ -30,7 +30,6 @@ const commands = {
   upload: (hexo) => hexo.call('deploy', { generate: true }),
 };
 
-debugger;
 const run = async () => {
   const command = commands[process.argv[2]];
   if (command) {

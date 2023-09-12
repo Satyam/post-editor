@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/neutralinojs/neutralinojs/main/schemas/neutralino.config.schema.json",
   "applicationId": "js.neutralino.sample",
   "version": "1.0.0",
-  "defaultMode": "window",
+  "defaultMode": "chrome",
   "port": 0,
   "documentRoot": "/resources/",
   "url": "/",
@@ -13,14 +13,7 @@
     "enabled": false,
     "writeToLogFile": false
   },
-  "nativeAllowList": [
-    "app.*",
-    "os.*",
-    "debug.log",
-    "filesystem.*",
-    "events.*",
-    "extensions.*"
-  ],
+  "nativeAllowList": ["app.*", "os.*", "debug.log", "filesystem.*", "events.*"],
   "modes": {
     "window": {
       "title": "Roxy Blog Editor",
@@ -56,12 +49,5 @@
     "clientLibrary": "/resources/js/neutralino.js",
     "binaryVersion": "4.10.0",
     "clientVersion": "3.8.2"
-  },
-  "enableExtensions": true,
-  "extensions": [
-    {
-      "id": "js.neutralino.hexo",
-      "command": "node ${NL_PATH}/extensions/hexo.js"
-    }
-  ]
+  }
 }

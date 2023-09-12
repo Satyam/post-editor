@@ -1,9 +1,7 @@
-import { onClick } from './utils';
+import { onClick, join } from './utils';
 
 const terminal = document.getElementById('terminal');
 const hexoButtons = document.getElementById('hexoButtons');
-
-const nEv = Neutralino.events;
 
 const clearTerminal = () => {
   terminal.innerHTML = '';
@@ -12,6 +10,7 @@ const clearTerminal = () => {
 const escRx = /\x1b\[\d+m/gm;
 const progressRx = /--\s*.+\sTamaño:\s*\d+\s*Total:\s*\d+\s*--/m;
 const preRx = /<pre>.*<\/pre>/gms;
+const doneRx = /--\s*DONE\s*--/im;
 
 const appendTerminal = (contents) => {
   if (progressRx.test(contents)) {
@@ -27,7 +26,7 @@ const appendTerminal = (contents) => {
     .replaceAll('\n', '<br/>')
     .replaceAll(escRx, '')}`;
   if (contents.length) {
-    terminal.lastElementChild.scrollIntoView({
+    terminal.lastElementChild?.scrollIntoView({
       behavior: 'smooth',
       block: 'center',
       inline: 'nearest',
@@ -35,11 +34,41 @@ const appendTerminal = (contents) => {
   }
 };
 
-['LOG', 'WARN', 'INFO', 'TRACE', 'ERROR', 'FATAL'].forEach((type) => {
-  nEv.on(type, (ev) => {
-    appendTerminal(`${type}: ${ev.detail}\n`);
+const launch = async (command) => {
+  const process = await Neutralino.os.spawnProcess(
+    `node ${join(NL_PATH, 'extensions/hexo.js')} ${command}`
+  );
+
+  await new Promise((resolve, reject) => {
+    const handler = (ev) => {
+      const { id, data, action } = ev.detail;
+      if (process.id == id) {
+        switch (action) {
+          case 'stdOut':
+            if (doneRx.test(data)) {
+              Neutralino.events.off('spawnedProcess', handler);
+              resolve();
+            } else {
+              appendTerminal(data);
+            }
+            break;
+          case 'stdErr':
+            appendTerminal(data);
+            reject();
+            break;
+          case 'exit':
+            appendTerminal(
+              `<hr/>El processo terminó con ${data ? `error ${data}` : `éxito`}`
+            );
+            Neutralino.events.off('spawnedProcess', handler);
+            resolve();
+            break;
+        }
+      }
+    };
+    Neutralino.events.on('spawnedProcess', handler);
   });
-});
+};
 
 const anyClick = async () =>
   new Promise((resolve) => {
@@ -62,17 +91,7 @@ onClick(
   hexoButtons,
   async (btn) => {
     disableButtons(true);
-    await Neutralino.extensions.dispatch('js.neutralino.hexo', btn.name, {});
-    await new Promise((resolve) => {
-      window.addEventListener(
-        'DONE',
-        (ev) => {
-          appendTerminal(`DONE: ${ev.detail}\n`);
-          resolve();
-        },
-        { once: true }
-      );
-    });
+    await launch(btn.name);
     appendTerminal('<hr/>Haga click en esta ventana para cerrar');
     await anyClick();
     clearTerminal();

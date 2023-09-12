@@ -11,8 +11,10 @@ const escRx = /\x1b\[\d+m/gm;
 const progressRx = /--\s*.+\sTamaño:\s*\d+\s*Total:\s*\d+\s*--/m;
 const preRx = /<pre>.*<\/pre>/gms;
 const doneRx = /--\s*DONE\s*--/im;
+const emptyInfo = /info\s*$/im;
 
 const appendTerminal = (contents) => {
+  if (emptyInfo.test(contents)) return;
   if (progressRx.test(contents)) {
     const log = terminal.innerHTML;
     if (preRx.test(log)) {

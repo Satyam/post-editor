@@ -57,8 +57,8 @@ export const onClick = (selector, fn, targetSel = '*') => {
   const el =
     typeof selector === 'string' ? document.querySelector(selector) : selector;
   el.addEventListener('click', (ev) => {
-    const target = ev.target;
-    if (target.matches(targetSel)) {
+    const target = ev.target.closest(targetSel);
+    if (target) {
       ev.stopPropagation();
       ev.preventDefault();
       fn(target, ev);
